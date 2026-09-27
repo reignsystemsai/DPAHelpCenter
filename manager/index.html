@@ -151,7 +151,10 @@
       <div class="brand"><strong>DPA HELP <span>CENTER</span></strong><small>Network Manager</small></div>
       <div class="nav-label">Workspace</div>
       <nav class="nav" aria-label="Manager navigation">
-        <button class="nav-btn" data-view="ai">Helux Workforce</button>
+        <button class="nav-btn" data-view="ai" data-helux-nav="outbound-q">Helux Outbound (Q)</button>
+        <button class="nav-btn" data-view="ai" data-helux-nav="outbound-uq">Helux Outbound (UQ)</button>
+        <button class="nav-btn" data-view="ai" data-helux-nav="inbound-q">Helux Inbound (Q)</button>
+        <button class="nav-btn" data-view="ai" data-helux-nav="inbound-uq">Helux Inbound (UQ)</button>
         <div class="nav-divider" aria-hidden="true"></div>
         <button class="nav-btn" data-view="prephub">PrepHub<span class="nav-count">2</span></button>
         <button class="nav-btn active" data-view="crm">DPA Department<span class="nav-count" id="dpaNavCount">0</span></button>
@@ -283,7 +286,6 @@
 
         <section class="view" id="view-ai">
           <div class="page-head"><div><div class="eyebrow">Helux Workforce</div><h2 id="heluxPageTitle">Outbound Call Control · Qualified</h2><p>Keep every qualified and unqualified inbound and outbound call queue separate for command and control.</p></div><button class="primary" data-toast="New call-control records will enter through the connected lead routes.">+ ADD CALL RECORD</button></div>
-          <div class="subtabs" id="heluxTabs"><button class="subtab active" data-helux-board="outbound-q">Outbound (Q)</button><button class="subtab" data-helux-board="outbound-uq">Outbound (UQ)</button><button class="subtab" data-helux-board="inbound-q">Inbound (Q)</button><button class="subtab" data-helux-board="inbound-uq">Inbound (UQ)</button></div>
           <section class="panel"><div class="panel-head"><div><h3 id="heluxBoardTitle">Helux Workforce - Outbound (Q)</h3><small>Five call-control groups, 24 fields, and no subitems.</small></div></div><div class="helux-board" id="heluxBoard"></div></section>
         </section>
       </div>
@@ -619,7 +621,7 @@
     const heluxGroups=[{name:"New Leads",color:"#c8102e"},{name:"Callbacks",color:"#fdab3d"},{name:"Agent Needed",color:"#f5d33d"},{name:"Completed",color:"#22a06b"},{name:"Do Not Call",color:"#7b8498"}];
     function renderHelux(){
       const config=heluxBoardConfigs[activeHeluxBoard],records=heluxRecords[activeHeluxBoard],collapsed=collapsedHeluxGroups[activeHeluxBoard];
-      document.getElementById("heluxPageTitle").textContent=config.page;document.getElementById("heluxBoardTitle").textContent=config.title;document.querySelectorAll("[data-helux-board]").forEach(button=>button.classList.toggle("active",button.dataset.heluxBoard===activeHeluxBoard));
+      document.getElementById("heluxPageTitle").textContent=config.page;document.getElementById("heluxBoardTitle").textContent=config.title;
       heluxBoard.innerHTML=heluxGroups.map(group=>{const rows=records.filter(record=>record.group===group.name&&!record.archived);return `<section class="credit-group helux-group ${collapsed.has(group.name)?"collapsed":""}" data-helux-group="${group.name}" style="--group:${group.color}"><div class="credit-group-title"><button class="credit-collapse helux-collapse" type="button" aria-expanded="${!collapsed.has(group.name)}"><span class="credit-arrow">⌄</span>${group.name}</button></div><div class="credit-grid helux-grid credit-grid-head"><div class="crm-select-cell"><input class="stage-check" type="checkbox" aria-label="Select all ${group.name} call records" ${rows.length?"":"disabled"}></div>${heluxColumns.map(column=>`<div>${column}</div>`).join("")}</div>${rows.length?rows.map(record=>`<div class="credit-grid helux-grid credit-grid-row"><div class="crm-select-cell"><input class="lead-check" type="checkbox" aria-label="Select ${record.lead}"></div>${heluxColumns.map((column,index)=>`<div class="${index===0?"credit-name":""}">${index===0?`<span class="stage-dot"></span><span class="grab-handle">⠿</span>`:""}${record[column]??"—"}</div>`).join("")}</div>`).join(""):`<div class="helux-empty">No call records in ${group.name}.</div>`}</section>`}).join("");
       heluxBoard.scrollLeft=0;
       heluxBoard.querySelectorAll(".helux-collapse").forEach(button=>button.addEventListener("click",()=>{const group=button.closest(".helux-group").dataset.heluxGroup;collapsed.has(group)?collapsed.delete(group):collapsed.add(group);renderHelux()}));
@@ -739,12 +741,12 @@
 
     document.querySelectorAll(".nav-btn").forEach(btn=>btn.addEventListener("click",()=>{
       document.querySelectorAll(".nav-btn,.view").forEach(el=>el.classList.remove("active"));
+      if(btn.dataset.heluxNav)activeHeluxBoard=btn.dataset.heluxNav;
       btn.classList.add("active"); document.getElementById(`view-${btn.dataset.view}`).classList.add("active");
-      document.getElementById("topTitle").textContent=titles[btn.dataset.view][0]; document.getElementById("topSub").textContent=titles[btn.dataset.view][1];
+      document.getElementById("topTitle").textContent=btn.dataset.heluxNav?heluxBoardConfigs[activeHeluxBoard].title:titles[btn.dataset.view][0]; document.getElementById("topSub").textContent=titles[btn.dataset.view][1];
       if(btn.dataset.view==="credit")renderCredit();if(btn.dataset.view==="tax")renderTax();if(btn.dataset.view==="review")renderReview();if(btn.dataset.view==="prephub")renderPrep();if(btn.dataset.view==="ai")renderHelux();updateBatchBar();
       window.scrollTo({top:0,behavior:"smooth"});
     }));
-    document.querySelectorAll("[data-helux-board]").forEach(button=>button.addEventListener("click",()=>{activeHeluxBoard=button.dataset.heluxBoard;renderHelux()}));
     document.querySelectorAll("[data-prep]").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll("[data-prep]").forEach(x=>x.classList.remove("active"));btn.classList.add("active");renderPrep(btn.dataset.prep)}));
     document.getElementById("drawerClose").addEventListener("click",()=>{drawer.classList.remove("open");drawer.setAttribute("aria-hidden","true")});
     drawer.addEventListener("click",e=>{if(e.target===drawer)document.getElementById("drawerClose").click()});
