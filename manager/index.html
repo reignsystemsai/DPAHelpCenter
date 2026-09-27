@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PrepHub Network Manager | DPA Help Center</title>
+  <meta name="description" content="Private DPA Help Center CRM, marketing, partner, and AI workflow manager.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --navy:#081f5c;
+      --navy-2:#102d72;
+      --blue:#0057b8;
+      --red:#d22630;
+      --ink:#17233f;
+      --muted:#6b7690;
+      --line:#e5eaf2;
+      --soft:#f4f7fb;
+      --green:#138a5b;
+      --amber:#b56b08;
+      --purple:#6c4bd3;
+      --shadow:0 16px 45px rgba(8,31,92,.09);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:var(--soft);color:var(--ink);font-family:Inter,Arial,sans-serif}
+    button,input,select{font:inherit}
+    button{cursor:pointer}
+    .app{min-height:100vh;display:grid;grid-template-columns:252px minmax(0,1fr)}
+    .sidebar{position:sticky;top:0;height:100vh;background:linear-gradient(180deg,#071b50 0%,#0a2869 100%);color:#fff;padding:24px 17px;display:flex;flex-direction:column;z-index:20}
+    .brand{padding:3px 9px 25px}
+    .brand strong{display:block;font-size:21px;font-weight:900;letter-spacing:-.6px}
+    .brand strong span{color:#ff4d57}
+    .brand small{display:block;margin-top:7px;color:rgba(255,255,255,.65);font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase}
+    .nav-label{margin:8px 10px;color:rgba(255,255,255,.45);font-size:9px;font-weight:900;letter-spacing:1.7px;text-transform:uppercase}
+    .nav{display:grid;gap:7px}
+    .nav-btn{width:100%;border:0;border-radius:14px;background:transparent;color:rgba(255,255,255,.72);padding:13px 14px;display:flex;align-items:center;gap:12px;text-align:left;font-size:13px;font-weight:800;transition:.2s}
+    .nav-btn:hover{background:rgba(255,255,255,.08);color:#fff}
+    .nav-btn.active{background:#fff;color:var(--navy);box-shadow:0 10px 24px rgba(0,0,0,.16)}
+    .nav-icon{width:29px;height:29px;border-radius:9px;display:grid;place-items:center;background:rgba(255,255,255,.09);font-size:14px}
+    .nav-btn.active .nav-icon{background:#edf3ff;color:var(--blue)}
+    .nav-count{margin-left:auto;min-width:23px;height:23px;border-radius:999px;background:var(--red);color:#fff;display:grid;place-items:center;font-size:9px;font-weight:900}
+    .side-card{margin-top:auto;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(255,255,255,.07);padding:14px}
+    .side-card .owner{display:flex;gap:10px;align-items:center}
+    .avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#fff,#cbdcff);color:var(--navy);font-weight:900}
+    .owner strong{display:block;font-size:12px}.owner small{display:block;margin-top:3px;color:rgba(255,255,255,.58);font-size:9px}
+    .private{margin-top:12px;padding-top:11px;border-top:1px solid rgba(255,255,255,.1);font-size:9px;font-weight:800;color:rgba(255,255,255,.64)}
+    .main{min-width:0}
+    .topbar{height:78px;padding:0 28px;background:rgba(255,255,255,.94);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:18px;position:sticky;top:0;z-index:15;backdrop-filter:blur(14px)}
+    .top-title{min-width:220px}.top-title h1{margin:0;color:var(--navy);font-size:18px;font-weight:900;letter-spacing:-.4px}.top-title p{margin:4px 0 0;color:var(--muted);font-size:10px;font-weight:700}
+    .search{margin-left:auto;position:relative;width:min(390px,34vw)}
+    .search input{width:100%;height:42px;border:1px solid var(--line);border-radius:13px;background:var(--soft);padding:0 42px 0 15px;color:var(--ink);outline:none;font-size:12px;font-weight:650}
+    .search span{position:absolute;right:14px;top:11px;color:var(--muted)}
+    .preview-badge{white-space:nowrap;border-radius:999px;background:#fff0f1;color:var(--red);padding:9px 12px;font-size:9px;font-weight:900;letter-spacing:.4px;text-transform:uppercase}
+    .content{padding:25px 28px 42px;max-width:1680px;margin:0 auto}
+    .view{display:none}.view.active{display:block;animation:fade .22s ease}@keyframes fade{from{opacity:.4;transform:translateY(5px)}to{opacity:1;transform:none}}
+    .page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:20px}
+    .eyebrow{color:var(--blue);font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase}
+    .page-head h2{margin:6px 0 0;color:var(--navy);font-size:30px;line-height:1;font-weight:900;letter-spacing:-1.2px}
+    .page-head p{margin:8px 0 0;color:var(--muted);font-size:12px;font-weight:600}
+    .primary,.secondary{border:0;border-radius:12px;padding:12px 16px;font-size:10px;font-weight:900;letter-spacing:.4px}
+    .primary{background:var(--red);color:#fff;box-shadow:0 10px 22px rgba(210,38,48,.18)}
+    .secondary{background:#fff;color:var(--navy);border:1px solid var(--line)}
+    .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:17px}
+    .stat{background:#fff;border:1px solid var(--line);border-radius:18px;padding:17px;box-shadow:0 8px 25px rgba(8,31,92,.045);position:relative;overflow:hidden}
+    .stat:after{content:"";position:absolute;right:-22px;bottom:-32px;width:78px;height:78px;border-radius:50%;background:var(--tint,#edf3ff)}
+    .stat-top{display:flex;align-items:center;justify-content:space-between;gap:10px}.stat-label{color:var(--muted);font-size:9px;font-weight:900;letter-spacing:.8px;text-transform:uppercase}.stat-icon{width:32px;height:32px;border-radius:10px;background:var(--tint,#edf3ff);color:var(--accent,var(--blue));display:grid;place-items:center;font-weight:900}
+    .stat-value{margin-top:10px;color:var(--navy);font-size:28px;font-weight:900;letter-spacing:-1px}.stat-sub{margin-top:4px;color:var(--muted);font-size:9px;font-weight:700}.up{color:var(--green)}
+    .panel{background:#fff;border:1px solid var(--line);border-radius:19px;box-shadow:0 9px 28px rgba(8,31,92,.045);overflow:hidden}
+    .panel-head{padding:15px 17px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .panel-head h3{margin:0;color:var(--navy);font-size:13px;font-weight:900}.panel-head small{display:block;margin-top:4px;color:var(--muted);font-size:9px;font-weight:650}
+    .filters{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+    .filter{border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--muted);padding:8px 10px;font-size:9px;font-weight:800}
+    .filter.active{background:var(--navy);border-color:var(--navy);color:#fff}
+    .table-wrap{overflow:auto}
+    table{width:100%;border-collapse:collapse;min-width:1040px}
+    th{padding:11px 13px;background:#fafbfe;color:#7a8498;text-align:left;font-size:8px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;border-bottom:1px solid var(--line)}
+    td{padding:13px;border-bottom:1px solid #edf0f5;font-size:10px;font-weight:700;color:#4f5c75;white-space:nowrap}
+    tbody tr{transition:.18s;cursor:pointer}tbody tr:hover{background:#f8faff}tbody tr:last-child td{border-bottom:0}
+    .person{display:flex;align-items:center;gap:10px}.person-avatar{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:#edf3ff;color:var(--navy);font-weight:900}.person strong{display:block;color:var(--navy);font-size:10px}.person small{display:block;margin-top:3px;color:#8a94a7;font-size:8px}
+    .pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:6px 8px;font-size:8px;font-weight:900}.pill:before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor}.green{background:#eaf8f2;color:var(--green)}.amber{background:#fff5e7;color:var(--amber)}.blue{background:#ebf3ff;color:var(--blue)}.red{background:#fff0f1;color:var(--red)}.purple{background:#f1edff;color:var(--purple)}.gray{background:#f0f2f6;color:#778196}
+    .score{display:flex;align-items:center;gap:8px}.score strong{width:32px;color:var(--navy);font-size:9px}.score-track{width:72px;height:6px;border-radius:99px;background:#e8edf5;overflow:hidden}.score-fill{height:100%;border-radius:99px;background:var(--score-color,var(--blue));width:var(--score)}
+    .split{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(290px,.55fr);gap:15px;margin-top:15px}
+    .activity{padding:4px 17px 15px}.activity-item{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}.activity-item:last-child{border-bottom:0}.activity-icon{width:31px;height:31px;border-radius:10px;background:#edf3ff;color:var(--blue);display:grid;place-items:center;font-size:12px}.activity strong{display:block;color:var(--navy);font-size:9px}.activity p{margin:3px 0 0;color:var(--muted);font-size:8px;font-weight:650}.activity time{color:#9aa2b2;font-size:8px;font-weight:700}
+    .pipeline{display:flex;gap:8px;overflow:auto;padding-bottom:3px;margin-bottom:14px}.stage{min-width:142px;border:1px solid var(--line);border-radius:14px;background:#fff;padding:12px}.stage-top{display:flex;justify-content:space-between;color:var(--muted);font-size:8px;font-weight:900;text-transform:uppercase}.stage strong{display:block;margin-top:7px;color:var(--navy);font-size:20px}.stage-bar{height:4px;margin-top:9px;border-radius:99px;background:#e9edf4;overflow:hidden}.stage-bar i{display:block;height:100%;border-radius:99px;background:var(--accent,var(--blue));width:var(--width)}
+    .campaign-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.campaign{border:1px solid var(--line);border-radius:18px;background:#fff;padding:17px;box-shadow:0 8px 25px rgba(8,31,92,.04)}.campaign-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.campaign-icon{width:40px;height:40px;border-radius:12px;background:#edf3ff;color:var(--navy);display:grid;place-items:center;font-size:18px}.campaign h3{margin:13px 0 5px;color:var(--navy);font-size:14px;font-weight:900}.campaign p{min-height:34px;margin:0;color:var(--muted);font-size:9px;font-weight:650;line-height:1.45}.campaign-meta{display:flex;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);color:#778196;font-size:8px;font-weight:800}.campaign-progress{margin-top:12px;height:6px;border-radius:99px;background:#edf0f5;overflow:hidden}.campaign-progress i{display:block;height:100%;border-radius:99px;background:var(--blue);width:var(--width)}
+    .two-col{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(300px,.8fr);gap:15px;margin-top:15px}
+    .funnel{padding:17px}.funnel-row{display:grid;grid-template-columns:125px 1fr 42px;gap:10px;align-items:center;margin-bottom:13px}.funnel-row:last-child{margin-bottom:0}.funnel-label{color:var(--muted);font-size:9px;font-weight:800}.funnel-track{height:11px;border-radius:99px;background:#edf0f5;overflow:hidden}.funnel-track i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--navy),var(--blue));width:var(--width)}.funnel-num{text-align:right;color:var(--navy);font-size:9px;font-weight:900}
+    .partner-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.partner{border:1px solid var(--line);border-radius:18px;background:#fff;padding:17px;box-shadow:0 8px 25px rgba(8,31,92,.04)}.partner-top{display:flex;align-items:center;gap:11px}.partner-avatar{width:47px;height:47px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(145deg,#e4ecff,#fff);color:var(--navy);font-size:14px;font-weight:900}.partner h3{margin:0;color:var(--navy);font-size:13px;font-weight:900}.partner p{margin:4px 0 0;color:var(--muted);font-size:8px;font-weight:700}.partner-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:15px}.mini{border-radius:12px;background:var(--soft);padding:10px 8px;text-align:center}.mini strong{display:block;color:var(--navy);font-size:13px}.mini span{display:block;margin-top:3px;color:var(--muted);font-size:7px;font-weight:900;text-transform:uppercase}.partner-foot{display:flex;justify-content:space-between;align-items:center;margin-top:13px;padding-top:12px;border-top:1px solid var(--line);font-size:8px;font-weight:800;color:var(--muted)}
+    .ai-layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr);gap:15px}.queue{display:grid;gap:9px;padding:14px}.call-card{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:12px}.call-icon{width:42px;height:42px;border-radius:13px;background:#edf3ff;color:var(--blue);display:grid;place-items:center;font-size:17px}.call-card h4{margin:0;color:var(--navy);font-size:10px;font-weight:900}.call-card p{margin:4px 0 0;color:var(--muted);font-size:8px;font-weight:650}.call-meta{text-align:right}.call-meta strong{display:block;color:var(--navy);font-size:9px}.call-meta small{display:block;margin-top:4px;color:var(--muted);font-size:8px}.daisy{padding:18px;text-align:center}.daisy-orb{width:86px;height:86px;margin:6px auto 14px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 28%,#fff 0 10%,#74a6ff 28%,#16499e 62%,#081f5c 100%);box-shadow:0 0 0 9px #edf3ff,0 18px 36px rgba(8,31,92,.2);color:#fff;font-size:25px;font-weight:900}.daisy h3{margin:0;color:var(--navy);font-size:17px;font-weight:900}.daisy p{margin:7px auto 15px;max-width:270px;color:var(--muted);font-size:9px;font-weight:650;line-height:1.5}.daisy-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.daisy-grid .mini{padding:12px}
+    .drawer{position:fixed;inset:0;z-index:50;display:none;background:rgba(5,16,46,.4);backdrop-filter:blur(3px)}.drawer.open{display:block}.drawer-panel{position:absolute;right:0;top:0;height:100%;width:min(480px,100%);background:#fff;box-shadow:-20px 0 55px rgba(4,17,53,.18);padding:24px;overflow:auto;animation:slide .2s ease}@keyframes slide{from{transform:translateX(35px);opacity:.5}to{transform:none;opacity:1}}.drawer-close{position:absolute;right:18px;top:18px;width:34px;height:34px;border:0;border-radius:10px;background:var(--soft);color:var(--navy);font-size:18px}.drawer h2{margin:7px 42px 4px 0;color:var(--navy);font-size:24px}.drawer-sub{color:var(--muted);font-size:10px;font-weight:700}.drawer-score{margin:18px 0;border-radius:17px;background:var(--navy);color:#fff;padding:17px}.drawer-score-top{display:flex;justify-content:space-between;align-items:center}.drawer-score strong{font-size:22px}.drawer-score small{font-size:8px;font-weight:900;letter-spacing:1px;text-transform:uppercase}.drawer-score .score-track{margin-top:11px;width:100%;background:rgba(255,255,255,.18)}.drawer-section{margin-top:19px}.drawer-section h3{margin:0 0 9px;color:var(--navy);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.8px}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.detail{border:1px solid var(--line);border-radius:12px;padding:11px}.detail span{display:block;color:var(--muted);font-size:7px;font-weight:900;text-transform:uppercase}.detail strong{display:block;margin-top:5px;color:var(--ink);font-size:10px}.task-list{display:grid;gap:8px}.task{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:12px;padding:10px;color:var(--ink);font-size:9px;font-weight:800}.task i{width:24px;height:24px;border-radius:8px;display:grid;place-items:center;background:#fff0f1;color:var(--red);font-style:normal}.task.done i{background:#eaf8f2;color:var(--green)}
+    .toast{position:fixed;right:24px;bottom:24px;z-index:80;max-width:340px;border-radius:14px;background:var(--navy);color:#fff;padding:13px 16px;box-shadow:var(--shadow);font-size:10px;font-weight:800;transform:translateY(25px);opacity:0;pointer-events:none;transition:.25s}.toast.show{transform:none;opacity:1}
+    @media(max-width:1100px){.stats{grid-template-columns:repeat(2,1fr)}.campaign-grid,.partner-grid{grid-template-columns:repeat(2,1fr)}.split,.two-col,.ai-layout{grid-template-columns:1fr}}
+    @media(max-width:760px){
+      .app{display:block}.sidebar{position:sticky;height:auto;padding:13px 12px}.brand{padding:0 4px 12px}.brand strong{font-size:18px}.brand small,.nav-label,.side-card{display:none}.nav{display:flex;gap:6px;overflow:auto}.nav-btn{min-width:max-content;width:auto;padding:9px 11px}.nav-icon{width:25px;height:25px}.nav-count{display:none}.topbar{height:auto;padding:13px 14px;flex-wrap:wrap;gap:10px}.top-title{min-width:0}.top-title p{display:none}.search{order:3;width:100%;margin:0}.preview-badge{margin-left:auto}.content{padding:18px 14px 30px}.page-head{align-items:flex-start}.page-head h2{font-size:25px}.page-head p{font-size:10px}.stats{grid-template-columns:1fr 1fr;gap:9px}.stat{padding:13px}.stat-value{font-size:23px}.campaign-grid,.partner-grid{grid-template-columns:1fr}.panel-head{align-items:flex-start;flex-direction:column}.filters{width:100%}.detail-grid{grid-template-columns:1fr}.drawer-panel{padding:20px 16px}.ai-layout{display:block}.daisy{margin-top:14px}
+    }
+    @media(max-width:430px){.stats{grid-template-columns:1fr}.page-head{display:block}.page-head .primary{margin-top:12px;width:100%}.campaign-grid,.partner-grid{display:block}.campaign,.partner{margin-bottom:10px}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><strong>DPA HELP <span>CENTER</span></strong><small>Network Manager</small></div>
+      <div class="nav-label">Workspace</div>
+      <nav class="nav" aria-label="Manager navigation">
+        <button class="nav-btn active" data-view="crm"><span class="nav-icon">▦</span>CRM<span class="nav-count">6</span></button>
+        <button class="nav-btn" data-view="marketing"><span class="nav-icon">✉</span>Marketing</button>
+        <button class="nav-btn" data-view="partners"><span class="nav-icon">♟</span>Partners</button>
+        <button class="nav-btn" data-view="ai"><span class="nav-icon">✦</span>AI Workflow<span class="nav-count">3</span></button>
+      </nav>
+      <div class="side-card">
+        <div class="owner"><div class="avatar">DT</div><div><strong>Douglas Thompson</strong><small>Owner access</small></div></div>
+        <div class="private">● Private workspace · Admin only</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="top-title"><h1 id="topTitle">CRM Command Center</h1><p id="topSub">One buyer record. Every department, message and call.</p></div>
+        <label class="search"><input id="globalSearch" type="search" placeholder="Search buyers, partners or campaigns"><span>⌕</span></label>
+        <div class="preview-badge">Visual Preview · Sample Data</div>
+      </header>
+
+      <div class="content">
+        <section class="view active" id="view-crm">
+          <div class="page-head"><div><div class="eyebrow">Buyer Management</div><h2>Your entire pipeline.</h2><p>PrepHub readiness, DPA progress and follow-up activity in one record.</p></div><button class="primary" data-toast="New lead entry will be enabled after the visual design is approved.">+ ADD LEAD</button></div>
+          <div class="stats">
+            <article class="stat" style="--accent:#0057b8;--tint:#edf4ff"><div class="stat-top"><span class="stat-label">Total buyers</span><span class="stat-icon">◎</span></div><div class="stat-value">247</div><div class="stat-sub"><span class="up">+18</span> this month</div></article>
+            <article class="stat" style="--accent:#138a5b;--tint:#eaf8f2"><div class="stat-top"><span class="stat-label">100% ready</span><span class="stat-icon">✓</span></div><div class="stat-value">38</div><div class="stat-sub">15.4% of active buyers</div></article>
+            <article class="stat" style="--accent:#d22630;--tint:#fff0f1"><div class="stat-top"><span class="stat-label">Needs action</span><span class="stat-icon">!</span></div><div class="stat-value">16</div><div class="stat-sub">6 callbacks · 10 reviews</div></article>
+            <article class="stat" style="--accent:#6c4bd3;--tint:#f1edff"><div class="stat-top"><span class="stat-label">Pipeline value</span><span class="stat-icon">$</span></div><div class="stat-value">$4.8M</div><div class="stat-sub">Estimated active volume</div></article>
+          </div>
+
+          <div class="pipeline">
+            <article class="stage" style="--accent:#0057b8;--width:100%"><div class="stage-top"><span>New leads</span><span>42%</span></div><strong>68</strong><div class="stage-bar"><i></i></div></article>
+            <article class="stage" style="--accent:#6c4bd3;--width:73%"><div class="stage-top"><span>Preparing</span><span>31%</span></div><strong>51</strong><div class="stage-bar"><i></i></div></article>
+            <article class="stage" style="--accent:#b56b08;--width:48%"><div class="stage-top"><span>Application</span><span>18%</span></div><strong>29</strong><div class="stage-bar"><i></i></div></article>
+            <article class="stage" style="--accent:#138a5b;--width:31%"><div class="stage-top"><span>Under contract</span><span>8%</span></div><strong>13</strong><div class="stage-bar"><i></i></div></article>
+            <article class="stage" style="--accent:#081f5c;--width:19%"><div class="stage-top"><span>Clear to close</span><span>5%</span></div><strong>8</strong><div class="stage-bar"><i></i></div></article>
+          </div>
+
+          <section class="panel">
+            <div class="panel-head"><div><h3>Buyer Pipeline</h3><small>Click a buyer to open the complete record.</small></div><div class="filters"><button class="filter active" data-filter="all">All</button><button class="filter" data-filter="100">100% Ready</button><button class="filter" data-filter="prep">Needs Prep</button><button class="filter" data-filter="callback">Callbacks</button></div></div>
+            <div class="table-wrap"><table><thead><tr><th>Buyer</th><th>Stage</th><th>Readiness</th><th>Focus areas</th><th>Email</th><th>Daisy</th><th>Owner</th><th>Next action</th></tr></thead><tbody id="buyerRows"></tbody></table></div>
+          </section>
+
+          <div class="split">
+            <section class="panel"><div class="panel-head"><div><h3>Readiness Departments</h3><small>One buyer database with department-specific views.</small></div><button class="secondary" data-toast="Department views will open after live data is connected.">VIEW ALL</button></div><div class="funnel">
+              <div class="funnel-row"><span class="funnel-label">Credit review</span><div class="funnel-track"><i style="--width:78%"></i></div><span class="funnel-num">39</span></div>
+              <div class="funnel-row"><span class="funnel-label">Income / DTI</span><div class="funnel-track"><i style="--width:61%"></i></div><span class="funnel-num">31</span></div>
+              <div class="funnel-row"><span class="funnel-label">Employment</span><div class="funnel-track"><i style="--width:37%"></i></div><span class="funnel-num">19</span></div>
+              <div class="funnel-row"><span class="funnel-label">Tax documents</span><div class="funnel-track"><i style="--width:44%"></i></div><span class="funnel-num">22</span></div>
+            </div></section>
+            <section class="panel"><div class="panel-head"><div><h3>Live Activity</h3><small>Email, calls and buyer progress.</small></div></div><div class="activity">
+              <div class="activity-item"><span class="activity-icon">✉</span><div><strong>Email delivered</strong><p>100% readiness email · Olivia M.</p></div><time>2m</time></div>
+              <div class="activity-item"><span class="activity-icon">☎</span><div><strong>Daisy call completed</strong><p>Application timeline confirmed</p></div><time>8m</time></div>
+              <div class="activity-item"><span class="activity-icon">✓</span><div><strong>Readiness increased</strong><p>Marcus R. moved from 75% to 100%</p></div><time>24m</time></div>
+            </div></section>
+          </div>
+        </section>
+
+        <section class="view" id="view-marketing">
+          <div class="page-head"><div><div class="eyebrow">Resend Campaign Center</div><h2>Marketing that follows readiness.</h2><p>Build sequences once, then automatically move buyers as their score changes.</p></div><button class="primary" data-toast="Campaign creation will be enabled after design approval.">+ NEW CAMPAIGN</button></div>
+          <div class="stats">
+            <article class="stat"><div class="stat-top"><span class="stat-label">Emails sent</span><span class="stat-icon">✉</span></div><div class="stat-value">1,284</div><div class="stat-sub">Last 30 days</div></article>
+            <article class="stat" style="--accent:#138a5b;--tint:#eaf8f2"><div class="stat-top"><span class="stat-label">Delivered</span><span class="stat-icon">✓</span></div><div class="stat-value">98.7%</div><div class="stat-sub">1,267 successful deliveries</div></article>
+            <article class="stat" style="--accent:#6c4bd3;--tint:#f1edff"><div class="stat-top"><span class="stat-label">Active sequences</span><span class="stat-icon">↻</span></div><div class="stat-value">4</div><div class="stat-sub">Score-based automation</div></article>
+            <article class="stat" style="--accent:#d22630;--tint:#fff0f1"><div class="stat-top"><span class="stat-label">Needs review</span><span class="stat-icon">!</span></div><div class="stat-value">7</div><div class="stat-sub">4 bounced · 3 complained</div></article>
+          </div>
+          <div class="campaign-grid">
+            <article class="campaign"><div class="campaign-top"><span class="campaign-icon">0–50</span><span class="pill green">Active</span></div><h3>Preparation Foundation</h3><p>Credit, DTI, employment and tax education based on each buyer’s missing areas.</p><div class="campaign-meta"><span>6 emails</span><span>312 enrolled</span></div><div class="campaign-progress"><i style="--width:72%"></i></div></article>
+            <article class="campaign"><div class="campaign-top"><span class="campaign-icon">75%</span><span class="pill green">Active</span></div><h3>Almost Lender-Ready</h3><p>Finish the final preparation area, organize documents and return to PrepHub.</p><div class="campaign-meta"><span>4 emails</span><span>84 enrolled</span></div><div class="campaign-progress"><i style="--width:54%"></i></div></article>
+            <article class="campaign"><div class="campaign-top"><span class="campaign-icon">100</span><span class="pill green">Active</span></div><h3>Ready Buyer Sequence</h3><p>Application instructions, document organization and partner matching.</p><div class="campaign-meta"><span>5 emails</span><span>38 enrolled</span></div><div class="campaign-progress"><i style="--width:88%"></i></div></article>
+          </div>
+          <div class="two-col">
+            <section class="panel"><div class="panel-head"><div><h3>Recent Email Activity</h3><small>Resend delivery events stored with the buyer record.</small></div><button class="secondary" data-toast="A complete event log will be available after Resend is connected.">EVENT LOG</button></div><div class="table-wrap"><table><thead><tr><th>Recipient</th><th>Campaign</th><th>Status</th><th>Sent</th><th>Opened</th><th>Buyer score</th></tr></thead><tbody>
+              <tr><td><div class="person"><span class="person-avatar">OM</span><div><strong>Olivia M.</strong><small>olivia@example.com</small></div></div></td><td>Ready Buyer</td><td><span class="pill green">Delivered</span></td><td>Today 4:08 AM</td><td>Today 4:12 AM</td><td>100%</td></tr>
+              <tr><td><div class="person"><span class="person-avatar">MR</span><div><strong>Marcus R.</strong><small>marcus@example.com</small></div></div></td><td>Almost Ready</td><td><span class="pill blue">Sent</span></td><td>Today 3:42 AM</td><td>—</td><td>75%</td></tr>
+              <tr><td><div class="person"><span class="person-avatar">AS</span><div><strong>Alicia S.</strong><small>alicia@example.com</small></div></div></td><td>Preparation</td><td><span class="pill red">Bounced</span></td><td>Yesterday</td><td>—</td><td>50%</td></tr>
+            </tbody></table></div></section>
+            <section class="panel"><div class="panel-head"><div><h3>Sequence Rules</h3><small>Automation that reacts to buyer progress.</small></div></div><div class="activity">
+              <div class="activity-item"><span class="activity-icon">1</span><div><strong>Score changes</strong><p>Remove buyer from the old sequence.</p></div></div>
+              <div class="activity-item"><span class="activity-icon">2</span><div><strong>New focus areas</strong><p>Enroll in the matching preparation track.</p></div></div>
+              <div class="activity-item"><span class="activity-icon">3</span><div><strong>Buyer reaches 100%</strong><p>Start lender-ready and partner matching.</p></div></div>
+            </div></section>
+          </div>
+        </section>
+
+        <section class="view" id="view-partners">
+          <div class="page-head"><div><div class="eyebrow">Agent & Partner Network</div><h2>Route the right buyer to the right partner.</h2><p>Brokerage-independent profiles, territories, capacity and performance.</p></div><button class="primary" data-toast="Partner invitations will be enabled after design approval.">+ ADD PARTNER</button></div>
+          <div class="stats">
+            <article class="stat"><div class="stat-top"><span class="stat-label">Active partners</span><span class="stat-icon">♟</span></div><div class="stat-value">12</div><div class="stat-sub">8 agents · 4 specialists</div></article>
+            <article class="stat" style="--accent:#138a5b;--tint:#eaf8f2"><div class="stat-top"><span class="stat-label">Available capacity</span><span class="stat-icon">+</span></div><div class="stat-value">46</div><div class="stat-sub">Open buyer assignments</div></article>
+            <article class="stat" style="--accent:#6c4bd3;--tint:#f1edff"><div class="stat-top"><span class="stat-label">Avg. response</span><span class="stat-icon">⌁</span></div><div class="stat-value">8m</div><div class="stat-sub">Across active partners</div></article>
+            <article class="stat" style="--accent:#d22630;--tint:#fff0f1"><div class="stat-top"><span class="stat-label">Needs assignment</span><span class="stat-icon">!</span></div><div class="stat-value">6</div><div class="stat-sub">Ready buyers waiting</div></article>
+          </div>
+          <div class="partner-grid">
+            <article class="partner"><div class="partner-top"><div class="partner-avatar">JR</div><div><h3>Jordan Reed</h3><p>Real Estate Agent · Georgia</p></div><span class="pill green" style="margin-left:auto">Active</span></div><div class="partner-stats"><div class="mini"><strong>14</strong><span>Assigned</span></div><div class="mini"><strong>5m</strong><span>Response</span></div><div class="mini"><strong>21%</strong><span>Conversion</span></div></div><div class="partner-foot"><span>Round-robin · Atlanta</span><span>8 slots open</span></div></article>
+            <article class="partner"><div class="partner-top"><div class="partner-avatar">TM</div><div><h3>Taylor Morgan</h3><p>DPA Specialist · Florida</p></div><span class="pill green" style="margin-left:auto">Active</span></div><div class="partner-stats"><div class="mini"><strong>22</strong><span>Assigned</span></div><div class="mini"><strong>9m</strong><span>Response</span></div><div class="mini"><strong>28%</strong><span>Conversion</span></div></div><div class="partner-foot"><span>Manual priority · Florida</span><span>12 slots open</span></div></article>
+            <article class="partner"><div class="partner-top"><div class="partner-avatar">AC</div><div><h3>Alex Carter</h3><p>Mortgage Partner · Texas</p></div><span class="pill amber" style="margin-left:auto">At capacity</span></div><div class="partner-stats"><div class="mini"><strong>31</strong><span>Assigned</span></div><div class="mini"><strong>11m</strong><span>Response</span></div><div class="mini"><strong>19%</strong><span>Conversion</span></div></div><div class="partner-foot"><span>Personal link · Houston</span><span>0 slots open</span></div></article>
+          </div>
+          <div class="two-col">
+            <section class="panel"><div class="panel-head"><div><h3>Assignment Queue</h3><small>Ready buyers waiting for a partner match.</small></div><button class="secondary" data-toast="Manual assignment will be enabled with the live partner database.">ASSIGN BUYERS</button></div><div class="table-wrap"><table><thead><tr><th>Buyer</th><th>Location</th><th>Score</th><th>Partner needed</th><th>Routing</th><th>Waiting</th></tr></thead><tbody>
+              <tr><td><div class="person"><span class="person-avatar">OM</span><div><strong>Olivia M.</strong><small>First-time buyer</small></div></div></td><td>Atlanta, GA</td><td>100%</td><td>Agent + DPA specialist</td><td><span class="pill blue">Round-robin</span></td><td>12 min</td></tr>
+              <tr><td><div class="person"><span class="person-avatar">DC</span><div><strong>Daniel C.</strong><small>First-time buyer</small></div></div></td><td>Houston, TX</td><td>100%</td><td>Lender</td><td><span class="pill purple">Manual</span></td><td>31 min</td></tr>
+            </tbody></table></div></section>
+            <section class="panel"><div class="panel-head"><div><h3>Routing Rules</h3><small>Owner controls every assignment method.</small></div></div><div class="activity">
+              <div class="activity-item"><span class="activity-icon">↻</span><div><strong>Round-robin</strong><p>Balance leads by territory and capacity.</p></div></div>
+              <div class="activity-item"><span class="activity-icon">⌁</span><div><strong>Personal links</strong><p>Keep buyers with the referring partner.</p></div></div>
+              <div class="activity-item"><span class="activity-icon">✋</span><div><strong>Manual override</strong><p>You can reassign any buyer at any time.</p></div></div>
+            </div></section>
+          </div>
+        </section>
+
+        <section class="view" id="view-ai">
+          <div class="page-head"><div><div class="eyebrow">Daisy AI Workflow</div><h2>Every call has a purpose.</h2><p>Attempts, callbacks, summaries and human handoffs connected to the buyer record.</p></div><button class="primary" data-toast="AI workflow controls will be activated after Daisy is connected.">EDIT WORKFLOW</button></div>
+          <div class="stats">
+            <article class="stat"><div class="stat-top"><span class="stat-label">Calls today</span><span class="stat-icon">☎</span></div><div class="stat-value">42</div><div class="stat-sub">31 connected</div></article>
+            <article class="stat" style="--accent:#138a5b;--tint:#eaf8f2"><div class="stat-top"><span class="stat-label">Connection rate</span><span class="stat-icon">✓</span></div><div class="stat-value">73.8%</div><div class="stat-sub">+6.2% this week</div></article>
+            <article class="stat" style="--accent:#b56b08;--tint:#fff5e7"><div class="stat-top"><span class="stat-label">Callbacks</span><span class="stat-icon">↻</span></div><div class="stat-value">5</div><div class="stat-sub">Next callback in 18m</div></article>
+            <article class="stat" style="--accent:#d22630;--tint:#fff0f1"><div class="stat-top"><span class="stat-label">Human action</span><span class="stat-icon">!</span></div><div class="stat-value">3</div><div class="stat-sub">Requires owner review</div></article>
+          </div>
+          <div class="ai-layout">
+            <section class="panel"><div class="panel-head"><div><h3>Live Call Queue</h3><small>Priority, next action and attempt limits from the AI workflow.</small></div><div class="filters"><button class="filter active">All</button><button class="filter">Callbacks</button><button class="filter">Agent Needed</button></div></div><div class="queue">
+              <article class="call-card"><span class="call-icon">☎</span><div><h4>Olivia M. · Ready buyer</h4><p>Confirm application timing and permission to match with a DPA specialist.</p></div><div class="call-meta"><strong>Calling now</strong><small>Attempt 1 of 3</small></div></article>
+              <article class="call-card"><span class="call-icon">↻</span><div><h4>Marcus R. · Callback</h4><p>Requested a call after work. Last result: connected, callback scheduled.</p></div><div class="call-meta"><strong>6:30 PM ET</strong><small>Attempt 2 of 3</small></div></article>
+              <article class="call-card"><span class="call-icon">!</span><div><h4>Daniel C. · Human action</h4><p>Buyer asked a lender-specific question. Daisy paused the sequence.</p></div><div class="call-meta"><strong>Owner review</strong><small>Pending 14m</small></div></article>
+              <article class="call-card"><span class="call-icon">✓</span><div><h4>Alicia S. · Completed</h4><p>Homebuying goals confirmed. Preparation sequence started.</p></div><div class="call-meta"><strong>Completed</strong><small>Summary saved</small></div></article>
+            </div></section>
+            <section class="panel daisy"><div class="daisy-orb">D</div><h3>Daisy is active</h3><p>Your first-time homebuyer assistant confirms information, learns goals and moves each buyer to the correct next step.</p><div class="daisy-grid"><div class="mini"><strong>3</strong><span>Max attempts</span></div><div class="mini"><strong>18m</strong><span>Next callback</span></div><div class="mini"><strong>9</strong><span>Summaries</span></div><div class="mini"><strong>3</strong><span>Handoffs</span></div></div></section>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="drawer" id="buyerDrawer" aria-hidden="true"><aside class="drawer-panel"><button class="drawer-close" id="drawerClose" aria-label="Close">×</button><div id="drawerContent"></div></aside></div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const buyers=[
+      {id:1,initials:"OM",name:"Olivia Martinez",email:"olivia@example.com",phone:"(404) 555-0182",city:"Atlanta, GA",stage:"New Lead",stageClass:"blue",score:100,focus:[],emailStatus:"Delivered",emailClass:"green",daisy:"Calling now",daisyClass:"blue",owner:"Unassigned",next:"Match partner",filter:"100 callback",home:"$385,000",dpa:"$24,000",credit:"704",income:"$92,000",employment:"2+ years",taxes:"Filed 2 years"},
+      {id:2,initials:"MR",name:"Marcus Reed",email:"marcus@example.com",phone:"(305) 555-0146",city:"Miami, FL",stage:"Preparing",stageClass:"purple",score:75,focus:["Tax documents"],emailStatus:"Sent",emailClass:"blue",daisy:"Callback",daisyClass:"amber",owner:"Douglas",next:"Review taxes",filter:"prep callback",home:"$420,000",dpa:"$20,000",credit:"682",income:"$88,000",employment:"2+ years",taxes:"Needs review"},
+      {id:3,initials:"AS",name:"Alicia Sanders",email:"alicia@example.com",phone:"(407) 555-0197",city:"Orlando, FL",stage:"Credit Review",stageClass:"red",score:50,focus:["Credit","Income / DTI"],emailStatus:"Bounced",emailClass:"red",daisy:"Completed",daisyClass:"green",owner:"Douglas",next:"Correct email",filter:"prep",home:"$310,000",dpa:"$15,500",credit:"612",income:"$64,000",employment:"2+ years",taxes:"Filed 2 years"},
+      {id:4,initials:"DC",name:"Daniel Carter",email:"daniel@example.com",phone:"(713) 555-0114",city:"Houston, TX",stage:"Application",stageClass:"amber",score:100,focus:[],emailStatus:"Opened",emailClass:"green",daisy:"Human action",daisyClass:"red",owner:"Douglas",next:"Answer lender question",filter:"100",home:"$355,000",dpa:"$18,000",credit:"721",income:"$104,000",employment:"3+ years",taxes:"Filed 2 years"},
+      {id:5,initials:"JW",name:"Jasmine Williams",email:"jasmine@example.com",phone:"(770) 555-0168",city:"Decatur, GA",stage:"Preparing",stageClass:"purple",score:25,focus:["Credit","Income / DTI","Employment"],emailStatus:"Delivered",emailClass:"green",daisy:"No answer",daisyClass:"gray",owner:"Unassigned",next:"Second attempt",filter:"prep callback",home:"$290,000",dpa:"$14,500",credit:"598",income:"$58,000",employment:"Under 2 years",taxes:"Filed 2 years"},
+      {id:6,initials:"TB",name:"Terrence Brown",email:"terrence@example.com",phone:"(813) 555-0173",city:"Tampa, FL",stage:"Under Contract",stageClass:"green",score:100,focus:[],emailStatus:"Delivered",emailClass:"green",daisy:"Completed",daisyClass:"green",owner:"Taylor M.",next:"Inspection follow-up",filter:"100",home:"$398,000",dpa:"$19,900",credit:"696",income:"$96,000",employment:"4+ years",taxes:"Filed 2 years"}
+    ];
+
+    const titles={
+      crm:["CRM Command Center","One buyer record. Every department, message and call."],
+      marketing:["Marketing Center","Readiness-based email campaigns powered by Resend."],
+      partners:["Partner Network","Agent profiles, routing, territories and performance."],
+      ai:["Daisy AI Workflow","Calls, callbacks, summaries and human handoffs."]
+    };
+
+    const rows=document.getElementById("buyerRows");
+    const drawer=document.getElementById("buyerDrawer");
+    const drawerContent=document.getElementById("drawerContent");
+    const toast=document.getElementById("toast");
+
+    function scoreColor(score){return score===100?"#138a5b":score>=75?"#0057b8":score>=50?"#b56b08":"#d22630"}
+    function renderBuyers(filter="all",search=""){
+      const term=search.trim().toLowerCase();
+      const list=buyers.filter(b=>(filter==="all"||b.filter.includes(filter))&&(!term||[b.name,b.email,b.city,b.stage,b.owner].join(" ").toLowerCase().includes(term)));
+      rows.innerHTML=list.map(b=>`<tr data-buyer="${b.id}">
+        <td><div class="person"><span class="person-avatar">${b.initials}</span><div><strong>${b.name}</strong><small>${b.email}</small></div></div></td>
+        <td><span class="pill ${b.stageClass}">${b.stage}</span></td>
+        <td><div class="score"><strong>${b.score}%</strong><div class="score-track"><i class="score-fill" style="--score:${b.score}%;--score-color:${scoreColor(b.score)}"></i></div></div></td>
+        <td>${b.focus.length?b.focus.join(" · "):"Lender-ready"}</td>
+        <td><span class="pill ${b.emailClass}">${b.emailStatus}</span></td>
+        <td><span class="pill ${b.daisyClass}">${b.daisy}</span></td>
+        <td>${b.owner}</td><td>${b.next}</td></tr>`).join("")||`<tr><td colspan="8" style="text-align:center;padding:35px">No buyers match this view.</td></tr>`;
+    }
+
+    function openBuyer(id){
+      const b=buyers.find(x=>x.id===Number(id)); if(!b)return;
+      const tasks=["Credit","Income / DTI","Employment","Tax documents"];
+      drawerContent.innerHTML=`<div class="eyebrow">Buyer Record</div><h2>${b.name}</h2><div class="drawer-sub">${b.city} · ${b.email} · ${b.phone}</div>
+        <div class="drawer-score"><div class="drawer-score-top"><div><small>Current readiness</small><strong>${b.score}%</strong></div><span class="pill ${b.score===100?"green":"amber"}">${b.score===100?"Ready":"Preparing"}</span></div><div class="score-track"><i class="score-fill" style="--score:${b.score}%;--score-color:#ff4d57"></i></div></div>
+        <div class="drawer-section"><h3>Buyer details</h3><div class="detail-grid"><div class="detail"><span>Home price</span><strong>${b.home}</strong></div><div class="detail"><span>Estimated DPA</span><strong>${b.dpa}</strong></div><div class="detail"><span>Credit score</span><strong>${b.credit}</strong></div><div class="detail"><span>Household income</span><strong>${b.income}</strong></div><div class="detail"><span>Employment</span><strong>${b.employment}</strong></div><div class="detail"><span>Tax history</span><strong>${b.taxes}</strong></div></div></div>
+        <div class="drawer-section"><h3>Preparation checklist</h3><div class="task-list">${tasks.map(t=>{const done=!b.focus.includes(t);return `<div class="task ${done?"done":""}"><i>${done?"✓":"!"}</i>${t}<span style="margin-left:auto;color:${done?"#138a5b":"#d22630"}">${done?"Complete":"Needs attention"}</span></div>`}).join("")}</div></div>
+        <div class="drawer-section"><h3>Communication</h3><div class="detail-grid"><div class="detail"><span>Email</span><strong>${b.emailStatus}</strong></div><div class="detail"><span>Daisy</span><strong>${b.daisy}</strong></div><div class="detail"><span>Owner</span><strong>${b.owner}</strong></div><div class="detail"><span>Next action</span><strong>${b.next}</strong></div></div></div>`;
+      drawer.classList.add("open"); drawer.setAttribute("aria-hidden","false");
+    }
+
+    document.querySelectorAll(".nav-btn").forEach(btn=>btn.addEventListener("click",()=>{
+      document.querySelectorAll(".nav-btn,.view").forEach(el=>el.classList.remove("active"));
+      btn.classList.add("active"); document.getElementById(`view-${btn.dataset.view}`).classList.add("active");
+      document.getElementById("topTitle").textContent=titles[btn.dataset.view][0]; document.getElementById("topSub").textContent=titles[btn.dataset.view][1];
+      window.scrollTo({top:0,behavior:"smooth"});
+    }));
+    document.querySelectorAll("[data-filter]").forEach(btn=>btn.addEventListener("click",()=>{
+      document.querySelectorAll("[data-filter]").forEach(x=>x.classList.remove("active"));btn.classList.add("active");renderBuyers(btn.dataset.filter,document.getElementById("globalSearch").value);
+    }));
+    rows.addEventListener("click",e=>{const tr=e.target.closest("tr[data-buyer]");if(tr)openBuyer(tr.dataset.buyer)});
+    document.getElementById("drawerClose").addEventListener("click",()=>{drawer.classList.remove("open");drawer.setAttribute("aria-hidden","true")});
+    drawer.addEventListener("click",e=>{if(e.target===drawer)document.getElementById("drawerClose").click()});
+    document.getElementById("globalSearch").addEventListener("input",e=>{document.querySelector('[data-view="crm"]').click();renderBuyers("all",e.target.value)});
+    document.querySelectorAll("[data-toast]").forEach(btn=>btn.addEventListener("click",()=>{toast.textContent=btn.dataset.toast;toast.classList.add("show");setTimeout(()=>toast.classList.remove("show"),2600)}));
+    document.addEventListener("keydown",e=>{if(e.key==="Escape"&&drawer.classList.contains("open"))document.getElementById("drawerClose").click()});
+    renderBuyers();
+  </script>
+</body>
+</html>
