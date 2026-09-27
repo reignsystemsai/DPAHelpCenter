@@ -368,5 +368,14 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,div::-webkit-scrollbar{display:n
   </div>
 </section>
 </div>
+<a class="prephub-return" data-prephub-return href="https://www.dpahelpcenter.com/prephub/">← BACK TO MY PREPHUB</a>
+<style>
+.prephub-return{position:fixed;left:18px;top:18px;z-index:9999;padding:12px 16px;border-radius:999px;background:#081F5C;color:#fff!important;text-decoration:none;font:900 12px/1 Inter,Arial,sans-serif;letter-spacing:.35px;box-shadow:0 10px 28px rgba(8,31,92,.24)}
+.prephub-return:hover{background:#D22630;transform:translateY(-1px)}
+@media(max-width:640px){.prephub-return{left:12px;top:12px;padding:10px 13px;font-size:10px}}
+</style>
+<script>
+(function(){const link=document.querySelector("[data-prephub-return]");const saved=localStorage.getItem("dpa_prephub_return_url");if(link&&saved&&saved.startsWith("https://www.dpahelpcenter.com/prephub"))link.href=saved;})();
+</script>
 </body>
 </html>
