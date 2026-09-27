@@ -1,0 +1,1266 @@
+<div id="dpa-desktop-funnel">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+html,body{margin:0;padding:0;background:#fff;overflow-x:hidden!important;scrollbar-width:none!important;-ms-overflow-style:none!important}
+html::-webkit-scrollbar,body::-webkit-scrollbar,*::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}
+
+#dpa-desktop-funnel{
+width:100%;
+max-width:1180px;
+min-width:980px;
+margin:0 auto;
+padding:24px 20px 40px;
+background:#fff;
+font-family:Inter,Arial,sans-serif;
+color:#081F5C;
+box-sizing:border-box;
+overflow:hidden!important;
+}
+
+#dpa-desktop-funnel *{box-sizing:border-box;font-family:Inter,Arial,sans-serif}
+
+.dpa-grid{
+display:grid;
+grid-template-columns:560px 430px;
+gap:34px;
+justify-content:center;
+align-items:start;
+}
+
+.dpa-left{padding-top:4px}
+.dpa-right-wrap{width:430px}
+
+.dpa-brand{
+font-size:36px;
+font-weight:950;
+letter-spacing:-1px;
+color:#081F5C;
+margin:0 0 16px;
+white-space:nowrap;
+}
+
+.dpa-brand:after{
+content:"";
+display:block;
+width:145px;
+height:7px;
+background:#D22630;
+border-radius:999px;
+margin:5px 0 0 58px;
+transform:rotate(-2deg);
+}
+
+.dpa-left-kicker,.dpa-kicker{
+font-size:12px;
+font-weight:900;
+letter-spacing:5px;
+color:#0057B8;
+text-transform:uppercase;
+margin-bottom:14px;
+}
+
+.dpa-left-title{
+font-size:58px;
+font-weight:900;
+line-height:.92;
+letter-spacing:-4px;
+color:#081F5C;
+margin:0 0 20px;
+}
+
+.dpa-left-title span,.red,.dpa-red{color:#D22630}
+
+.dpa-left-sub{
+max-width:520px;
+font-size:18px;
+font-weight:750;
+line-height:1.4;
+color:#5f6b7f;
+margin-bottom:24px;
+}
+
+.dpa-benefit-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+max-width:520px;
+}
+
+.dpa-benefit-pill{
+border-radius:17px;
+background:#fff;
+padding:14px 15px;
+font-size:13px;
+font-weight:850;
+color:#081F5C;
+box-shadow:0 8px 22px rgba(8,31,92,.06);
+}
+
+.dpa-benefit-pill span{color:#0057B8;font-weight:900}
+
+.dpa-card{
+width:100%;
+min-height:580px;
+padding:12px 0 24px;
+text-align:center;
+overflow:visible;
+}
+  
+.dpa-right-trust{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:14px;
+margin:0 auto 16px;
+width:100%;
+text-align:center;
+}
+
+.dpa-face-stack{width:166px;height:42px;position:relative;flex:0 0 166px}
+
+.dpa-face{
+width:42px;
+height:42px;
+border-radius:50%;
+position:absolute;
+top:0;
+border:3px solid #fff;
+overflow:hidden;
+opacity:1;
+transform:scale(1);
+background:#eef3ff;
+box-shadow:0 8px 14px rgba(8,31,92,.08);
+transition:opacity .35s ease,transform .35s ease;
+}
+
+.dpa-face.fade{opacity:0;transform:scale(.84)}
+.dpa-face img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.9) contrast(.98)}
+.dpa-face:nth-child(1){left:0}
+.dpa-face:nth-child(2){left:31px}
+.dpa-face:nth-child(3){left:62px}
+.dpa-face:nth-child(4){left:93px}
+.dpa-face:nth-child(5){left:124px}
+
+.dpa-trust-copy{
+font-size:18px;
+font-weight:750;
+line-height:1.08;
+color:#6f7890;
+text-align:left;
+white-space:nowrap;
+}
+
+.dpa-trust-copy strong{color:#081F5C;font-weight:950}
+.dpa-stars{margin-top:7px;color:#F5B301;font-size:21px;letter-spacing:2px}
+
+.dpa-program-top,.dpa-premium-panel,.dpa-score-top,.dpa-estimate-card,.dpa-benefit,.dpa-select-card{
+background:linear-gradient(145deg,rgba(255,255,255,.96),rgba(255,255,255,.70));
+border:1px solid rgba(8,31,92,.08);
+box-shadow:0 12px 30px rgba(8,31,92,.06);
+backdrop-filter:blur(14px);
+-webkit-backdrop-filter:blur(14px);
+}
+
+.dpa-program-top{margin:0 auto 18px;padding:16px 15px;border-radius:24px;max-width:380px}
+.dpa-program-label{font-size:10px;font-weight:900;letter-spacing:4px;color:#081F5C;margin-bottom:8px}
+.dpa-program-line{height:1px;background:linear-gradient(90deg,transparent,rgba(8,31,92,.22),transparent)}
+.dpa-program-number{font-size:66px;font-weight:900;letter-spacing:-5px;line-height:.95;color:#081F5C;margin:10px 0;transition:.25s ease;white-space:nowrap}
+.dpa-program-number.flash{transform:scale(1.035)}
+.dpa-program-copy{margin-top:10px;font-size:14px;font-weight:850;line-height:1.18;color:#081F5C}
+
+.dpa-step-screen{display:none;animation:dpaFade .22s ease}
+.dpa-step-screen.show{display:block}
+@keyframes dpaFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.dpa-question-kicker{font-size:10px;font-weight:900;letter-spacing:3.5px;color:#0057B8;margin:0 0 8px;text-transform:uppercase}
+.dpa-question{font-size:24px;font-weight:900;line-height:1.08;color:#081F5C;margin:0 auto 10px;max-width:330px;letter-spacing:-.6px}
+.dpa-note{max-width:320px;margin:0 auto 14px;font-size:10.5px;font-weight:700;line-height:1.35;color:#7c8496}
+
+.dpa-btns{display:flex;flex-direction:column;gap:10px;margin:0 auto 14px;max-width:330px}
+
+.dpa-choice,.dpa-submit,.dpa-answer-btn{
+width:100%;
+min-height:52px;
+border-radius:18px;
+border:1.5px solid rgba(8,31,92,.12);
+background:#fff;
+color:#081F5C;
+font-size:14px;
+font-weight:900;
+letter-spacing:1px;
+cursor:pointer;
+box-shadow:0 8px 22px rgba(8,31,92,.04);
+transition:.22s ease;
+}
+
+.dpa-choice{height:48px;min-height:48px;font-size:15px;letter-spacing:5px}
+
+.dpa-choice:hover,.dpa-submit:hover,.dpa-select-card:hover{
+transform:translateY(-3px);
+border-color:rgba(0,87,184,.50);
+box-shadow:0 15px 35px rgba(8,31,92,.12);
+}
+
+.dpa-submit.ready{background:#081F5C!important;color:#fff!important;border-color:#081F5C!important;box-shadow:0 14px 30px rgba(8,31,92,.22)!important}
+.dpa-submit:disabled{opacity:.38;cursor:not-allowed}
+
+.dpa-location-box{display:none;margin:12px auto 16px;animation:dpaFade .2s ease;max-width:340px}
+.dpa-location-box.show{display:block}
+.dpa-location-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px auto 12px}
+
+.dpa-field{
+width:100%;
+height:44px;
+border-radius:14px;
+border:1px solid rgba(8,31,92,.14);
+background:#fff;
+padding:0 12px;
+color:#081F5C;
+font-size:12px;
+font-weight:800;
+outline:none;
+}
+
+.dpa-field:focus{border-color:rgba(0,87,184,.58);box-shadow:0 10px 22px rgba(8,31,92,.08)}
+
+.dpa-slider-title{font-size:24px;font-weight:900;color:#081F5C;line-height:1.12;margin:4px 0 8px}
+.dpa-slider-sub{font-size:11px;font-weight:750;color:#6f7890;line-height:1.35;max-width:330px;margin:0 auto 12px}
+.dpa-price{font-size:36px;font-weight:900;letter-spacing:-2px;color:#081F5C;margin:0 0 12px}
+
+.dpa-range{
+width:100%;
+appearance:none;
+-webkit-appearance:none;
+height:8px;
+border-radius:999px;
+background:linear-gradient(90deg,#9fc5ff,#081F5C);
+outline:none;
+}
+
+.dpa-range::-webkit-slider-thumb{
+appearance:none;
+-webkit-appearance:none;
+width:24px;
+height:24px;
+border-radius:50%;
+background:#081F5C;
+border:3px solid #fff;
+}
+
+.dpa-range-labels{display:flex;justify-content:space-between;font-size:9px;font-weight:900;color:#081F5C;margin:8px 12px 12px}
+.dpa-estimate-card{margin:12px auto;padding:10px;border-radius:16px;max-width:340px}
+.dpa-estimate-label{font-size:8px;font-weight:900;letter-spacing:1.3px;color:#0057B8}
+.dpa-estimate-num{font-size:30px;font-weight:900;color:#081F5C;letter-spacing:-1px;margin-top:4px}
+
+.dpa-benefits{display:grid;gap:5px;margin:0 auto 10px;max-width:315px;text-align:left}
+.dpa-benefit{font-size:9.5px;font-weight:800;color:#081F5C;border-radius:11px;padding:6px 9px}
+.dpa-benefit span{color:#0057B8;font-weight:900}
+
+.dpa-fields{display:flex;flex-direction:column;gap:8px;margin:10px auto 0;max-width:330px}
+
+.dpa-score-top{padding:11px;border-radius:18px;margin:9px auto 12px;max-width:350px}
+.dpa-score-label{font-size:8px;font-weight:900;letter-spacing:2px;color:#0057B8}
+.dpa-score-num{font-size:34px;font-weight:900;color:#081F5C;letter-spacing:-1px;margin:2px 0}
+.dpa-score-status{font-size:10.5px;font-weight:900;color:#D22630}
+.dpa-score-bar{height:7px;border-radius:999px;background:rgba(8,31,92,.12);overflow:hidden;margin-top:8px}
+.dpa-score-fill{height:100%;width:0%;border-radius:999px;background:#081F5C;transition:.25s ease}
+
+.dpa-premium-panel{border-radius:20px;padding:14px 12px;margin:10px auto 12px;max-width:360px}
+.dpa-premium-mini{font-size:8px;font-weight:900;letter-spacing:2.2px;color:#0057B8;margin-bottom:7px}
+.dpa-premium-title{font-size:20px;font-weight:900;line-height:1.08;color:#081F5C;margin-bottom:8px}
+.dpa-premium-value{font-size:34px;font-weight:900;letter-spacing:-1px;color:#081F5C;margin-bottom:8px}
+.dpa-premium-explain{font-size:10px;font-weight:750;color:#6f7890;line-height:1.35;max-width:290px;margin:0 auto 12px}
+.dpa-premium-good{color:#0057B8!important}
+.dpa-premium-warn{color:#D22630!important}
+
+.dpa-select-grid{display:grid;gap:8px;margin-top:10px}
+.dpa-select-card{width:100%;border-radius:16px;padding:12px;text-align:left;color:#081F5C;cursor:pointer;transition:.22s ease}
+.dpa-select-card.active{background:#081F5C!important;color:#fff!important;border-color:#081F5C!important;box-shadow:0 12px 28px rgba(8,31,92,.22)!important}
+.dpa-select-card.active .dpa-select-title,.dpa-select-card.active .dpa-select-copy{color:#fff!important}
+.dpa-select-title{font-size:11.5px;font-weight:950;line-height:1.15}
+.dpa-select-copy{font-size:9px;font-weight:750;color:#6f7890;line-height:1.28;margin-top:4px}
+
+.dpa-final-btn,.dpa-agent-btn,.dpa-link-btn{
+display:block;
+width:100%;
+border:none;
+text-align:center;
+text-decoration:none;
+border-radius:14px;
+color:#fff;
+font-size:11px;
+font-weight:900;
+letter-spacing:.6px;
+padding:13px 8px;
+box-shadow:0 10px 20px rgba(8,31,92,.14);
+cursor:pointer;
+}
+
+.dpa-final-btn,.dpa-link-btn.red{background:#D22630;margin-top:10px}
+.dpa-agent-btn,.dpa-link-btn.blue{background:#081F5C;margin-top:8px}
+.dpa-route-title{font-size:22px;font-weight:900;line-height:1.12;color:#081F5C;margin:10px 0 8px}
+.dpa-route-copy{font-size:10.5px;font-weight:750;line-height:1.4;color:#6f7890;margin:0 auto 12px;max-width:300px}
+
+.dpa-footer{margin-top:12px;padding-bottom:8px}
+.dpa-step{font-size:10.5px;font-weight:900;letter-spacing:3px;color:#081F5C;margin-bottom:7px}
+.dpa-progress-dots{display:flex;justify-content:center;gap:7px}
+.dpa-dot{width:6px;height:6px;border-radius:50%;background:rgba(8,31,92,.16)}
+.dpa-dot.active{width:18px;border-radius:999px;background:#081F5C}
+
+.page-wrap{width:100%;max-width:980px;margin:0 auto;text-align:center;overflow:hidden}
+.page-brand{font-size:34px;font-weight:950;color:#081F5C;margin:4px 0}
+.page-brand:after{content:"";display:block;width:140px;height:7px;background:#D22630;border-radius:999px;margin:5px auto 18px;transform:rotate(-2deg)}
+.page-title{font-size:46px;font-weight:950;letter-spacing:-2.5px;line-height:.96;color:#081F5C;margin:0 0 12px}
+.page-title span{color:#D22630}
+.page-sub{max-width:780px;margin:0 auto 24px;font-size:15px;font-weight:750;line-height:1.45;color:#5f6b7f}
+
+.page-card{
+border:1px solid rgba(8,31,92,.08);
+border-radius:26px;
+background:#fff;
+box-shadow:0 18px 42px rgba(8,31,92,.06);
+padding:22px;
+text-align:left;
+}
+
+.page-grid,.results-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.page-field label{display:block;font-size:11px;font-weight:900;color:#081F5C;margin-bottom:6px}
+.page-field small{display:block;font-size:9.5px;font-weight:750;color:#7c8496;margin-bottom:6px}
+.page-input,.page-select{width:100%;height:48px;border-radius:15px;border:1px solid rgba(8,31,92,.14);background:#fff;color:#081F5C;padding:0 14px;font-size:14px;font-weight:850;outline:none}
+.page-btn{width:100%;min-height:56px;border:none;border-radius:17px;background:#081F5C;color:#fff;font-size:14px;font-weight:950;letter-spacing:.5px;margin-top:18px;cursor:pointer}
+.page-result{display:none;margin-top:18px;border-radius:22px;background:#081F5C;color:#fff;padding:20px;text-align:center}
+.page-result.show{display:block}
+.page-result-num{font-size:44px;font-weight:950;letter-spacing:-2px;margin:5px 0}
+
+.results-save{width:100%;max-width:360px;margin:18px auto 24px;background:#081F5C;color:#fff;border-radius:24px;padding:22px;box-shadow:0 18px 38px rgba(8,31,92,.2)}
+.results-save h3{font-size:31px;line-height:.95;letter-spacing:-1px;margin:8px 0}
+
+.result-card{
+position:relative;
+overflow:hidden;
+border-radius:22px;
+border:1px solid rgba(8,31,92,.09);
+background:#fff;
+padding:18px;
+box-shadow:0 14px 30px rgba(8,31,92,.06);
+opacity:.45;
+}
+
+.result-card.active{
+opacity:1;
+border:2px solid #D22630;
+box-shadow:0 0 0 3px rgba(210,38,48,.16),0 0 26px rgba(210,38,48,.42),0 18px 34px rgba(210,38,48,.14);
+animation:glowBorder 1.45s ease-in-out infinite;
+}
+
+@keyframes glowBorder{
+0%,100%{box-shadow:0 0 0 3px rgba(210,38,48,.13),0 0 18px rgba(210,38,48,.35),0 18px 34px rgba(210,38,48,.12)}
+50%{box-shadow:0 0 0 6px rgba(210,38,48,.24),0 0 36px rgba(210,38,48,.72),0 22px 42px rgba(210,38,48,.20)}
+}
+
+.result-top{font-size:8px;font-weight:900;letter-spacing:2.4px;text-transform:uppercase;color:#D22630;margin-bottom:8px}
+.result-status{display:inline-block;border-radius:999px;background:rgba(210,38,48,.08);color:#D22630;font-size:9px;font-weight:950;padding:6px 9px;margin-bottom:10px}
+.result-card h3{font-size:24px;line-height:1.02;letter-spacing:-.8px;font-weight:950;margin:0 0 8px;color:#081F5C}
+.result-card p{font-size:12px;font-weight:720;line-height:1.42;color:#5f6b7f;margin:0 0 12px}
+.result-btn{display:grid;place-items:center;width:100%;min-height:50px;margin-top:12px;border-radius:15px;background:#081F5C;color:#fff;text-decoration:none;font-size:11.5px;font-weight:950;text-align:center}
+.result-card.active .result-btn{background:#D22630}
+.result-return{display:block;text-align:center;margin-top:8px;color:#081F5C;font-size:9.5px;font-weight:900;text-decoration:none}
+.results-note{margin-top:16px;border-radius:16px;background:rgba(210,38,48,.055);border:1px solid rgba(210,38,48,.1);padding:14px;font-size:11.5px;font-weight:800;line-height:1.4;color:#081F5C;text-align:left}
+
+#leadNextBtn{
+width:240px;
+height:36px;
+min-height:50px;
+display:block;
+margin:10px auto 0;
+border-radius:16px;
+}
+#employmentNextBtn{
+    margin-top:10px;
+}
+
+#taxesNextBtn{
+    margin-top:10px;
+}
+  
+  </style>
+
+<div id="dpaApp"></div>
+
+<script>
+(function(){
+const DPA_WEBHOOK_URL="https://hook.us2.make.com/xaaosa30ynypx76iyvkceqkyonazo76a";
+const RESULTS_URL="https://www.dpahelpcenter.com/results";
+const APPLICATION_URL="https://www.dpahelpcenter.com";
+const AGENT_PHONE_URL="tel:+10000000000";
+const CREDIT_URL="https://www.dpahelpcenter.com/credit";
+const DTI_URL="https://www.dpahelpcenter.com/dti";
+const JOB_URL="https://www.dpahelpcenter.com/job";
+const TAXES_URL="https://www.dpahelpcenter.com/taxes";
+const app=document.getElementById("dpaApp");
+const path=(window.location.pathname||"/").toLowerCase();
+
+let audioReady=false;
+let audioCtx=null;
+
+function dpaSound(freq=520,type="sine",dur=.06,gain=.025){
+try{
+audioReady=true;
+audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();
+const o=audioCtx.createOscillator();
+const g=audioCtx.createGain();
+o.type=type;
+o.frequency.value=freq;
+g.gain.value=gain;
+o.connect(g);
+g.connect(audioCtx.destination);
+o.start();
+g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+dur);
+o.stop(audioCtx.currentTime+dur);
+}catch(e){}
+}
+
+document.addEventListener("click",function(e){
+if(e.target.closest("button,a,input[type=range]"))dpaSound(620,"sine",.055,.028);
+},true);
+
+document.addEventListener("mouseover",function(e){
+if(audioReady&&e.target.closest("button,.dpa-select-card"))dpaSound(420,"triangle",.035,.012);
+},true);
+
+const buyerFaces=[
+"https://randomuser.me/api/portraits/women/44.jpg",
+"https://randomuser.me/api/portraits/men/32.jpg",
+"https://randomuser.me/api/portraits/women/68.jpg",
+"https://randomuser.me/api/portraits/men/45.jpg",
+"https://randomuser.me/api/portraits/women/65.jpg",
+"https://randomuser.me/api/portraits/men/75.jpg",
+"https://randomuser.me/api/portraits/women/17.jpg",
+"https://randomuser.me/api/portraits/men/22.jpg",
+"https://randomuser.me/api/portraits/women/12.jpg",
+"https://randomuser.me/api/portraits/men/52.jpg",
+"https://randomuser.me/api/portraits/women/33.jpg",
+"https://randomuser.me/api/portraits/men/41.jpg",
+"https://randomuser.me/api/portraits/women/50.jpg",
+"https://randomuser.me/api/portraits/men/68.jpg",
+"https://randomuser.me/api/portraits/women/76.jpg"
+];
+
+function faces(){
+let h="";
+for(let i=0;i<5;i++){
+h+='<span class="dpa-face" data-slot="'+i+'"><img src="'+buyerFaces[i]+'"></span>';
+}
+return h;
+}
+
+function startFaceRotation(){
+let pool=5;
+setInterval(function(){
+const slots=[0,1,2,3,4];
+const first=slots[Math.floor(Math.random()*slots.length)];
+let second=slots[Math.floor(Math.random()*slots.length)];
+if(second===first)second=(second+1)%5;
+
+[first,second].forEach(function(slot,idx){
+const el=document.querySelector('.dpa-face[data-slot="'+slot+'"]');
+if(!el)return;
+setTimeout(function(){
+el.classList.add("fade");
+setTimeout(function(){
+pool=(pool+1)%buyerFaces.length;
+el.querySelector("img").src=buyerFaces[pool];
+el.classList.remove("fade");
+},350);
+},idx*180);
+});
+},2200);
+}
+
+if(path.includes("/results"))renderResults();
+else if(path.includes("/dti"))renderDTI();
+else if(path.includes("/taxes"))renderSimplePage("Tax Document Readiness","Lenders may need tax returns to verify income. If you recently switched from W2 to 1099, you’ll need 2 years as a 1099 employee.","RETURN TO DPA HELP CENTER");
+else if(path.includes("/credit"))renderSimplePage("Credit Readiness","Review your credit readiness first, then return to DPA Help Center.","RETURN TO DPA HELP CENTER");
+else if(path.includes("/job"))renderSimplePage("Employment Readiness","Most lenders want a stable 2-year work, school, military, or income history. Job changes can be okay when documented.","RETURN TO DPA HELP CENTER");
+else renderMain();
+
+function renderMain(){
+app.innerHTML=`
+<div class="dpa-grid">
+<div class="dpa-left">
+<div class="dpa-brand">DPA HELP CENTER</div>
+<div class="dpa-left-kicker">Down Payment Assistance</div>
+<h1 class="dpa-left-title">First-Time Homebuyers<br>Buy a Home No Money Down<br><span>Programs are offering up to 100k</span></h1>
+<div class="dpa-left-sub">First-time homebuyers can get up to $100,000 in assistance (varies by state). Answer a few simple questions and see where you stand.</div>
+<div class="dpa-benefit-grid">
+<div class="dpa-benefit-pill"><span>&#10003;</span> Buy with less cash out of pocket</div>
+<div class="dpa-benefit-pill"><span>&#10003;</span> Programs up to $100,000</div>
+<div class="dpa-benefit-pill"><span>&#10003;</span> Available in all 50 states</div>
+<div class="dpa-benefit-pill"><span>&#10003;</span> FHA / VA / Conventional</div>
+</div>
+</div>
+
+<div class="dpa-right-wrap">
+<div id="dpaScreen" class="dpa-card">
+<input type="hidden" id="leadIdField" name="lead_id">
+<input type="hidden" id="leadPayloadField" name="lead_payload">
+
+<div id="screenOne" class="dpa-step-screen show">
+<div class="dpa-right-trust">
+<div class="dpa-face-stack">${faces()}</div>
+<div class="dpa-trust-copy">Trusted by <strong>Thousands</strong><div class="dpa-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div></div>
+</div>
+
+<div class="dpa-program-top">
+<div class="dpa-program-label">PROGRAMS UP TO</div>
+<div class="dpa-program-line"></div>
+<div id="desktopProgramNumber" class="dpa-program-number">$100<span class="dpa-red">K</span></div>
+<div class="dpa-program-line"></div>
+<div class="dpa-program-copy">Assistance may help reduce<br>your <span class="dpa-red">cash to close.</span></div>
+</div>
+
+<div class="dpa-question-kicker">Check Your Eligibility</div>
+<div class="dpa-question">Is this your<br>first home?</div>
+
+<div id="firstHomeBtns" class="dpa-btns">
+<button type="button" class="dpa-choice primary" onclick="dpaShowLocation()">YES</button>
+<button type="button" class="dpa-choice" onclick="dpaNoPath()">NO</button>
+</div>
+
+<div id="locationBox" class="dpa-location-box">
+<div class="dpa-note">What city and ZIP code are you buying in?</div>
+<div class="dpa-location-grid">
+<input id="buyerCity" class="dpa-field" type="text" placeholder="City" oninput="dpaValidateLocation()">
+<input id="buyerZip" class="dpa-field" type="tel" placeholder="ZIP Code" maxlength="5" oninput="dpaValidateLocation()">
+</div>
+<button type="button" id="locationNextBtn" class="dpa-submit" onclick="dpaContinueFromLocation()" disabled>CONTINUE</button>
+</div>
+</div>
+
+<div id="screenTwo" class="dpa-step-screen">
+<div class="dpa-question-kicker">Home Price Slider</div>
+<div class="dpa-slider-title">Slide & See Your Estimate</div>
+<div class="dpa-slider-sub">Move the home price slider to see how much 5% DPA may be able to help you.</div>
+<div id="homePriceDisplay" class="dpa-price">$400,000</div>
+<input id="homePriceSlider" class="dpa-range" type="range" min="200000" max="700000" step="10000" value="400000" oninput="dpaUpdateEstimate(this.value)">
+<div class="dpa-range-labels"><span>$200K</span><span>$700K</span></div>
+
+<div class="dpa-estimate-card">
+<div class="dpa-estimate-label">POTENTIAL DOWN PAYMENT ASSISTANCE</div>
+<div id="dpaEstimate" class="dpa-estimate-num">$20,000</div>
+</div>
+
+<div class="dpa-benefits">
+<div class="dpa-benefit"><span>&#10003;</span> Could reduce cash needed at closing</div>
+<div class="dpa-benefit"><span>&#10003;</span> May be used toward down payment</div>
+<div class="dpa-benefit"><span>&#10003;</span> Programs vary by lender and county</div>
+</div>
+
+<div class="dpa-note">Put your information here to get help.</div>
+<div class="dpa-fields">
+<input id="firstName" class="dpa-field" type="text" placeholder="First Name" oninput="dpaValidateLead()">
+<input id="lastName" class="dpa-field" type="text" placeholder="Last Name" oninput="dpaValidateLead()">
+<input id="email" class="dpa-field" type="email" placeholder="Email Address" oninput="dpaValidateLead()">
+<input id="phone" class="dpa-field" type="tel" placeholder="Phone Number" oninput="dpaValidateLead()">
+</div>
+<button type="button" id="leadNextBtn" class="dpa-submit" onclick="dpaSaveLeadAndContinue()" disabled>YES, I WANT HELP</button>
+</div>
+
+<div id="screenThree" class="dpa-step-screen">
+<div class="dpa-question-kicker">Program readiness</div>
+<div class="dpa-question">Fine tune your readiness.</div>
+<div class="dpa-score-top">
+<div class="dpa-score-label">DPA READINESS SCORE</div>
+<div id="readinessScore" class="dpa-score-num">0%</div>
+<div id="readinessStatus" class="dpa-score-status">Start with credit</div>
+<div class="dpa-score-bar"><div id="readinessFill" class="dpa-score-fill"></div></div>
+</div>
+<div id="premiumQuestionWrap"></div>
+</div>
+
+<div id="screenFinal" class="dpa-step-screen">
+<div class="dpa-question-kicker">Your results</div>
+<div id="finalTitle" class="dpa-route-title">Getting your results ready...</div>
+<div class="dpa-score-top">
+<div class="dpa-score-label">FINAL READINESS SCORE</div>
+<div id="finalScoreNum" class="dpa-score-num">0%</div>
+<div id="finalScoreStatus" class="dpa-score-status">Routing</div>
+<div class="dpa-score-bar"><div id="finalScoreFill" class="dpa-score-fill"></div></div>
+</div>
+<div id="resultsIntro" class="dpa-route-copy">Please wait. We are sending you to your next step.</div>
+<button type="button" id="beginAppBtn" class="dpa-final-btn" style="display:none" onclick="dpaStartApplication()">BEGIN APPLICATION</button>
+<a id="agentBtn" class="dpa-agent-btn" style="display:none" href="${1-866-281-5271}">CALL TO SPEAK TO AN AGENT</a>
+</div>
+
+<div class="dpa-footer">
+<div class="dpa-step" id="stepText">STEP 1 OF 4</div>
+<div class="dpa-progress-dots">
+<div id="dpaDot1" class="dpa-dot active"></div>
+<div id="dpaDot2" class="dpa-dot"></div>
+<div id="dpaDot3" class="dpa-dot"></div>
+<div id="dpaDot4" class="dpa-dot"></div>
+</div>
+</div>
+
+</div>
+</div>
+</div>`;
+
+startFaceRotation();
+initMain();
+}
+
+function renderResults(){
+const p=new URLSearchParams(window.location.search);
+const credit=p.get("credit")==="1"||p.get("route","").includes("credit");
+const dti=p.get("dti")==="1"||p.get("income")==="1"||p.get("route","").includes("dti")||p.get("route","").includes("income");
+const job=p.get("job")==="1"||p.get("route","").includes("job");
+const taxes=p.get("taxes")==="1"||p.get("route","").includes("tax");
+const any=credit||dti||job||taxes;
+
+app.innerHTML=`
+<div class="page-wrap">
+<a class="dpa-back-btn" href="${APPLICATION_URL}" target="_top">BACK TO DPA HELP CENTER</a>
+<div class="page-brand">DPA HELP CENTER</div>
+<div class="dpa-kicker" style="text-align:center">Homebuyer Readiness Results</div>
+<h1 class="page-title">You’re not denied.<br>You’re just a little <span>unprepared.</span></h1>
+<div class="page-sub">The glowing cards are the exact steps you need to complete before moving forward.</div>
+
+<div class="results-save">
+<div style="font-size:8px;font-weight:900;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.75)">Save This Page</div>
+<h3>Your prep <span class="red">hub.</span></h3>
+<p style="font-size:12px;font-weight:800;line-height:1.35;margin:0 0 12px;color:rgba(255,255,255,.85)">This page keeps all your next steps in one place.</p>
+<button class="dpa-link-btn red" type="button" onclick="copyResultsLink()">COPY THIS PAGE LINK</button>
+<div id="copyStatus" style="font-size:9px;font-weight:800;margin-top:8px;color:rgba(255,255,255,.75)">Save this link to return later.</div>
+</div>
+
+<div class="results-grid">
+${resultCard("credit",credit,any,"Credit Deficiency","Credit Readiness","If your score is below 640, review your credit path first.","REVIEW CREDIT READINESS",CREDIT_URL)}
+${resultCard("dti",dti,any,"Income Deficiency","Income / DTI Review","If household income is below the target range, use the DTI tool to estimate your buying power.","CALCULATE MY DTI",DTI_URL)}
+${resultCard("job",job,any,"Employment Deficiency","Employment Readiness","A stable 2-year work, school, military, or income history can help your file.","REVIEW WORK HISTORY",JOB_URL)}
+${resultCard("taxes",taxes,any,"Tax Deficiency","Tax Document Readiness","Tax returns may be needed to verify income, especially for self-employed or 1099 income borrowers.","REVIEW TAX DOCUMENTS",TAXES_URL)}
+</div>
+
+<div class="results-note"><span class="red"><strong>Important:</strong></span> Complete the glowing steps first. After you are prepared, return to DPA Help Center and continue your eligibility review.</div>
+</div>`;
+}
+
+function resultCard(key,isActive,any,top,title,copy,btn,url){
+let active=isActive||!any;
+return `<div class="result-card ${active?'active':''}" id="card-${key}">
+<div class="result-top">${top}</div>
+<div class="result-status">${active?'Needs Attention':'Not Highlighted'}</div>
+<h3>${title}</h3>
+<p>${copy}</p>
+<a class="result-btn" href="${url}" target="_top">${btn}</a>
+<a class="result-return" href="#" onclick="copyResultsLink();return false;">Save this link to return to this page</a>
+</div>`;
+}
+
+window.copyResultsLink=function(){
+const s=document.getElementById("copyStatus");
+if(navigator.clipboard){
+navigator.clipboard.writeText(window.location.href).then(()=>{
+if(s)s.textContent="Link copied. Save it so you can return later.";
+}).catch(()=>{
+if(s)s.textContent="Copy this page URL from your browser.";
+});
+}else if(s){
+s.textContent="Copy this page URL from your browser.";
+}
+};
+
+function renderDTI(){
+app.innerHTML=`
+<div class="page-wrap">
+<a class="dpa-back-btn" href="${RESULTS_URL}" target="_top">BACK TO RESULTS</a>
+<div class="page-brand">DPA HELP CENTER</div>
+<div class="dpa-kicker" style="text-align:center">Debt-To-Income Review</div>
+<h1 class="page-title">Calculate your<br><span>buying power.</span></h1>
+<div class="page-sub">Your debt-to-income ratio helps determine how much home payment may fit your profile.</div>
+
+<section class="page-card">
+<div class="page-grid">
+<div class="page-field"><label>Gross Monthly Income</label><small>Before taxes</small><input id="income" class="page-input" type="tel" placeholder="$6,500"></div>
+<div class="page-field"><label>Estimated Monthly Debts</label><small>Cars, cards, loans, minimum payments</small><input id="debts" class="page-input" type="tel" placeholder="$850"></div>
+<div class="page-field"><label>Estimated Home Payment</label><small>Mortgage, taxes, insurance, HOA</small><input id="payment" class="page-input" type="tel" placeholder="$2,200"></div>
+<div class="page-field"><label>Child Support / Alimony</label><small>Monthly required payment</small><select id="support" class="page-select"><option value="0">None</option><option value="250">$250</option><option value="500">$500</option><option value="750">$750</option><option value="1000">$1,000+</option></select></div>
+</div>
+
+<button class="page-btn" type="button" onclick="calculateDTI()">CALCULATE MY BUYING POWER</button>
+
+<div id="dtiResults" class="page-result">
+<div style="font-size:10px;font-weight:900;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.72)">Estimated DTI</div>
+<div id="dtiNumber" class="page-result-num">0%</div>
+<div id="dtiCopy" style="font-size:13px;font-weight:750;line-height:1.45;color:rgba(255,255,255,.82)">Enter your numbers to calculate your estimate.</div>
+</div>
+
+<a class="dpa-link-btn blue" href="${APPLICATION_URL}" target="_top" style="margin-top:16px">RETURN TO DPA HELP CENTER</a>
+</section>
+</div>`;
+}
+
+window.calculateDTI=function(){
+const clean=v=>Number(String(v||"").replace(/[^0-9.]/g,""))||0;
+const income=clean(document.getElementById("income").value);
+const debts=clean(document.getElementById("debts").value);
+const payment=clean(document.getElementById("payment").value);
+const support=clean(document.getElementById("support").value);
+const box=document.getElementById("dtiResults");
+const num=document.getElementById("dtiNumber");
+const copy=document.getElementById("dtiCopy");
+
+box.classList.add("show");
+
+if(income<=0){
+num.textContent="0%";
+copy.textContent="Enter your monthly income to calculate your debt-to-income estimate.";
+return;
+}
+
+const dti=Math.round(((debts+payment+support)/income)*100);
+num.textContent=dti+"%";
+
+copy.textContent=dti<=43
+?"This looks stronger. Your estimated DTI may be within a workable range for many loan programs."
+:dti<=57
+?"This may need lender review. Some programs may allow higher DTI, but your full file must be reviewed."
+:"This looks high. Reducing monthly debts may improve your buying power before moving forward.";
+};
+
+function renderSimplePage(title,sub,btn){
+app.innerHTML=`
+<div class="page-wrap">
+<a class="dpa-back-btn" href="${RESULTS_URL}" target="_top">BACK TO RESULTS</a>
+<div class="page-brand">DPA HELP CENTER</div>
+<div class="dpa-kicker" style="text-align:center">Readiness Review</div>
+<h1 class="page-title">${title.split(" ")[0]}<br><span>${title.split(" ").slice(1).join(" ")}</span></h1>
+<div class="page-sub">${sub}</div>
+
+<section class="page-card">
+<div class="results-note"><strong>Next step:</strong> Review this area, complete the needed preparation, then return to DPA Help Center.</div>
+<a class="dpa-link-btn blue" href="${APPLICATION_URL}" target="_top" style="margin-top:16px">${btn}</a>
+</section>
+</div>`;
+}
+
+function initMain(){
+let qIndex=0;
+let leadSubmitted=false;
+let qualificationSubmitted=false;
+let currentStep=1;
+const programEl=document.getElementById("desktopProgramNumber");
+
+function getStableLeadId(){
+let id=sessionStorage.getItem("dpa_desktop_lead_id");
+if(!id){
+id="DPA-"+Date.now()+"-"+Math.random().toString(36).substring(2,8).toUpperCase();
+sessionStorage.setItem("dpa_desktop_lead_id",id);
+}
+return id;
+}
+
+let leadData={
+lead_id:getStableLeadId(),
+item_name:"",
+source:"DPA Help Center Desktop Funnel",
+created_at:sessionStorage.getItem("dpa_created_at")||new Date().toISOString(),
+last_updated_at:"",
+submission_stage:"Started",
+submit_type:"",
+first_home:"yes",
+city:"",
+zip:"",
+home_price:400000,
+estimated_dpa:20000,
+first_name:"",
+last_name:"",
+email:"",
+phone:"",
+readiness_score:0,
+credit_score:680,
+household_income:90000,
+employment_history:"",
+tax_return_history:"",
+credit_answered:false,
+income_answered:false,
+employment_answered:false,
+taxes_answered:false,
+credit_640_plus:null,
+income_70k_plus:null,
+job_history_2yrs:null,
+tax_returns_2yrs:null,
+route:"",
+results_url:"",
+final_submitted:false,
+final_submitted_at:""
+};
+
+sessionStorage.setItem("dpa_created_at",leadData.created_at);
+document.getElementById("leadIdField").value=leadData.lead_id;
+
+const questions=[
+{type:"credit",mini:"QUESTION 1 OF 4"},
+{type:"income",mini:"QUESTION 2 OF 4"},
+{type:"employment",mini:"QUESTION 3 OF 4"},
+{type:"taxes",mini:"QUESTION 4 OF 4"}
+];
+
+function fmt(n){return "$"+Math.round(n).toLocaleString()}
+function yn(v){return v===true?"Yes":v===false?"No":""}
+
+function buildItemName(){
+const n=((leadData.first_name||"")+" "+(leadData.last_name||"")).trim();
+return n||leadData.email||leadData.phone||(leadData.city&&leadData.zip?"DPA Lead - "+leadData.city+" "+leadData.zip:"DPA Lead - "+leadData.lead_id);
+}
+
+function calculateScore(){
+let s=0;
+if(leadData.credit_answered&&leadData.credit_score>=640)s+=25;
+if(leadData.income_answered&&leadData.household_income>=70000)s+=25;
+if(leadData.employment_answered&&leadData.job_history_2yrs===true)s+=25;
+if(leadData.taxes_answered&&leadData.tax_returns_2yrs===true)s+=25;
+
+leadData.credit_640_plus=leadData.credit_answered?leadData.credit_score>=640:null;
+leadData.income_70k_plus=leadData.income_answered?leadData.household_income>=70000:null;
+leadData.readiness_score=s;
+return s;
+}
+
+function buildDeficiencyList(){
+let a=[];
+if(leadData.credit_640_plus===false)a.push({key:"credit",param:"credit=1",url:CREDIT_URL});
+if(leadData.income_70k_plus===false)a.push({key:"dti",param:"dti=1",url:DTI_URL});
+if(leadData.job_history_2yrs===false)a.push({key:"job",param:"job=1",url:JOB_URL});
+if(leadData.tax_returns_2yrs===false)a.push({key:"taxes",param:"taxes=1",url:TAXES_URL});
+return a;
+}
+
+function buildResultsUrl(){
+const d=buildDeficiencyList();
+
+if(d.length===0){
+leadData.route="qualified_begin_application";
+leadData.results_url=APPLICATION_URL;
+return APPLICATION_URL;
+}
+
+leadData.route=d.map(i=>i.key+"_review").join("|");
+const q=d.map(i=>i.param).join("&");
+leadData.results_url=RESULTS_URL+"?"+q+"&route="+encodeURIComponent(leadData.route)+"&lead="+encodeURIComponent(leadData.lead_id);
+return leadData.results_url;
+}
+
+function makePayload(){
+leadData.item_name=buildItemName();
+leadData.last_updated_at=new Date().toISOString();
+
+return{
+lead_id:leadData.lead_id,
+item_name:leadData.item_name,
+source:leadData.source,
+created_at:leadData.created_at,
+last_updated_at:leadData.last_updated_at,
+submission_stage:leadData.submission_stage,
+submit_type:leadData.submit_type,
+first_home:leadData.first_home||"",
+city:leadData.city||"",
+zip:leadData.zip||"",
+home_price:Number(leadData.home_price)||0,
+estimated_dpa:Number(leadData.estimated_dpa)||0,
+first_name:leadData.first_name||"",
+last_name:leadData.last_name||"",
+email:leadData.email||"",
+phone:(leadData.phone||"").replace(/\D/g,""),
+readiness_score:Number(leadData.readiness_score)||0,
+credit_score:Number(leadData.credit_score)||0,
+household_income:Number(leadData.household_income)||0,
+employment_history:leadData.employment_history||"",
+tax_return_history:leadData.tax_return_history||"",
+credit_answered:leadData.credit_answered?"Yes":"No",
+income_answered:leadData.income_answered?"Yes":"No",
+employment_answered:leadData.employment_answered?"Yes":"No",
+taxes_answered:leadData.taxes_answered?"Yes":"No",
+credit_640_plus:yn(leadData.credit_640_plus),
+income_70k_plus:yn(leadData.income_70k_plus),
+job_history_2yrs:yn(leadData.job_history_2yrs),
+tax_returns_2yrs:yn(leadData.tax_returns_2yrs),
+route:leadData.route||"",
+results_url:leadData.results_url||"",
+final_submitted:leadData.final_submitted?"Yes":"No",
+final_submitted_at:leadData.final_submitted_at||""
+};
+}
+
+function updateHiddenPayload(){
+document.getElementById("leadPayloadField").value=JSON.stringify(makePayload());
+}
+
+function sendWebhook(t){
+leadData.submit_type=t;
+const p=makePayload();
+document.getElementById("leadPayloadField").value=JSON.stringify(p);
+
+return fetch(DPA_WEBHOOK_URL,{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify(p),
+keepalive:true
+}).catch(e=>console.log(e));
+}
+
+function updateProgramNumber(){
+const a=Math.floor(Math.random()*91)+10;
+programEl.classList.add("flash");
+programEl.innerHTML="$"+a+'<span class="dpa-red">K</span>';
+setTimeout(()=>programEl.classList.remove("flash"),250);
+}
+
+updateProgramNumber();
+setInterval(updateProgramNumber,2600);
+
+window.dpaBack=function(){
+if(currentStep>1)dpaGoToStep(currentStep-1);
+else window.top.location.href=APPLICATION_URL;
+};
+
+window.dpaShowLocation=function(){
+leadData.first_home="yes";
+leadData.submission_stage="First Home Yes";
+document.getElementById("firstHomeBtns").style.display="none";
+document.getElementById("locationBox").classList.add("show");
+updateHiddenPayload();
+};
+
+window.dpaNoPath=function(){
+leadData.first_home="no";
+leadData.submission_stage="First Home No";
+document.getElementById("firstHomeBtns").style.display="none";
+document.getElementById("locationBox").classList.add("show");
+updateHiddenPayload();
+};
+
+window.dpaValidateLocation=function(){
+const c=document.getElementById("buyerCity").value.trim();
+const z=document.getElementById("buyerZip").value.replace(/\D/g,"").slice(0,5);
+document.getElementById("buyerZip").value=z;
+
+const ready=c.length>=2&&z.length===5;
+const btn=document.getElementById("locationNextBtn");
+
+btn.disabled=!ready;
+btn.classList.toggle("ready",ready);
+
+leadData.city=c;
+leadData.zip=z;
+leadData.submission_stage="Location Entered";
+updateHiddenPayload();
+};
+
+window.dpaContinueFromLocation=function(){
+dpaValidateLocation();
+leadData.submission_stage="Location Submitted";
+updateHiddenPayload();
+dpaGoToStep(2);
+};
+
+window.dpaGoToStep=function(step){
+currentStep=step;
+
+document.querySelectorAll("#dpa-desktop-funnel .dpa-step-screen").forEach(s=>{
+s.style.display="none";
+s.classList.remove("show");
+});
+
+const id=step===1?"screenOne":step===2?"screenTwo":step===3?"screenThree":"screenFinal";
+document.getElementById(id).style.display="block";
+document.getElementById(id).classList.add("show");
+
+document.getElementById("stepText").textContent="STEP "+step+" OF 4";
+
+for(let i=1;i<=4;i++){
+document.getElementById("dpaDot"+i).classList.remove("active");
+}
+
+document.getElementById("dpaDot"+step).classList.add("active");
+
+if(step===2)setTimeout(()=>dpaValidateLead(),80);
+
+if(step===3&&!qualificationSubmitted){
+qIndex=0;
+leadData.credit_answered=false;
+leadData.income_answered=false;
+leadData.employment_answered=false;
+leadData.taxes_answered=false;
+leadData.credit_640_plus=null;
+leadData.income_70k_plus=null;
+leadData.job_history_2yrs=null;
+leadData.tax_returns_2yrs=null;
+leadData.employment_history="";
+leadData.tax_return_history="";
+leadData.readiness_score=0;
+leadData.route="";
+leadData.results_url="";
+leadData.submission_stage="Premium Readiness Started";
+dpaRenderQuestion();
+dpaUpdateScore();
+updateHiddenPayload();
+}
+};
+
+window.dpaUpdateEstimate=function(v){
+const p=parseInt(v,10);
+leadData.home_price=p;
+leadData.estimated_dpa=Math.round(p*.05);
+leadData.submission_stage="Estimate Viewed";
+
+document.getElementById("homePriceDisplay").textContent=fmt(p);
+document.getElementById("dpaEstimate").textContent=fmt(p*.05);
+
+updateHiddenPayload();
+};
+
+window.dpaValidateLead=function(){
+leadData.first_name=document.getElementById("firstName").value.trim();
+leadData.last_name=document.getElementById("lastName").value.trim();
+leadData.email=document.getElementById("email").value.trim();
+leadData.phone=document.getElementById("phone").value.replace(/\D/g,'');
+leadData.submission_stage="Lead Info Entered";
+
+const e=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(leadData.email);
+const ph=leadData.phone.replace(/\D/g,"").length>=10;
+const ready=!!(leadData.first_name&&leadData.last_name&&e&&ph);
+const btn=document.getElementById("leadNextBtn");
+
+btn.disabled=!ready;
+btn.classList.toggle("ready",ready);
+
+updateHiddenPayload();
+};
+
+window.dpaSaveLeadAndContinue=function(){
+if(leadSubmitted){
+dpaGoToStep(3);
+return;
+}
+
+dpaValidateLead();
+
+leadData.submission_stage="Lead Info Captured - Not Submitted Yet";
+leadSubmitted=true;
+
+document.getElementById("leadNextBtn").disabled=true;
+document.getElementById("leadNextBtn").textContent="SAVED";
+
+updateHiddenPayload();
+
+setTimeout(()=>dpaGoToStep(3),300);
+};
+
+function dpaRenderQuestion(){
+const q=questions[qIndex];
+const wrap=document.getElementById("premiumQuestionWrap");
+
+if(q.type==="credit"){
+wrap.innerHTML=`
+<div class="dpa-premium-panel">
+<div class="dpa-premium-mini">${q.mini}</div>
+<div class="dpa-premium-title">What is your estimated credit score?</div>
+<div id="creditScoreDisplay" class="dpa-premium-value">${leadData.credit_score}</div>
+<div class="dpa-premium-explain">Slide this bar to your estimated credit score.</div>
+<input id="creditScoreSlider" class="dpa-range" type="range" min="580" max="800" step="1" value="${leadData.credit_score}" oninput="dpaUpdatePremiumCredit(this.value)">
+<div class="dpa-range-labels"><span>580</span><span>690</span><span>800</span></div>
+<button type="button" id="creditNextBtn" class="dpa-submit ready" onclick="dpaCreditNext()">CONTINUE</button>
+</div>`;
+}
+
+if(q.type==="income"){
+wrap.innerHTML=`
+<div class="dpa-premium-panel">
+<div class="dpa-premium-mini">${q.mini}</div>
+<div class="dpa-premium-title">What is your household income?</div>
+<div id="incomeDisplay" class="dpa-premium-value">${fmt(leadData.household_income)}</div>
+<div class="dpa-premium-explain">Slide bar to your estimated household income.</div>
+<input id="incomeSlider" class="dpa-range" type="range" min="60000" max="200000" step="1000" value="${leadData.household_income}" oninput="dpaUpdatePremiumIncome(this.value)">
+<div class="dpa-range-labels"><span>$60K</span><span>$120K</span><span>$200K</span></div>
+<button type="button" id="incomeNextBtn" class="dpa-submit ready" onclick="dpaIncomeNext()">CONTINUE</button>
+</div>`;
+}
+
+if(q.type==="employment"){
+wrap.innerHTML=`
+<div class="dpa-premium-panel">
+<div class="dpa-premium-mini">${q.mini}</div>
+<div class="dpa-premium-title">Choose your employment history.</div>
+<div class="dpa-premium-explain">Choose the best option that represents your last two years of employment.</div>
+<div class="dpa-select-grid">
+<button type="button" class="dpa-select-card" onclick="dpaSelectEmployment(this,'employed_2_years',true)"><div class="dpa-select-title">Employed past two years</div><div class="dpa-select-copy">I worked for the same employer for the past two years.</div></button>
+<button type="button" class="dpa-select-card" onclick="dpaSelectEmployment(this,'switched_jobs_2_years',true)"><div class="dpa-select-title">Switched jobs, but worked two years</div><div class="dpa-select-copy">I’ve had different jobs, but worked without large gaps of employment.</div></button>
+<button type="button" class="dpa-select-card" onclick="dpaSelectEmployment(this,'recent_college_graduate',true)"><div class="dpa-select-title">Just graduated college</div><div class="dpa-select-copy">School counts as work history as long as you graduated and began work within 6 months.</div></button>
+<button type="button" class="dpa-select-card" onclick="dpaSelectEmployment(this,'in_and_out_of_work',false)"><div class="dpa-select-title">In and out of work</div><div class="dpa-select-copy">This may need employment prep first.</div></button>
+</div>
+<button type="button" id="employmentNextBtn" class="dpa-submit" onclick="dpaPremiumNext()" disabled>CONTINUE</button>
+</div>`;
+}
+
+if(q.type==="taxes"){
+wrap.innerHTML=`
+<div class="dpa-premium-panel">
+<div class="dpa-premium-mini">${q.mini}</div>
+<div class="dpa-premium-title">Choose your tax return history.</div>
+<div class="dpa-select-grid">
+<button type="button" class="dpa-select-card" onclick="dpaSelectTaxes(this,'filed_2_years',true)"><div class="dpa-select-title">Filed taxes for the last 2 years</div></button>
+<button type="button" class="dpa-select-card" onclick="dpaSelectTaxes(this,'filed_1_year',false)"><div class="dpa-select-title">Only filed 1 year</div></button>
+<button type="button" class="dpa-select-card" onclick="dpaSelectTaxes(this,'not_filed_recently',false)"><div class="dpa-select-title">Have not filed recently</div></button>
+<button type="button" class="dpa-select-card" onclick="dpaSelectTaxes(this,'not_sure',false)"><div class="dpa-select-title">Not sure</div></button>
+</div>
+<button type="button" id="taxesNextBtn" class="dpa-submit" onclick="dpaSubmitQualification()" disabled>GET MY RESULTS</button>
+</div>`;
+}
+
+dpaUpdateScore();
+updateHiddenPayload();
+}
+
+window.dpaUpdatePremiumCredit=function(v){
+leadData.credit_score=parseInt(v,10);
+const el=document.getElementById("creditScoreDisplay");
+
+el.textContent=leadData.credit_score;
+el.classList.toggle("dpa-premium-good",leadData.credit_score>=640);
+el.classList.toggle("dpa-premium-warn",leadData.credit_score<640);
+
+leadData.submission_stage="Credit Slider Updated";
+updateHiddenPayload();
+};
+
+window.dpaUpdatePremiumIncome=function(v){
+leadData.household_income=parseInt(v,10);
+const el=document.getElementById("incomeDisplay");
+
+el.textContent=fmt(leadData.household_income);
+el.classList.toggle("dpa-premium-good",leadData.household_income>=70000);
+el.classList.toggle("dpa-premium-warn",leadData.household_income<70000);
+
+leadData.submission_stage="Income Slider Updated";
+updateHiddenPayload();
+};
+
+window.dpaCreditNext=function(){
+leadData.credit_answered=true;
+leadData.credit_640_plus=leadData.credit_score>=640;
+dpaPremiumNext();
+};
+
+window.dpaIncomeNext=function(){
+leadData.income_answered=true;
+leadData.income_70k_plus=leadData.household_income>=70000;
+dpaPremiumNext();
+};
+
+window.dpaSelectEmployment=function(btn,value,pass){
+leadData.employment_answered=true;
+leadData.employment_history=value;
+leadData.job_history_2yrs=pass;
+
+document.querySelectorAll("#premiumQuestionWrap .dpa-select-card").forEach(b=>b.classList.remove("active"));
+btn.classList.add("active");
+
+const next=document.getElementById("employmentNextBtn");
+next.disabled=false;
+next.classList.add("ready");
+
+leadData.submission_stage="Employment History Selected";
+dpaUpdateScore();
+};
+
+window.dpaSelectTaxes=function(btn,value,pass){
+leadData.taxes_answered=true;
+leadData.tax_return_history=value;
+leadData.tax_returns_2yrs=pass;
+
+document.querySelectorAll("#premiumQuestionWrap .dpa-select-card").forEach(b=>b.classList.remove("active"));
+btn.classList.add("active");
+
+const next=document.getElementById("taxesNextBtn");
+next.disabled=false;
+next.classList.add("ready");
+
+leadData.submission_stage="Tax Return History Selected";
+dpaUpdateScore();
+};
+
+window.dpaPremiumNext=function(){
+const q=questions[qIndex];
+leadData.submission_stage=q.mini+" Completed";
+dpaUpdateScore();
+
+if(qIndex<questions.length-1){
+qIndex++;
+dpaRenderQuestion();
+}else{
+dpaSubmitQualification();
+}
+};
+
+window.dpaSubmitQualification=function(){
+if(qualificationSubmitted)return;
+
+calculateScore();
+const destination=buildResultsUrl();
+
+qualificationSubmitted=true;
+leadData.final_submitted=true;
+leadData.final_submitted_at=new Date().toISOString();
+leadData.submission_stage=leadData.readiness_score===100?"Submit Final - Qualification Qualified":"Submit Final - Redirected To Results Page";
+
+document.getElementById("finalScoreNum").textContent=leadData.readiness_score+"%";
+document.getElementById("finalScoreFill").style.width=leadData.readiness_score+"%";
+document.getElementById("finalScoreStatus").textContent=leadData.readiness_score===100?"Strong Match":"Routing";
+
+updateHiddenPayload();
+sendWebhook("qualification_final");
+
+if(leadData.readiness_score===100){
+dpaGoToStep(4);
+document.getElementById("finalTitle").textContent="You’re 100% ready.";
+document.getElementById("resultsIntro").textContent="Your credit, income, employment, and tax history look ready. You can begin your application now or speak to an agent.";
+document.getElementById("beginAppBtn").style.display="block";
+document.getElementById("agentBtn").style.display="block";
+}else{
+dpaGoToStep(4);
+document.getElementById("finalTitle").textContent="Sending you to your prep hub...";
+document.getElementById("resultsIntro").textContent="Your highlighted steps will show on the results page.";
+setTimeout(()=>{window.top.location.href=destination},900);
+}
+};
+
+function dpaUpdateScore(){
+const s=calculateScore();
+
+document.getElementById("readinessScore").textContent=s+"%";
+document.getElementById("readinessFill").style.width=s+"%";
+document.getElementById("readinessStatus").textContent=s===100?"Strong Match":s===75?"Almost Ready":s===50?"Needs Review":s>0?"Needs Help First":"Start with credit";
+
+updateHiddenPayload();
+}
+
+window.dpaStartApplication=function(){
+leadData.route="application_started";
+leadData.submission_stage="Application Started";
+leadData.final_submitted=true;
+leadData.final_submitted_at=new Date().toISOString();
+
+sendWebhook("application_started");
+
+setTimeout(()=>{window.top.location.href=APPLICATION_URL},500);
+};
+
+document.getElementById("homePriceDisplay").textContent=fmt(leadData.home_price);
+document.getElementById("dpaEstimate").textContent=fmt(leadData.estimated_dpa);
+updateHiddenPayload();
+}
+})();
+</script>
+</div>
