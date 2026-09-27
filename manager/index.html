@@ -513,7 +513,7 @@
     }
     function mapPrepCustomer(lead,index,operationsByLead){const route=lead.route||"",op=operationsByLead.get(lead.id)||{},creditComplete=Number(lead.credit_score)>=640,taxComplete=lead.tax_return_history==="filed_2_years",incomeComplete=Number(lead.household_income)>=70000,jobComplete=employmentReady(lead.employment_history);return {id:`prep-${index+1}`,dbId:lead.id,name:`${lead.first_name||""} ${lead.last_name||""}`.trim(),taxesFiled:lead.tax_return_history,taxStatus:taxComplete?"Complete":"Department",householdIncome:String(lead.household_income||0),incomeStatus:incomeComplete?"Complete":"Department",monthlyDebtStatus:"—",dti:"—",dtiStatus:incomeComplete?"Complete":"Department",creditScore:String(lead.credit_score||0),creditStatus:creditComplete?"Complete":"Department",midFico:String(lead.credit_score||0),employment:lead.employment_history,employmentStatus:jobComplete?"Complete":"Department",leadId:lead.lead_id,createdAt:dateTime(lead.created_at),firstName:lead.first_name,lastName:lead.last_name,email:lead.email,phone:lead.phone,zip:lead.zip,city:lead.city,source:leadSource(lead),route,group:"New Leads",archived:Boolean(op.archived_at||op.deleted_at),deletedAt:op.deleted_at||null};}
     async function loadManagerData(){
-      const sync=document.getElementById("managerSync");sync.hidden=false;sync.className="manager-sync loading";sync.textContent="Syncing live data…";
+      const sync=document.getElementById("managerSync");sync.hidden=true;
       const [leadsResult,operationsResult,membersResult,notesResult,communicationsResult,webinarsResult,registrationsResult,siteVisitsResult,heluxResult]=await Promise.all([
         supabaseClient.from("prephub_leads").select("*").order("created_at",{ascending:false}),
         supabaseClient.from("lead_operations").select("*"),
@@ -535,7 +535,7 @@
       if(webinarsResult.data?.length){const registrationStats=new Map();(registrationsResult.data||[]).forEach(item=>{const stats=registrationStats.get(item.webinar_id)||{registrations:0,attendance:0};stats.registrations+=1;if(item.attended_at)stats.attendance+=1;registrationStats.set(item.webinar_id,stats)});webinars=webinarsResult.data.map(row=>Object.assign(mapDatabaseWebinar(row),registrationStats.get(row.id)||{registrations:0,attendance:0}));activeWebinarId=webinars.some(item=>item.id===activeWebinarId)?activeWebinarId:webinars[0].id}
       const liveCutoff=Date.now()-90000,liveVisits=(siteVisitsResult.data||[]).filter(item=>{const lastSeen=Date.parse(item.last_seen_at||"");return Number.isFinite(lastSeen)&&lastSeen>=liveCutoff});document.getElementById("websiteLiveCount").textContent=liveVisits.filter(item=>item.scope==="website").length;document.getElementById("prephubLiveCount").textContent=liveVisits.filter(item=>item.scope==="prephub").length;
       document.getElementById("dpaNavCount").textContent=buyers.filter(item=>!item.archived).length;const prepCount=document.querySelector('[data-view="prephub"] .nav-count');if(prepCount)prepCount.textContent=prepCustomers.filter(item=>!item.archived).length;
-      refreshBuyerViews();renderHelux();syncWebinarForm();renderWebinarLibrary();sync.className="manager-sync ok";sync.textContent="Live · Supabase connected";setTimeout(()=>sync.hidden=true,3500);
+      refreshBuyerViews();renderHelux();syncWebinarForm();renderWebinarLibrary();
     }
     async function authorizeManager(session){
       if(!session){document.body.classList.add("auth-pending");document.getElementById("managerAuth").hidden=false;return false}
