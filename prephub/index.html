@@ -1090,10 +1090,11 @@
   const SUPABASE_URL="https://fklchtsxahepzfzgcqdp.supabase.co";
   const SUPABASE_PUBLISHABLE_KEY="sb_publishable_TUIi5-8ISzGLtdFKxO-k6g_HCHz7nOk";
   const prephubDb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-  const prephubPresenceId=sessionStorage.getItem("dpa_prephub_presence_id")||crypto.randomUUID();
-  sessionStorage.setItem("dpa_prephub_presence_id",prephubPresenceId);
-  const prephubPresence=prephubDb.channel("dpa-prephub-presence",{config:{presence:{key:prephubPresenceId}}});
-  prephubPresence.subscribe(function(status){if(status==="SUBSCRIBED")prephubPresence.track({page:"prephub",online_at:new Date().toISOString()})});
+  const prephubVisitorId=localStorage.getItem("dpa_visitor_id")||crypto.randomUUID();
+  localStorage.setItem("dpa_visitor_id",prephubVisitorId);
+  function sendPrephubHeartbeat(){prephubDb.functions.invoke("track-site-visit",{body:{scope:"prephub",visitor_id:prephubVisitorId,path:location.pathname}}).catch(function(){});}
+  sendPrephubHeartbeat();
+  window.setInterval(sendPrephubHeartbeat,30000);
   let pageParams=new URLSearchParams(window.location.search||"");
   if(!pageParams.get("lead")&&document.referrer){
     try{pageParams=new URL(document.referrer).searchParams}catch(e){}
