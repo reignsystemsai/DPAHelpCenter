@@ -314,7 +314,8 @@
 }
 #prephub-desktop-results .ph-card.deficient{
   border:2px solid #D22630;
-  animation:phDeficientBeam 2.2s linear infinite;
+  overflow:visible;
+  animation:phDeficientGlow 1.8s ease-in-out infinite;
 }
 #prephub-desktop-results .ph-card.deficient::before{
   content:"";
@@ -327,6 +328,7 @@
   -webkit-mask-composite:xor;
   mask-composite:exclude;
   padding:3px;
+  animation:phDeficientBeam 2.2s linear infinite;
 }
 @property --beam-angle{
   syntax:"<angle>";
@@ -334,13 +336,14 @@
   inherits:false;
 }
 @keyframes phDeficientBeam{
-  0%{--beam-angle:0deg;box-shadow:0 -7px 18px rgba(210,38,48,.34)!important}
-  25%{box-shadow:7px 0 18px rgba(210,38,48,.34)!important}
-  50%{--beam-angle:180deg;box-shadow:0 7px 18px rgba(210,38,48,.34)!important}
-  75%{box-shadow:-7px 0 18px rgba(210,38,48,.34)!important}
-  100%{--beam-angle:360deg;box-shadow:0 -7px 18px rgba(210,38,48,.34)!important}
+  0%{--beam-angle:0deg}
+  100%{--beam-angle:360deg}
 }
-#prephub-desktop-results .ph-card.deficient.completed{animation:none;box-shadow:none!important;border-color:rgba(0,87,184,.35)}
+@keyframes phDeficientGlow{
+  0%,100%{box-shadow:0 0 0 2px rgba(210,38,48,.08),0 0 18px rgba(210,38,48,.16)!important}
+  50%{box-shadow:0 0 0 4px rgba(210,38,48,.18),0 0 28px rgba(210,38,48,.34)!important}
+}
+#prephub-desktop-results .ph-card.deficient.completed{animation:none;box-shadow:none!important;border-color:rgba(0,87,184,.35);overflow:hidden}
 #prephub-desktop-results .ph-icon{
   width:64px;
   height:64px;
@@ -882,8 +885,11 @@
 #prephub-desktop-results .ph-login-box p{margin:0 0 18px;color:#52617c;font-size:14px;font-weight:650;line-height:1.5}
 #prephub-desktop-results .ph-login-focus{margin:0 0 18px;padding:14px 16px;border-left:4px solid #D22630;border-radius:12px;background:rgba(210,38,48,.07)}
 #prephub-desktop-results .ph-login-focus strong{display:block;margin-bottom:7px;color:#081F5C;font-size:12px;font-weight:950;line-height:1.35}
-#prephub-desktop-results .ph-login-focus ul{display:flex;flex-wrap:wrap;gap:7px;margin:0;padding:0;list-style:none}
-#prephub-desktop-results .ph-login-focus li{border:1px solid rgba(210,38,48,.2);border-radius:999px;background:#fff;padding:7px 10px;color:#081F5C;font-size:11px;font-weight:900}
+#prephub-desktop-results .ph-login-focus ul{display:grid;gap:7px;margin:0;padding:0;list-style:none}
+#prephub-desktop-results .ph-login-focus li{display:grid;grid-template-columns:24px minmax(0,1fr);gap:9px;align-items:start;border:1px solid rgba(210,38,48,.16);border-radius:12px;background:#fff;padding:9px 10px;color:#081F5C}
+#prephub-desktop-results .ph-login-focus li::before{content:"✓";width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#D22630;color:#fff;font-size:11px;font-weight:950}
+#prephub-desktop-results .ph-focus-title{display:block;font-size:11px;font-weight:950;line-height:1.25}
+#prephub-desktop-results .ph-focus-detail{display:block;margin-top:2px;color:#52617c;font-size:10px;font-weight:700;line-height:1.35}
 #prephub-desktop-results .ph-login-focus-empty{color:#52617c;font-size:12px;font-weight:750;line-height:1.45}
 #prephub-desktop-results .ph-login-label{display:block;margin-bottom:7px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1px}
 #prephub-desktop-results .ph-login-input{width:100%;border:1px solid rgba(8,31,92,.2);border-radius:12px;padding:14px 15px;font-size:16px;color:#081F5C;outline:none}
@@ -947,8 +953,8 @@
           <div class="ph-icon">◴</div>
           <div>
             <span class="ph-tag">Needs Attention</span>
-            <h3>Credit Readiness</h3>
-            <p>Most DPA programs want to see a 640+ credit score.</p>
+            <h3>Get Your Credit Ready</h3>
+            <p>See what to strengthen before a lender reviews your credit.</p>
           </div>
           <div class="ph-check">✓</div>
           <button class="ph-complete" type="button">MARK DONE</button>
@@ -959,8 +965,8 @@
           <div class="ph-icon">▦</div>
           <div>
             <span class="ph-tag">Needs Attention</span>
-            <h3>Income / DTI Review</h3>
-            <p>If household income is below the target range, calculate your buying power.</p>
+            <h3>Strengthen Income &amp; DTI</h3>
+            <p>Make sure your income and monthly debts support your buying power.</p>
           </div>
           <div class="ph-check">✓</div>
           <button class="ph-complete" type="button">MARK DONE</button>
@@ -971,20 +977,20 @@
           <div class="ph-icon">▣</div>
           <div>
             <span class="ph-tag">Needs Attention</span>
-            <h3>Employment Readiness</h3>
-            <p>A stable 2-year work, school, military, or income history can help your file.</p>
+            <h3>Review Your Work History</h3>
+            <p>Prepare the work, school, military, or income history a lender may request.</p>
           </div>
           <div class="ph-check">✓</div>
           <button class="ph-complete" type="button">MARK DONE</button>
           <div class="ph-arrow">›</div>
         </a>
 
-        <a class="ph-card" data-task-key="taxes" href="https://www.estimatemytaxreturn.com" target="_top">
+        <a class="ph-card" data-task-key="taxes" href="https://www.dpahelpcenter.com/taxes/" target="_top">
           <div class="ph-icon">▤</div>
           <div>
             <span class="ph-tag">Needs Attention</span>
-            <h3>Tax Document Readiness</h3>
-            <p>Tax returns may be needed to verify income, especially for self-employed or 1099 income.</p>
+            <h3>Organize Your Documents</h3>
+            <p>Gather taxes, alimony, disability, child support, and bank statements.</p>
           </div>
           <div class="ph-check">✓</div>
           <button class="ph-complete" type="button">MARK DONE</button>
@@ -1005,13 +1011,13 @@
 
   <div class="ph-right">
     <div class="ph-prep-blue">
-      <small>Welcome to PrepHub - Your readiness station</small>
+      <small>Your homebuying preparation hub</small>
       <h2>Prep<span>Hub</span></h2>
-      <p>Your account keeps your plan, preparation work, and readiness score saved in one place.</p>
+      <p>Get your credit ready, strengthen your debt-to-income, review your work history, and organize the documents lenders may request—all in one place.</p>
 
-      <div class="ph-account-status" id="prephubAccountStatusDesktop">Check your email for your secure PrepHub login link.</div>
+      <div class="ph-account-status" id="prephubAccountStatusDesktop">Your personalized homebuying readiness plan is ready.</div>
       <div class="ph-account-actions">
-        <button class="ph-account-btn red" id="prephubResendDesktop" type="button">RESEND LOGIN</button>
+        <button class="ph-account-btn red" id="prephubResendDesktop" type="button">LOGIN TO PREPHUB</button>
         <button class="ph-account-btn" id="prephubLogoutDesktop" type="button" style="display:none">LOG OUT</button>
       </div>
 
@@ -1024,9 +1030,9 @@
       <div id="copyStatusDesktop">Save this link to return later.</div>
 
       <div class="ph-benefits">
-        <div class="ph-benefit"><i>✓</i><span>Save this link to return later.</span></div>
-        <div class="ph-benefit"><i>✉</i><span>We’ll also email you these steps.</span></div>
-        <div class="ph-benefit"><i>!</i><span>Check your email for more details.</span></div>
+        <div class="ph-benefit"><i>1</i><span>Know exactly what you need to prepare next.</span></div>
+        <div class="ph-benefit"><i>2</i><span>Know which income and supporting documents to gather.</span></div>
+        <div class="ph-benefit"><i>3</i><span>Return anytime and pick up where you left off.</span></div>
       </div>
     </div>
     <div class="ph-support">Need help? Call <a href="tel:+18333028953">1-833-302-8953</a></div>
@@ -1044,18 +1050,19 @@
 <div class="ph-login-modal" id="prephubLoginModalDesktop" role="dialog" aria-modal="true" aria-labelledby="prephubLoginTitleDesktop">
   <div class="ph-login-box">
     <button class="ph-login-close" id="prephubLoginCloseDesktop" type="button" aria-label="Close login">×</button>
-    <div class="ph-login-kicker">Secure PrepHub access</div>
+    <div class="ph-login-kicker">Your homebuying preparation hub</div>
     <h2 id="prephubLoginTitleDesktop">Get Prepared for up to $100k in Down Payment Assistance</h2>
+    <p>Get your credit ready, strengthen your debt-to-income, review your work history, and organize the documents lenders may request—all in one place.</p>
     <div class="ph-login-focus" aria-live="polite">
-      <strong>Your readiness plan shows you need to work on:</strong>
+      <strong>Your personalized readiness path:</strong>
       <ul id="prephubLoginFocusDesktop"></ul>
       <div class="ph-login-focus-empty" id="prephubLoginFocusEmptyDesktop" hidden>Sign in to save your score and open your next preparation step.</div>
     </div>
-    <p>Use the same email from your assessment. We’ll send a secure login link—no password needed.</p>
+    <p>Log in now with the same email from your assessment. We’ll send a secure link—no password needed.</p>
     <form id="prephubLoginFormDesktop">
       <label class="ph-login-label" for="prephubLoginEmailDesktop">Email address</label>
       <input class="ph-login-input" id="prephubLoginEmailDesktop" type="email" autocomplete="email" required placeholder="you@example.com">
-      <button class="ph-login-submit" id="prephubLoginSubmitDesktop" type="submit">SEND SECURE LOGIN LINK</button>
+      <button class="ph-login-submit" id="prephubLoginSubmitDesktop" type="submit">LOGIN TO MY PREPHUB</button>
     </form>
     <div class="ph-login-message" id="prephubLoginMessageDesktop" aria-live="polite"></div>
   </div>
@@ -1074,11 +1081,11 @@
   }
   const leadId=pageParams.get("lead")||localStorage.getItem("dpa_prephub_lead_id")||"";
   let activeSession=null;
-  const FOCUS_LABELS={
-    credit:"Credit readiness",
-    dti:"Income / DTI review",
-    job:"Employment readiness",
-    taxes:"Tax document readiness"
+  const FOCUS_CONTENT={
+    credit:{title:"Get your credit ready",detail:"Strengthen your credit before a lender reviews it."},
+    dti:{title:"Strengthen your income & DTI",detail:"Make sure your income and monthly debts support your buying power."},
+    job:{title:"Review your work history",detail:"Prepare the employment or income history a lender may request."},
+    taxes:{title:"Organize your documents",detail:"Gather taxes, alimony, disability, child support, and bank statements."}
   };
   const HOMEBUYER_DESKTOP_FACE_IDS=[
     12,15,33,36,47,
@@ -1181,14 +1188,23 @@
 
   function renderLoginFocus(clickedKey){
     let keys=initialFocusKeys();
-    if(keys.length===0&&clickedKey&&FOCUS_LABELS[clickedKey])keys=[clickedKey];
+    if(keys.length===0&&clickedKey&&FOCUS_CONTENT[clickedKey])keys=[clickedKey];
     const list=document.getElementById("prephubLoginFocusDesktop");
     const empty=document.getElementById("prephubLoginFocusEmptyDesktop");
     if(!list||!empty)return;
     list.innerHTML="";
     keys.forEach(function(key){
       const item=document.createElement("li");
-      item.textContent=FOCUS_LABELS[key];
+      const copy=document.createElement("span");
+      const title=document.createElement("span");
+      const detail=document.createElement("span");
+      title.className="ph-focus-title";
+      detail.className="ph-focus-detail";
+      title.textContent=FOCUS_CONTENT[key].title;
+      detail.textContent=FOCUS_CONTENT[key].detail;
+      copy.appendChild(title);
+      copy.appendChild(detail);
+      item.appendChild(copy);
       list.appendChild(item);
     });
     list.hidden=keys.length===0;
@@ -1221,7 +1237,7 @@
     if(!session){
       if(logout)logout.style.display="none";
       if(resend)resend.style.display="block";
-      setAccountStatus("Check your email for your secure PrepHub login link. Your plan is already saved.");
+      setAccountStatus("Your personalized readiness plan is ready. Log in to keep your progress in one place.");
       return;
     }
 
