@@ -1104,6 +1104,12 @@
     job:{title:"Review your work history",detail:"Prepare the employment or income history a lender may request."},
     taxes:{title:"Organize your documents",detail:"Gather taxes, alimony, disability, child support, and bank statements."}
   };
+  const READINESS_NAMES={
+    credit:"credit",
+    dti:"income & debt-to-income",
+    job:"work history",
+    taxes:"documents"
+  };
   const HOMEBUYER_DESKTOP_FACE_IDS=[
     12,15,33,36,47,
     52,55,57,60,61,
@@ -1239,13 +1245,30 @@
 
   function renderLoginSummary(){
     const score=Math.max(0,Math.min(100,Number(pageParams.get("score")||localStorage.getItem("dpa_prephub_score")||0)||0));
-    const completed=Math.max(0,Math.min(4,Math.round(score/25)));
-    const remaining=initialFocusKeys().length||Math.max(0,4-completed);
+    const remainingKeys=initialFocusKeys();
+    const completedKeys=Object.keys(READINESS_NAMES).filter(function(key){return !remainingKeys.includes(key)});
     const greeting=document.getElementById("prephubLoginGreetingDesktop");
     const copy=document.getElementById("prephubLoginProgressCopyDesktop");
     const fill=document.getElementById("prephubLoginProgressFillDesktop");
     if(greeting)greeting.textContent=(buyerName?buyerName+", your":"Your")+" homebuyer readiness is "+score+"%.";
-    if(copy)copy.textContent=completed+" of 4 preparation areas complete. Finish "+remaining+" remaining "+(remaining===1?"area":"areas")+" to reach 100%.";
+    if(copy){
+      const list=function(values){
+        if(values.length===0)return "";
+        if(values.length===1)return values[0];
+        if(values.length===2)return values[0]+" and "+values[1];
+        return values.slice(0,-1).join(", ")+", and "+values[values.length-1];
+      };
+      const completedNames=completedKeys.map(function(key){return READINESS_NAMES[key]});
+      const remainingNames=remainingKeys.map(function(key){return READINESS_NAMES[key]});
+      let status=completedNames.length?"Your "+list(completedNames)+(completedNames.length===1?" is":" are")+" 100% ready.":"Your personalized preparation plan is ready.";
+      if(remainingNames.length){
+        const remainingList=list(remainingNames);
+        status+=" Finish "+remainingList.charAt(0).toUpperCase()+remainingList.slice(1)+" to reach 100%.";
+      }else if(score===100){
+        status+=" You are ready for the next step.";
+      }
+      copy.textContent=status;
+    }
     if(fill)fill.style.width=score+"%";
   }
 
