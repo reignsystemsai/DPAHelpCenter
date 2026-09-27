@@ -869,7 +869,7 @@
 #prephub-desktop-results .ph-card.account-ready .ph-check{display:none}
 #prephub-desktop-results .ph-empty{display:none;text-align:center;padding:30px;border-radius:18px;background:rgba(0,87,184,.06);color:#081F5C;font-weight:850}
 #prephub-desktop-results .ph-support{margin-top:14px;text-align:center;color:#52617c;font-size:12px;font-weight:750}
-#prephub-desktop-results .ph-support a{color:#0057B8;font-weight:950;text-decoration:none}
+#prephub-desktop-results .ph-support a{color:#081F5C;font-weight:950;text-decoration:none}
 #prephub-desktop-results .ph-login-modal{
   position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:flex-end;padding:28px 44px;
   background:linear-gradient(90deg,rgba(4,15,45,.02) 0%,rgba(4,15,45,.06) 54%,rgba(4,15,45,.38) 100%);
@@ -904,7 +904,7 @@
 #prephub-desktop-results .ph-login-submit{width:100%;margin-top:12px;border:0;border-radius:12px;background:#D22630;color:#fff;padding:14px;font-size:12px;font-weight:950;letter-spacing:.5px;cursor:pointer}
 #prephub-desktop-results .ph-login-submit:disabled{opacity:.55;cursor:wait}
 #prephub-desktop-results .ph-login-help{margin:10px 0 0;text-align:center;color:#52617c;font-size:11px;font-weight:800}
-#prephub-desktop-results .ph-login-help a{color:#0057B8;font-weight:950;text-decoration:none}
+#prephub-desktop-results .ph-login-help a{color:#081F5C;font-weight:950;text-decoration:none}
 #prephub-desktop-results .ph-login-message{min-height:20px;margin-top:12px;color:#081F5C;font-size:12px;font-weight:750;line-height:1.4}
 @media(max-width:720px){
   #prephub-desktop-results .ph-login-modal{justify-content:center;padding:16px;background:rgba(4,15,45,.62)}
@@ -958,7 +958,7 @@
       </div>
 
       <div class="ph-cards">
-        <a class="ph-card" data-task-key="credit" href="https://www.creditjump.ai" target="_top">
+        <a class="ph-card" data-task-key="credit" href="https://www.dpahelpcenter.com/credit/" target="_top">
           <div class="ph-icon">◴</div>
           <div>
             <span class="ph-tag">Needs Attention</span>
@@ -1417,6 +1417,7 @@
   });
 
   showInitialPlan();
+  localStorage.setItem("dpa_prephub_return_url",window.location.href);
   loadAccount().catch(function(){setAccountStatus("PrepHub could not load. Please refresh or call 1-833-302-8953.")});
 })();
 </script>
