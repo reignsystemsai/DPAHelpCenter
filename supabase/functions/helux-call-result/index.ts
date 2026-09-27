@@ -45,20 +45,22 @@ Deno.serve(async(req:Request)=>{
     const payload=JSON.parse(rawBody) as Record<string,unknown>,result=(payload.result&&typeof payload.result==="object"?payload.result:{}) as Record<string,unknown>;
     const externalLeadId=clean(payload.lead_id,150),phoneDigits=clean(payload.phone,30).replace(/\D/g,""),phone=phoneDigits.length===11&&phoneDigits.startsWith("1")?phoneDigits.slice(1):phoneDigits,email=clean(payload.email,320).toLowerCase();
     const db=createClient(Deno.env.get("SUPABASE_URL")!,Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,{auth:{persistSession:false,autoRefreshToken:false}});
-    const requestedQualification=clean(payload.qualification,20).toLowerCase();
-    let leads:Array<{id:string;lead_id:string;initial_readiness_score:number;phone:string;email:string;created_at:string}>=[];
+    const requestedQualification=clean(payload.qualification,20).toLowerCase(),firstName=clean(result.first_name,120).toLowerCase(),lastName=clean(result.last_name,120).toLowerCase();
+    let leads:Array<{id:string;lead_id:string;initial_readiness_score:number;phone:string;email:string;first_name:string;last_name:string;created_at:string}>=[];
     if(externalLeadId){
-      const lookup=await db.from("prephub_leads").select("id,lead_id,initial_readiness_score,phone,email,created_at").eq("lead_id",externalLeadId).limit(1);
+      const lookup=await db.from("prephub_leads").select("id,lead_id,initial_readiness_score,phone,email,first_name,last_name,created_at").eq("lead_id",externalLeadId).limit(1);
       if(lookup.error)throw lookup.error;leads=lookup.data||[];
     }else if(email){
-      const lookup=await db.from("prephub_leads").select("id,lead_id,initial_readiness_score,phone,email,created_at").ilike("email",email).order("created_at",{ascending:false}).limit(25);
+      const lookup=await db.from("prephub_leads").select("id,lead_id,initial_readiness_score,phone,email,first_name,last_name,created_at").ilike("email",email).order("created_at",{ascending:false}).limit(25);
       if(lookup.error)throw lookup.error;leads=lookup.data||[];
     }
     if(!leads.length&&phone){
-      const lookup=await db.from("prephub_leads").select("id,lead_id,initial_readiness_score,phone,email,created_at").eq("phone",phone).order("created_at",{ascending:false}).limit(25);
+      const lookup=await db.from("prephub_leads").select("id,lead_id,initial_readiness_score,phone,email,first_name,last_name,created_at").eq("phone",phone).order("created_at",{ascending:false}).limit(25);
       if(lookup.error)throw lookup.error;leads=lookup.data||[];
     }
-    const matchingLead=leads.find(candidate=>requestedQualification==="qualified"?Number(candidate.initial_readiness_score)===100:requestedQualification==="unqualified"?Number(candidate.initial_readiness_score)<100:true);
+    const qualificationMatches=(candidate:{initial_readiness_score:number})=>requestedQualification==="qualified"?Number(candidate.initial_readiness_score)===100:requestedQualification==="unqualified"?Number(candidate.initial_readiness_score)<100:true;
+    const namedLead=leads.find(candidate=>qualificationMatches(candidate)&&(!firstName||clean(candidate.first_name,120).toLowerCase()===firstName)&&(!lastName||clean(candidate.last_name,120).toLowerCase()===lastName));
+    const matchingLead=namedLead||leads.find(qualificationMatches);
     const lead=matchingLead||leads[0];
     if(!lead)return json({error:"Lead not found",lead_id:externalLeadId||null},404);
 
