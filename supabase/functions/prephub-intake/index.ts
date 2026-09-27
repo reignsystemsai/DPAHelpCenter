@@ -632,23 +632,11 @@ Deno.serve(async (req: Request) => {
       console.warn("PrepHub login link could not be generated", linkError?.message || "missing_action_link");
     }
 
-    if (!emailSent) {
-      const { error: authError } = await supabase.auth.signInWithOtp({
-        email,
-        options: { emailRedirectTo: redirectTo, data: userData },
-      });
-      emailSent = !authError;
-      emailStatus = emailSent ? (score === 100 ? "fallback_sent" : "sent") : "temporarily_unavailable";
-      if (authError) {
-        console.warn("PrepHub login email was not sent", authError.code || authError.message);
-      }
-    }
-
     await supabase.from("lead_communications").insert({
       lead_id: lead.id,
       channel: "email",
       direction: "outbound",
-      provider: emailStatus === "fallback_sent" ? "supabase_auth" : "resend",
+      provider: "resend",
       template_key: score === 100 ? "prephub_ready_100" : "prephub_below_100",
       subject: score === 100 ? `${firstName}, you appear 100% ready` : `${firstName}, your personal PrepHub plan is ready`,
       summary: score === 100 ? "100% readiness and lender-file preparation email" : "Personal readiness preparation plan email",
