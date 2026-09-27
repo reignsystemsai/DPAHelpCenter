@@ -390,10 +390,13 @@ border-radius:16px;
 
 <script>
 (function(){
-const DPA_WEBHOOK_URL="https://hook.us2.make.com/xaaosa30ynypx76iyvkceqkyonazo76a";
+const SUPABASE_URL="https://fklchtsxahepzfzgcqdp.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_TUIi5-8ISzGLtdFKxO-k6g_HCHz7nOk";
+const PREPHUB_INTAKE_URL=SUPABASE_URL+"/functions/v1/prephub-intake";
 const RESULTS_URL="https://www.dpahelpcenter.com/results";
+const PREPHUB_URL="https://www.dpahelpcenter.com/prephub";
 const APPLICATION_URL="https://www.dpahelpcenter.com";
-const AGENT_PHONE_URL="tel:+10000000000";
+const AGENT_PHONE_URL="tel:+18333028953";
 const CREDIT_URL="https://www.dpahelpcenter.com/credit";
 const DTI_URL="https://www.dpahelpcenter.com/dti";
 const JOB_URL="https://www.dpahelpcenter.com/job";
@@ -848,7 +851,7 @@ return APPLICATION_URL;
 
 leadData.route=d.map(i=>i.key+"_review").join("|");
 const q=d.map(i=>i.param).join("&");
-leadData.results_url=RESULTS_URL+"?"+q+"&route="+encodeURIComponent(leadData.route)+"&lead="+encodeURIComponent(leadData.lead_id);
+leadData.results_url=PREPHUB_URL+"?"+q+"&route="+encodeURIComponent(leadData.route)+"&lead="+encodeURIComponent(leadData.lead_id);
 return leadData.results_url;
 }
 
@@ -897,17 +900,28 @@ function updateHiddenPayload(){
 document.getElementById("leadPayloadField").value=JSON.stringify(makePayload());
 }
 
-function sendWebhook(t){
+async function sendPrepHubIntake(t){
 leadData.submit_type=t;
 const p=makePayload();
 document.getElementById("leadPayloadField").value=JSON.stringify(p);
 
-return fetch(DPA_WEBHOOK_URL,{
+const response=await fetch(PREPHUB_INTAKE_URL,{
 method:"POST",
-headers:{"Content-Type":"application/json"},
+headers:{
+"Content-Type":"application/json",
+"apikey":SUPABASE_PUBLISHABLE_KEY,
+"Authorization":"Bearer "+SUPABASE_PUBLISHABLE_KEY
+},
 body:JSON.stringify(p),
 keepalive:true
-}).catch(e=>console.log(e));
+});
+
+const result=await response.json().catch(()=>({}));
+if(!response.ok)throw new Error(result.error||"PrepHub could not save your plan.");
+localStorage.setItem("dpa_prephub_email",leadData.email);
+localStorage.setItem("dpa_prephub_lead_id",leadData.lead_id);
+localStorage.setItem("dpa_prephub_score",String(leadData.readiness_score));
+return result;
 }
 
 function updateProgramNumber(){
@@ -1204,7 +1218,7 @@ dpaSubmitQualification();
 }
 };
 
-window.dpaSubmitQualification=function(){
+window.dpaSubmitQualification=async function(){
 if(qualificationSubmitted)return;
 
 calculateScore();
@@ -1220,18 +1234,28 @@ document.getElementById("finalScoreFill").style.width=leadData.readiness_score+"
 document.getElementById("finalScoreStatus").textContent=leadData.readiness_score===100?"Strong Match":"Routing";
 
 updateHiddenPayload();
-sendWebhook("qualification_final");
+
+dpaGoToStep(4);
+document.getElementById("finalTitle").textContent="Saving your personal plan...";
+document.getElementById("resultsIntro").textContent="We’re creating your secure PrepHub login and emailing your next steps.";
+
+try{
+await sendPrepHubIntake("qualification_final");
+}catch(error){
+qualificationSubmitted=false;
+document.getElementById("finalTitle").textContent="We couldn’t save your plan yet.";
+document.getElementById("resultsIntro").textContent=(error&&error.message?error.message:"Please try again.")+" Return to the last question and tap GET MY RESULTS again.";
+return;
+}
 
 if(leadData.readiness_score===100){
-dpaGoToStep(4);
 document.getElementById("finalTitle").textContent="You’re 100% ready.";
-document.getElementById("resultsIntro").textContent="Your credit, income, employment, and tax history look ready. You can begin your application now or speak to an agent.";
+document.getElementById("resultsIntro").textContent="Your credit, income, employment, and tax history look ready. Your DPA Help Center login link is in your email.";
 document.getElementById("beginAppBtn").style.display="block";
 document.getElementById("agentBtn").style.display="block";
 }else{
-dpaGoToStep(4);
 document.getElementById("finalTitle").textContent="Sending you to your prep hub...";
-document.getElementById("resultsIntro").textContent="Your highlighted steps will show on the results page.";
+document.getElementById("resultsIntro").textContent="Your plan is saved. Check your email for your secure PrepHub login.";
 setTimeout(()=>{window.top.location.href=destination},900);
 }
 };
@@ -1252,7 +1276,7 @@ leadData.submission_stage="Application Started";
 leadData.final_submitted=true;
 leadData.final_submitted_at=new Date().toISOString();
 
-sendWebhook("application_started");
+sendPrepHubIntake("application_started").catch(function(error){console.log(error)});
 
 setTimeout(()=>{window.top.location.href=APPLICATION_URL},500);
 };
