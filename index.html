@@ -568,11 +568,12 @@ const app=document.getElementById("dpaApp");
 const path=(window.location.pathname||"/").toLowerCase();
 
 if(window.supabase){
-  const websitePresenceDb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
-  const websitePresenceId=sessionStorage.getItem("dpa_website_presence_id")||crypto.randomUUID();
-  sessionStorage.setItem("dpa_website_presence_id",websitePresenceId);
-  const websitePresence=websitePresenceDb.channel("dpa-website-presence",{config:{presence:{key:websitePresenceId}}});
-  websitePresence.subscribe(function(status){if(status==="SUBSCRIBED")websitePresence.track({page:path,online_at:new Date().toISOString()})});
+  const websiteAnalyticsDb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+  const websiteVisitorId=localStorage.getItem("dpa_visitor_id")||crypto.randomUUID();
+  localStorage.setItem("dpa_visitor_id",websiteVisitorId);
+  function sendWebsiteHeartbeat(){websiteAnalyticsDb.functions.invoke("track-site-visit",{body:{scope:"website",visitor_id:websiteVisitorId,path:location.pathname}}).catch(function(){});}
+  sendWebsiteHeartbeat();
+  window.setInterval(sendWebsiteHeartbeat,30000);
 }
 
 let audioReady=false;
