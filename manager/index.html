@@ -35,6 +35,7 @@
     .brand small{display:block;margin-top:7px;color:rgba(255,255,255,.65);font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase}
     .nav-label{margin:8px 10px;color:rgba(255,255,255,.45);font-size:9px;font-weight:900;letter-spacing:1.7px;text-transform:uppercase}
     .nav{display:grid;gap:7px}
+    .nav-divider{height:1px;margin:5px 10px;background:rgba(255,255,255,.18)}
     .nav-btn{width:100%;border:0;border-radius:14px;background:transparent;color:rgba(255,255,255,.72);padding:13px 14px;display:flex;align-items:center;gap:12px;text-align:left;font-size:13px;font-weight:800;transition:.2s}
     .nav-btn:hover{background:rgba(255,255,255,.08);color:#fff}
     .nav-btn.active{background:#fff;color:var(--navy);box-shadow:0 10px 24px rgba(0,0,0,.16)}
@@ -136,6 +137,7 @@
     .tax-group{min-width:2350px}.tax-group.workflow-mode{min-width:1350px}.credit-grid.tax-lead-grid{grid-template-columns:46px 210px repeat(14,145px)}.credit-grid.tax-workflow-grid{grid-template-columns:46px 210px repeat(7,145px)}
     .review-group{min-width:3200px}.review-group.workflow-mode{min-width:1900px}.credit-grid.review-lead-grid{grid-template-columns:46px 210px repeat(20,145px)}.credit-grid.review-workflow-grid{grid-template-columns:46px 210px repeat(10,145px)}
     .prep-group{min-width:3650px;margin-bottom:14px}.credit-grid.prep-lead-grid{grid-template-columns:46px 210px repeat(22,145px)}.prep-status{display:inline-flex;align-items:center;border-radius:999px;padding:6px 8px;font-size:8px;font-weight:900}.prep-status.complete{background:#e8f7ef;color:#08734b}.prep-status.department{background:#fff0f1;color:var(--red)}.prep-status.working{background:#fff5e7;color:var(--amber)}
+    .helux-board{overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}.helux-board::-webkit-scrollbar{display:none;width:0;height:0}.helux-group{min-width:3690px;margin-bottom:14px;background:#fff}.credit-grid.helux-grid{grid-template-columns:46px 210px repeat(23,145px)}.helux-empty{min-width:3690px;padding:18px 72px;border-top:1px solid var(--line);color:var(--muted);font-size:9px;font-weight:750}.helux-group.collapsed .helux-empty{display:none}
     .dpa-meter{height:8px;margin-top:11px;border-radius:99px;background:#e8edf5;overflow:hidden}.dpa-meter i{display:block;height:100%;border-radius:99px;background:#0057b8!important;background-image:none!important;width:var(--meter,0%);transition:width .35s ease}.dpa-ratio{color:#0057b8;font-weight:900}
     .forecast-toggle{display:inline-grid;place-items:center;width:25px;height:25px;margin-right:6px;border:0;border-radius:8px;background:#edf3ff;color:var(--navy);font-size:17px;vertical-align:-3px;transition:transform .18s}.month-panel.collapsed .forecast-toggle{transform:rotate(-90deg)}.month-panel.collapsed .month-strip,.month-panel.collapsed .carry-note{display:none}
     @media(max-width:1320px){.stats.crm-stats{grid-template-columns:repeat(3,1fr)}}
@@ -149,14 +151,15 @@
       <div class="brand"><strong>DPA HELP <span>CENTER</span></strong><small>Network Manager</small></div>
       <div class="nav-label">Workspace</div>
       <nav class="nav" aria-label="Manager navigation">
+        <button class="nav-btn" data-view="ai">Helux Workforce</button>
         <button class="nav-btn" data-view="prephub">PrepHub<span class="nav-count">2</span></button>
         <button class="nav-btn active" data-view="crm">DPA Department<span class="nav-count" id="dpaNavCount">0</span></button>
         <button class="nav-btn" data-view="credit">Credit Department</button>
         <button class="nav-btn" data-view="tax">Tax Department</button>
         <button class="nav-btn" data-view="review">Review Department</button>
+        <div class="nav-divider" aria-hidden="true"></div>
         <button class="nav-btn" data-view="marketing">Marketing</button>
         <button class="nav-btn" data-view="partners">Partners</button>
-        <button class="nav-btn" data-view="ai">AI Workforce<span class="nav-count">4</span></button>
       </nav>
       <div class="side-card">
         <div class="owner"><div class="avatar">DT</div><div><strong>Douglas Thompson</strong><small>Owner access</small></div></div>
@@ -278,32 +281,8 @@
         </section>
 
         <section class="view" id="view-ai">
-          <div class="page-head"><div><div class="eyebrow">AI Workforce Control</div><h2>Two callers. Four dedicated workflows.</h2><p>Qualified and unqualified buyers each receive a separate inbound and outbound experience.</p></div><button class="primary" data-toast="Workflow editing will be activated after the four call routes are connected.">EDIT WORKFLOWS</button></div>
-          <div class="caller-grid">
-            <article class="caller-card"><div class="caller-orb">D</div><div><h3>Daisy · Qualified Buyer Caller</h3><p>Handles 100%-ready inbound questions and outbound application follow-up.</p></div><div class="caller-meta"><strong>ACTIVE</strong><small>2 workflows</small></div></article>
-            <article class="caller-card"><div class="caller-orb" style="background:linear-gradient(145deg,#6c4bd3,#d22630)">P</div><div><h3>PrepHub AI · Preparation Caller</h3><p>Handles unqualified inbound support and outbound readiness follow-up.</p></div><div class="caller-meta"><strong>ACTIVE</strong><small>2 workflows</small></div></article>
-          </div>
-          <div class="workflow-grid">
-            <article class="workflow-card" style="--flow-color:#138a5b"><div class="workflow-top"><h3>Qualified · Inbound</h3><span class="pill green">Daisy</span></div><p>Recognizes the customer, confirms their 100% score, answers next-step questions and prepares lender or DPA specialist routing.</p><div class="flow-steps"><span class="flow-step">Identify</span><i class="flow-arrow">→</i><span class="flow-step">Confirm 100%</span><i class="flow-arrow">→</i><span class="flow-step">Route</span></div></article>
-            <article class="workflow-card" style="--flow-color:#0057b8"><div class="workflow-top"><h3>Qualified · Outbound</h3><span class="pill blue">Daisy</span></div><p>Calls new ready buyers, verifies goals, prompts the application and schedules the specialist handoff with callback control.</p><div class="flow-steps"><span class="flow-step">New Lead</span><i class="flow-arrow">→</i><span class="flow-step">Call</span><i class="flow-arrow">→</i><span class="flow-step">Application</span></div></article>
-            <article class="workflow-card" style="--flow-color:#b56b08"><div class="workflow-top"><h3>Unqualified · Inbound</h3><span class="pill amber">PrepHub AI</span></div><p>Finds the customer’s readiness record and helps with credit, tax, income, DTI, employment and document questions.</p><div class="flow-steps"><span class="flow-step">Identify</span><i class="flow-arrow">→</i><span class="flow-step">Find blocker</span><i class="flow-arrow">→</i><span class="flow-step">Assist</span></div></article>
-            <article class="workflow-card" style="--flow-color:#d22630"><div class="workflow-top"><h3>Unqualified · Outbound</h3><span class="pill red">PrepHub AI</span></div><p>Follows the assigned department route, reminds the buyer what is missing and returns progress to the same PrepHub customer record.</p><div class="flow-steps"><span class="flow-step">Department</span><i class="flow-arrow">→</i><span class="flow-step">Follow up</span><i class="flow-arrow">→</i><span class="flow-step">Re-score</span></div></article>
-          </div>
-          <div class="stats">
-            <article class="stat"><div class="stat-top"><span class="stat-label">Calls today</span><span class="stat-icon">☎</span></div><div class="stat-value">42</div><div class="stat-sub">31 connected</div></article>
-            <article class="stat" style="--accent:#138a5b;--tint:#eaf8f2"><div class="stat-top"><span class="stat-label">Connection rate</span><span class="stat-icon">✓</span></div><div class="stat-value">73.8%</div><div class="stat-sub">+6.2% this week</div></article>
-            <article class="stat" style="--accent:#b56b08;--tint:#fff5e7"><div class="stat-top"><span class="stat-label">Callbacks</span><span class="stat-icon">↻</span></div><div class="stat-value">5</div><div class="stat-sub">Next callback in 18m</div></article>
-            <article class="stat" style="--accent:#d22630;--tint:#fff0f1"><div class="stat-top"><span class="stat-label">Human action</span><span class="stat-icon">!</span></div><div class="stat-value">3</div><div class="stat-sub">Requires owner review</div></article>
-          </div>
-          <div class="ai-layout">
-            <section class="panel"><div class="panel-head"><div><h3>Live Call Queue</h3><small>Priority, next action and attempt limits from the AI workflow.</small></div><div class="filters"><button class="filter active">All</button><button class="filter">Callbacks</button><button class="filter">Agent Needed</button></div></div><div class="queue">
-              <article class="call-card"><span class="call-icon">☎</span><div><h4>Olivia M. · Ready buyer</h4><p>Confirm application timing and permission to match with a DPA specialist.</p></div><div class="call-meta"><strong>Calling now</strong><small>Attempt 1 of 3</small></div></article>
-              <article class="call-card"><span class="call-icon">↻</span><div><h4>Marcus R. · Callback</h4><p>Requested a call after work. Last result: connected, callback scheduled.</p></div><div class="call-meta"><strong>6:30 PM ET</strong><small>Attempt 2 of 3</small></div></article>
-              <article class="call-card"><span class="call-icon">!</span><div><h4>Daniel C. · Human action</h4><p>Buyer asked a lender-specific question. Daisy paused the sequence.</p></div><div class="call-meta"><strong>Owner review</strong><small>Pending 14m</small></div></article>
-              <article class="call-card"><span class="call-icon">✓</span><div><h4>Alicia S. · Completed</h4><p>Homebuying goals confirmed. Preparation sequence started.</p></div><div class="call-meta"><strong>Completed</strong><small>Summary saved</small></div></article>
-            </div></section>
-            <section class="panel daisy"><div class="daisy-orb">D</div><h3>Daisy is active</h3><p>Your first-time homebuyer assistant confirms information, learns goals and moves each buyer to the correct next step.</p><div class="daisy-grid"><div class="mini"><strong>3</strong><span>Max attempts</span></div><div class="mini"><strong>18m</strong><span>Next callback</span></div><div class="mini"><strong>9</strong><span>Summaries</span></div><div class="mini"><strong>3</strong><span>Handoffs</span></div></div></section>
-          </div>
+          <div class="page-head"><div><div class="eyebrow">Helux Workforce</div><h2>Outbound Call Control</h2><p>Control call attempts, callbacks, outcomes, consent, and human handoffs from one live board.</p></div><button class="primary" data-toast="New call-control records will enter through the connected lead routes.">+ ADD CALL RECORD</button></div>
+          <section class="panel"><div class="panel-head"><div><h3>HELUX AI Workforce - Outbound Call Control</h3><small>Five call-control groups, 24 fields, and no subitems.</small></div></div><div class="helux-board" id="heluxBoard"></div></section>
         </section>
       </div>
     </main>
@@ -435,7 +414,7 @@
       prephub:["PrepHub Readiness Center","Every customer, readiness score and department record."],
       marketing:["Marketing Center","Readiness-based email campaigns powered by Resend."],
       partners:["Partner Network","Agent profiles, routing, territories and performance."],
-      ai:["AI Workforce Control","Two callers and four buyer-specific workflows."]
+      ai:["Helux Workforce","Outbound call control, callbacks, outcomes, consent, and human handoffs."]
     };
 
     const stages=[
@@ -460,7 +439,10 @@
     let prepCollapsed=false;
     let deleteSelectionType="buyers";
     const selectedPrepIds=new Set();
+    const heluxRecords=[];
+    const collapsedHeluxGroups=new Set();
     const prepBoard=document.getElementById("prepBoard");
+    const heluxBoard=document.getElementById("heluxBoard");
     const creditBoard=document.getElementById("creditBoard");
     const taxBoard=document.getElementById("taxBoard");
     const reviewBoard=document.getElementById("reviewBoard");
@@ -624,6 +606,14 @@
       updateBatchBar();
     }
 
+    const heluxColumns=["Lead","Case ID","Callback At","Max Attempts","Next Action","Last Call","Owner","Priority","Lead ID","Call Summary","Has_Realtor","Applied_With_Lender","App_Started_Confirm","Time_frame","Attempts Used","Business Outcome","Sequence Status","Next Call","Phone","Last Call Result","Consent","AI Agent","Do Not Call","Time Zone"];
+    const heluxGroups=[{name:"New Leads",color:"#c8102e"},{name:"Callbacks",color:"#fdab3d"},{name:"Agent Needed",color:"#f5d33d"},{name:"Completed",color:"#22a06b"},{name:"Do Not Call",color:"#7b8498"}];
+    function renderHelux(){
+      heluxBoard.innerHTML=heluxGroups.map(group=>{const rows=heluxRecords.filter(record=>record.group===group.name&&!record.archived);return `<section class="credit-group helux-group ${collapsedHeluxGroups.has(group.name)?"collapsed":""}" data-helux-group="${group.name}" style="--group:${group.color}"><div class="credit-group-title"><button class="credit-collapse helux-collapse" type="button" aria-expanded="${!collapsedHeluxGroups.has(group.name)}"><span class="credit-arrow">⌄</span>${group.name}</button></div><div class="credit-grid helux-grid credit-grid-head"><div class="crm-select-cell"><input class="stage-check" type="checkbox" aria-label="Select all ${group.name} call records" ${rows.length?"":"disabled"}></div>${heluxColumns.map(column=>`<div>${column}</div>`).join("")}</div>${rows.length?rows.map(record=>`<div class="credit-grid helux-grid credit-grid-row"><div class="crm-select-cell"><input class="lead-check" type="checkbox" aria-label="Select ${record.lead}"></div>${heluxColumns.map((column,index)=>`<div class="${index===0?"credit-name":""}">${index===0?`<span class="stage-dot"></span><span class="grab-handle">⠿</span>`:""}${record[column]??"—"}</div>`).join("")}</div>`).join(""):`<div class="helux-empty">No call records in ${group.name}.</div>`}</section>`}).join("");
+      heluxBoard.scrollLeft=0;
+      heluxBoard.querySelectorAll(".helux-collapse").forEach(button=>button.addEventListener("click",()=>{const group=button.closest(".helux-group").dataset.heluxGroup;collapsedHeluxGroups.has(group)?collapsedHeluxGroups.delete(group):collapsedHeluxGroups.add(group);renderHelux()}));
+    }
+
     const creditColumns=["Name","Owner","Updated_Date","lead_id","First_Name","Last_Name","Phone","City","email","ZIP","Utilization","Credit_score","Trans","Exp","Equ","Mid_Fico_Score","Homeowner","Route","Source","FICO_Status"];
     const creditWorkflowColumns=["Name","Owner","Credit_score","Mid_Fico_Score","Credit_Status","Last Updated","collections","Charge_offs","BK","Inquires","Disputes_Sent","FTC_Sent","CFPB_Sent","FICO_Status","Sent_to_Hub"];
     const creditStatusOptions={Homeowner:["Yes","No"],Credit_Status:["Complete","Department"],Disputes_Sent:["Working on it","Done","Stuck"],FTC_Sent:["Working on it","Done","Stuck"],CFPB_Sent:["Working on it","Done","Stuck"],Sent_to_Hub:["Sent","Not Sent"]};
@@ -740,7 +730,7 @@
       document.querySelectorAll(".nav-btn,.view").forEach(el=>el.classList.remove("active"));
       btn.classList.add("active"); document.getElementById(`view-${btn.dataset.view}`).classList.add("active");
       document.getElementById("topTitle").textContent=titles[btn.dataset.view][0]; document.getElementById("topSub").textContent=titles[btn.dataset.view][1];
-      if(btn.dataset.view==="credit")renderCredit();if(btn.dataset.view==="tax")renderTax();if(btn.dataset.view==="review")renderReview();if(btn.dataset.view==="prephub")renderPrep();updateBatchBar();
+      if(btn.dataset.view==="credit")renderCredit();if(btn.dataset.view==="tax")renderTax();if(btn.dataset.view==="review")renderReview();if(btn.dataset.view==="prephub")renderPrep();if(btn.dataset.view==="ai")renderHelux();updateBatchBar();
       window.scrollTo({top:0,behavior:"smooth"});
     }));
     document.querySelectorAll("[data-prep]").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll("[data-prep]").forEach(x=>x.classList.remove("active"));btn.classList.add("active");renderPrep(btn.dataset.prep)}));
@@ -779,7 +769,7 @@
     document.getElementById("batchClear").addEventListener("click",()=>{selectedBuyerIds.clear();selectedPrepIds.clear();renderKanban();renderCredit();renderTax();renderReview();renderPrep()});
     document.getElementById("forecastToggle").addEventListener("click",()=>{const panel=document.getElementById("monthPanel"),collapsed=panel.classList.toggle("collapsed"),button=document.getElementById("forecastToggle");button.setAttribute("aria-expanded",String(!collapsed));button.setAttribute("aria-label",`${collapsed?"Expand":"Collapse"} 12-month closing forecast`)});
     document.addEventListener("keydown",e=>{if(e.key==="Escape"&&leadEntryLayer.classList.contains("open"))closeLeadEntry();else if(e.key==="Escape"&&deleteLayer.classList.contains("open"))closeDelete();else if(e.key==="Escape"&&ownerLayer.classList.contains("open"))closeOwner();else if(e.key==="Escape"&&drawer.classList.contains("open"))document.getElementById("drawerClose").click()});
-    renderKanban();updateMetrics();renderMonths();renderPrep();renderCredit();renderTax();renderReview();bindToasts();
+    renderKanban();updateMetrics();renderMonths();renderPrep();renderCredit();renderTax();renderReview();renderHelux();bindToasts();
   </script>
 </body>
 </html>
