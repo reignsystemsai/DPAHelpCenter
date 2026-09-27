@@ -101,13 +101,13 @@
     /* Bright, branded operating workspace */
     .stats.crm-stats{grid-template-columns:repeat(5,minmax(0,1fr))}
     .crm-board{padding:16px;overflow:auto;background:linear-gradient(135deg,#fbfdff 0%,#f5f8ff 100%)}
-    .crm-group{min-width:2850px;margin-bottom:18px;border:1px solid var(--line);border-left:6px solid var(--group);border-radius:15px;background:#fff;box-shadow:0 8px 22px rgba(8,31,92,.055);transition:.2s}
+    .crm-group{min-width:2850px;margin-bottom:18px;border:1px solid var(--line);border-radius:15px;background:#fff;box-shadow:0 8px 22px rgba(8,31,92,.055);transition:.2s}
     .crm-group.drag-over{transform:translateY(-2px);box-shadow:0 0 0 3px rgba(0,87,184,.16),0 14px 34px rgba(8,31,92,.13)}
     .crm-group-title{display:flex;align-items:center;gap:10px;padding:13px 15px;color:var(--group);font-size:13px;font-weight:900}.crm-group-title b{color:var(--muted);font-size:11px;font-weight:700}
     .crm-grid{display:grid;grid-template-columns:210px 105px 135px 130px 115px 115px 128px 190px 95px 110px 80px 110px 112px 100px 130px 120px 110px 120px 125px 115px 120px 130px 130px 125px 130px 145px 145px 140px 140px 210px;min-width:max-content}
     .crm-head>div,.crm-row>div{padding:11px 10px;border-top:1px solid var(--line);border-right:1px solid var(--line);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .crm-head{background:#f2f5fb;color:#68758f;font-weight:900}.crm-row{background:#fff;color:#44516c;cursor:grab;transition:transform .14s,background .14s,box-shadow .14s}.crm-row:active{cursor:grabbing;transform:scale(.998)}.crm-row:hover{position:relative;z-index:2;background:#f8fbff;box-shadow:0 5px 16px rgba(8,31,92,.08)}
-    .crm-name{border-left:3px solid var(--group);font-weight:850;color:var(--navy)}.crm-name:before{content:"⠿";display:inline-block;margin-right:9px;color:#9aa7bd;font-size:16px;vertical-align:-1px}
+    .crm-name{font-weight:850;color:var(--navy)}.stage-dot{display:inline-block;width:10px;height:10px;margin-right:9px;border-radius:50%;background:var(--group);box-shadow:0 0 0 4px rgba(8,31,92,.05);vertical-align:1px}.grab-handle{display:inline-block;margin-right:9px;color:#9aa7bd;font-size:16px;vertical-align:-1px}
     .crm-summary{background:#f8faff;color:#79859b}.crm-status{display:inline-block;min-width:56px;padding:5px 7px;border-radius:7px;text-align:center;background:#eef2f8;color:#53617b;font-weight:800}.crm-status.yes{background:#e7f8ef;color:#08734b}.crm-status.no{background:#f0f2f6;color:#727d91}.crm-status.score{background:#eaf1ff;color:#174fa5}
     .dpa-meter{height:8px;margin-top:11px;border-radius:99px;background:#e8edf5;overflow:hidden}.dpa-meter i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),#62a7ff,var(--red));width:var(--meter,0%);transition:width .35s ease}.dpa-ratio{color:var(--blue);font-weight:900}
     @media(max-width:1320px){.stats.crm-stats{grid-template-columns:repeat(3,1fr)}}
@@ -121,7 +121,7 @@
       <div class="brand"><strong>DPA HELP <span>CENTER</span></strong><small>Network Manager</small></div>
       <div class="nav-label">Workspace</div>
       <nav class="nav" aria-label="Manager navigation">
-        <button class="nav-btn active" data-view="crm"><span class="nav-icon">▦</span>CRM<span class="nav-count">2</span></button>
+        <button class="nav-btn active" data-view="crm"><span class="nav-icon">▦</span>DPA Department<span class="nav-count">2</span></button>
         <button class="nav-btn" data-view="prephub"><span class="nav-icon">◎</span>PrepHub<span class="nav-count">2</span></button>
         <button class="nav-btn" data-view="marketing"><span class="nav-icon">✉</span>Marketing</button>
         <button class="nav-btn" data-view="partners"><span class="nav-icon">♟</span>Partners</button>
@@ -135,7 +135,7 @@
 
     <main class="main">
       <header class="topbar">
-        <div class="top-title"><h1 id="topTitle">CRM Command Center</h1><p id="topSub">One buyer record. Every department, message and call.</p></div>
+        <div class="top-title"><h1 id="topTitle">DPA Department</h1><p id="topSub">Qualified buyers moving from readiness to closing.</p></div>
         <label class="search"><input id="globalSearch" type="search" placeholder="Search buyers, partners or campaigns"><span>⌕</span></label>
         <div class="preview-badge">Live Board Snapshot</div>
       </header>
@@ -267,7 +267,7 @@
     ];
 
     const titles={
-      crm:["Qualified Buyer CRM","100%-ready DPA buyers moving toward closing."],
+      crm:["DPA Department","Qualified buyers moving from readiness to closing."],
       prephub:["PrepHub Customer Center","Every customer, readiness score and department record."],
       marketing:["Marketing Center","Readiness-based email campaigns powered by Resend."],
       partners:["Partner Network","Agent profiles, routing, territories and performance."],
@@ -275,9 +275,9 @@
     };
 
     const stages=[
-      {name:"New Leads",color:"#e2445c",weight:.20},
+      {name:"New Leads",color:"#f5d33d",weight:.20},
       {name:"Under Contract",color:"#fdab3d",weight:.65},
-      {name:"Clear to Close",color:"#f5d33d",weight:.90},
+      {name:"Clear to Close",color:"#e2445c",weight:.90},
       {name:"Closed Date",color:"#22a06b",weight:1}
     ];
     const kanban=document.getElementById("kanbanBoard");
@@ -294,7 +294,7 @@
       const ready=buyers.filter(b=>b.score===100);
       const headers=["Name","Owner","lead_Id","Updated_Date","First_Name","Last_Name","Phone","Email","First_Home","City","Zip","Home_Price","Estimated_Dpa","Credit_Score","Household_Income","Employment","Taxes_Filed","Readiness_Score","App_started_confirm","Call_Inspector","I_Date_scheduled","Inspection_results","Moving_Forward","Call_Insurance_quote","Insurance_quote_amount","Cordinate_title","DPA_Realtor_Name","DPA_Realtor_Phone","Route","Source"];
       const rowValues=b=>[b.name,b.owner,b.leadId,b.updated,b.firstName,b.lastName,b.phone,b.email,b.firstHome,b.city,b.zip,b.home,b.dpa,b.credit,b.income,b.employment,b.taxes,`${b.score}%`,b.stage==="New Leads"?"No":"Yes","—","—","—",b.stage==="Closed Date"?"Closed":b.stage==="New Leads"?"Pending":"Yes","—","—","—","—","—",b.route,b.source];
-      kanban.innerHTML=stages.map(s=>{const rows=ready.filter(b=>b.stage===s.name),volume=rows.reduce((n,b)=>n+priceOf(b),0),dpa=rows.reduce((n,b)=>n+Number(b.dpa.replace(/[^0-9]/g,"")),0),summary=headers.map(()=>"");summary[0]="+ Add lead";summary[11]=money(volume);summary[12]=money(dpa);summary[29]=`${money(volume*.025)} potential`;return `<section class="crm-group" data-stage="${s.name}" style="--group:${s.color}"><div class="crm-group-title"><span>⌄ ${s.name}</span><b>${rows.length} ${rows.length===1?"lead":"leads"}</b></div><div class="crm-grid crm-head">${headers.map(h=>`<div>${h}</div>`).join("")}</div><div class="group-body">${rows.map(b=>`<div class="crm-grid crm-row" draggable="true" data-buyer="${b.id}" style="--group:${s.color}">${rowValues(b).map((v,i)=>`<div class="${i===0?"crm-name":""}">${i===8?`<span class="crm-status ${v==="Yes"?"yes":"no"}">${v}</span>`:i===17?`<span class="crm-status score">${v}</span>`:i===18?`<span class="crm-status ${v==="Yes"?"yes":"no"}">${v}</span>`:v}</div>`).join("")}</div>`).join("")}</div><div class="crm-grid crm-summary">${summary.map(v=>`<div>${v}</div>`).join("")}</div></section>`}).join("");
+      kanban.innerHTML=stages.map(s=>{const rows=ready.filter(b=>b.stage===s.name),volume=rows.reduce((n,b)=>n+priceOf(b),0),dpa=rows.reduce((n,b)=>n+Number(b.dpa.replace(/[^0-9]/g,"")),0),summary=headers.map(()=>"");summary[0]="+ Add lead";summary[11]=money(volume);summary[12]=money(dpa);summary[29]=`${money(volume*.025)} potential`;return `<section class="crm-group" data-stage="${s.name}" style="--group:${s.color}"><div class="crm-group-title"><span>⌄ ${s.name}</span><b>${rows.length} ${rows.length===1?"lead":"leads"}</b></div><div class="crm-grid crm-head">${headers.map(h=>`<div>${h}</div>`).join("")}</div><div class="group-body">${rows.map(b=>`<div class="crm-grid crm-row" draggable="true" data-buyer="${b.id}" style="--group:${s.color}">${rowValues(b).map((v,i)=>`<div class="${i===0?"crm-name":""}">${i===0?`<span class="stage-dot"></span><span class="grab-handle">⠿</span>${v}`:i===8?`<span class="crm-status ${v==="Yes"?"yes":"no"}">${v}</span>`:i===17?`<span class="crm-status score">${v}</span>`:i===18?`<span class="crm-status ${v==="Yes"?"yes":"no"}">${v}</span>`:v}</div>`).join("")}</div>`).join("")}</div><div class="crm-grid crm-summary">${summary.map(v=>`<div>${v}</div>`).join("")}</div></section>`}).join("");
       kanban.querySelectorAll(".crm-row").forEach(row=>{row.addEventListener("dragstart",e=>e.dataTransfer.setData("text/plain",row.dataset.buyer));row.addEventListener("click",()=>openBuyer(row.dataset.buyer))});
       kanban.querySelectorAll(".crm-group").forEach(group=>{group.addEventListener("dragover",e=>{e.preventDefault();group.classList.add("drag-over")});group.addEventListener("dragleave",()=>group.classList.remove("drag-over"));group.addEventListener("drop",e=>{e.preventDefault();group.classList.remove("drag-over");const b=buyers.find(x=>x.id===Number(e.dataTransfer.getData("text/plain")));if(b){b.stage=group.dataset.stage;renderKanban();updateMetrics();showToast(`${b.name} moved to ${b.stage}. Visual preview only—Monday was not changed.`)}})});
     }
