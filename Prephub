@@ -801,6 +801,33 @@
     font-size:10px;
   }
 }
+
+#prephub-desktop-results .ph-score-panel{
+  margin:0 0 16px;padding:18px;border-radius:18px;background:#081F5C;color:#fff;
+}
+#prephub-desktop-results .ph-score-row{display:flex;align-items:end;justify-content:space-between;gap:16px}
+#prephub-desktop-results .ph-score-label{font-size:10px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.7)}
+#prephub-desktop-results .ph-score-number{font-size:38px;font-weight:950;line-height:1;color:#fff}
+#prephub-desktop-results .ph-score-copy{font-size:12px;font-weight:750;color:rgba(255,255,255,.84);text-align:right}
+#prephub-desktop-results .ph-score-track{height:9px;margin-top:12px;border-radius:999px;background:rgba(255,255,255,.18);overflow:hidden}
+#prephub-desktop-results .ph-score-fill{height:100%;width:0;background:#D22630;border-radius:999px;transition:width .35s ease}
+#prephub-desktop-results .ph-account-status{margin:14px 0 0;padding:12px;border-radius:13px;background:rgba(255,255,255,.1);font-size:12px;font-weight:750;line-height:1.4}
+#prephub-desktop-results .ph-account-actions{display:flex;gap:8px;margin-top:10px}
+#prephub-desktop-results .ph-account-btn{border:0;border-radius:10px;background:#fff;color:#081F5C;padding:10px 12px;font-size:10px;font-weight:950;cursor:pointer}
+#prephub-desktop-results .ph-account-btn.red{background:#D22630;color:#fff}
+#prephub-desktop-results .ph-complete{
+  position:absolute;right:43px;top:50%;transform:translateY(-50%);min-width:92px;border:0;border-radius:999px;
+  background:#D22630;color:#fff;padding:9px 10px;font-size:9px;font-weight:950;cursor:pointer;display:none;
+}
+#prephub-desktop-results .ph-card.completed{border-color:rgba(0,87,184,.35);background:rgba(0,87,184,.05)}
+#prephub-desktop-results .ph-card.completed .ph-tag{color:#0057B8}
+#prephub-desktop-results .ph-card.completed .ph-complete{background:#0057B8}
+#prephub-desktop-results .ph-card.account-ready{padding-right:155px}
+#prephub-desktop-results .ph-card.account-ready .ph-complete{display:block}
+#prephub-desktop-results .ph-card.account-ready .ph-check{display:none}
+#prephub-desktop-results .ph-empty{display:none;text-align:center;padding:30px;border-radius:18px;background:rgba(0,87,184,.06);color:#081F5C;font-weight:850}
+#prephub-desktop-results .ph-support{margin-top:14px;text-align:center;color:#52617c;font-size:12px;font-weight:750}
+#prephub-desktop-results .ph-support a{color:#0057B8;font-weight:950;text-decoration:none}
 </style>
 
 <div class="ph-top">
@@ -811,8 +838,8 @@
 
   <div class="ph-hero">
     <div class="ph-small-kicker">Homebuyer Readiness Results</div>
-    <h1>You’re not denied.<br>You’re just a little <span>unprepared.</span></h1>
-    <p>Save the links below. Check your email for the specific areas you need to work on.</p>
+    <h1>You’re not denied.<br>You’re just <span>unprepared.</span></h1>
+    <p>PrepHub is your new station for homebuyer readiness. Your work and progress stay saved here.</p>
   </div>
 
   <div class="dpa-right-trust">
@@ -835,13 +862,20 @@
 <div class="ph-shell">
   <div class="ph-left">
     <div class="ph-steps">
+      <div class="ph-score-panel">
+        <div class="ph-score-row">
+          <div><div class="ph-score-label">Your readiness score</div><div class="ph-score-number" id="prephubScoreDesktop">0%</div></div>
+          <div class="ph-score-copy" id="prephubScoreCopyDesktop">Complete your focused preparation steps to raise your score.</div>
+        </div>
+        <div class="ph-score-track"><div class="ph-score-fill" id="prephubScoreFillDesktop"></div></div>
+      </div>
       <div class="ph-section-head">
         <h2 class="ph-section-title"><span class="ph-target">◎</span>HELP IS HERE - YOUR NEXT STEPS</h2>
         <span class="ph-focus">Focus on these first</span>
       </div>
 
       <div class="ph-cards">
-        <a class="ph-card" href="https://www.creditjump.ai" target="_top">
+        <a class="ph-card" data-task-key="credit" href="https://www.creditjump.ai" target="_top">
           <div class="ph-icon">◴</div>
           <div>
             <span class="ph-tag">Needs Attention</span>
@@ -849,10 +883,11 @@
             <p>Most DPA programs want to see a 640+ credit score.</p>
           </div>
           <div class="ph-check">✓</div>
+          <button class="ph-complete" type="button">MARK DONE</button>
           <div class="ph-arrow">›</div>
         </a>
 
-        <a class="ph-card" href="https://www.dpahelpcenter.com/dti" target="_top">
+        <a class="ph-card" data-task-key="dti" href="https://www.dpahelpcenter.com/dti" target="_top">
           <div class="ph-icon">▦</div>
           <div>
             <span class="ph-tag">Needs Attention</span>
@@ -860,10 +895,11 @@
             <p>If household income is below the target range, calculate your buying power.</p>
           </div>
           <div class="ph-check">✓</div>
+          <button class="ph-complete" type="button">MARK DONE</button>
           <div class="ph-arrow">›</div>
         </a>
 
-        <a class="ph-card" href="https://www.dpahelpcenter.com/job" target="_top">
+        <a class="ph-card" data-task-key="job" href="https://www.dpahelpcenter.com/job" target="_top">
           <div class="ph-icon">▣</div>
           <div>
             <span class="ph-tag">Needs Attention</span>
@@ -871,10 +907,11 @@
             <p>A stable 2-year work, school, military, or income history can help your file.</p>
           </div>
           <div class="ph-check">✓</div>
+          <button class="ph-complete" type="button">MARK DONE</button>
           <div class="ph-arrow">›</div>
         </a>
 
-        <a class="ph-card" href="https://www.estimatemytaxreturn.com" target="_top">
+        <a class="ph-card" data-task-key="taxes" href="https://www.estimatemytaxreturn.com" target="_top">
           <div class="ph-icon">▤</div>
           <div>
             <span class="ph-tag">Needs Attention</span>
@@ -882,9 +919,11 @@
             <p>Tax returns may be needed to verify income, especially for self-employed or 1099 income.</p>
           </div>
           <div class="ph-check">✓</div>
+          <button class="ph-complete" type="button">MARK DONE</button>
           <div class="ph-arrow">›</div>
         </a>
       </div>
+      <div class="ph-empty" id="prephubEmptyDesktop">You completed every preparation step. Your readiness score is now 100%.</div>
 
       <div class="ph-alert">
         <div class="ph-alert-icon">!</div>
@@ -898,9 +937,15 @@
 
   <div class="ph-right">
     <div class="ph-prep-blue">
-      <small>Welcome to PrepHub - Save this page</small>
+      <small>Welcome to PrepHub - Your readiness station</small>
       <h2>Prep<span>Hub</span></h2>
-      <p>This page keeps all your next steps in one place.</p>
+      <p>Your account keeps your plan, preparation work, and readiness score saved in one place.</p>
+
+      <div class="ph-account-status" id="prephubAccountStatusDesktop">Check your email for your secure PrepHub login link.</div>
+      <div class="ph-account-actions">
+        <button class="ph-account-btn red" id="prephubResendDesktop" type="button">RESEND LOGIN</button>
+        <button class="ph-account-btn" id="prephubLogoutDesktop" type="button" style="display:none">LOG OUT</button>
+      </div>
 
       <div class="ph-copy-label">Copy this page link to return later.</div>
       <div class="ph-copy">
@@ -916,6 +961,7 @@
         <div class="ph-benefit"><i>!</i><span>Check your email for more details.</span></div>
       </div>
     </div>
+    <div class="ph-support">Need help? Call <a href="tel:+18333028953">1-833-302-8953</a></div>
 
     <div class="ph-email">
       <div class="ph-email-icon">✉</div>
@@ -927,9 +973,18 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.3/dist/umd/supabase.min.js"></script>
 <script>
 (function(){
   const PREPHUB_DESKTOP_LINK="https://www.dpahelpcenter.com/prephub";
+  const SUPABASE_URL="https://fklchtsxahepzfzgcqdp.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY="sb_publishable_TUIi5-8ISzGLtdFKxO-k6g_HCHz7nOk";
+  const prephubDb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+  let pageParams=new URLSearchParams(window.location.search||"");
+  if(!pageParams.get("lead")&&document.referrer){
+    try{pageParams=new URL(document.referrer).searchParams}catch(e){}
+  }
+  const leadId=pageParams.get("lead")||localStorage.getItem("dpa_prephub_lead_id")||"";
   const HOMEBUYER_DESKTOP_FACE_IDS=[
     12,15,33,36,47,
     52,55,57,60,61,
@@ -986,6 +1041,133 @@
 
     document.body.removeChild(temp);
   }
+
+  function setAccountStatus(message){
+    const el=document.getElementById("prephubAccountStatusDesktop");
+    if(el)el.textContent=message;
+  }
+
+  function setScore(score){
+    const safe=Math.max(0,Math.min(100,Number(score)||0));
+    const number=document.getElementById("prephubScoreDesktop");
+    const fill=document.getElementById("prephubScoreFillDesktop");
+    const copy=document.getElementById("prephubScoreCopyDesktop");
+    if(number)number.textContent=safe+"%";
+    if(fill)fill.style.width=safe+"%";
+    if(copy)copy.textContent=safe===100?"You’re ready for the next step.":"Complete your focused preparation steps to raise your score.";
+  }
+
+  function showInitialPlan(){
+    const requested=["credit","dti","job","taxes"].filter(function(key){return pageParams.get(key)==="1"});
+    document.querySelectorAll("#prephub-desktop-results .ph-card[data-task-key]").forEach(function(card){
+      card.style.display=requested.length===0||requested.includes(card.dataset.taskKey)?"grid":"none";
+    });
+    setScore(localStorage.getItem("dpa_prephub_score")||0);
+  }
+
+  async function loadAccount(){
+    const sessionResult=await prephubDb.auth.getSession();
+    const session=sessionResult.data&&sessionResult.data.session;
+    const logout=document.getElementById("prephubLogoutDesktop");
+    const resend=document.getElementById("prephubResendDesktop");
+
+    if(!session){
+      if(logout)logout.style.display="none";
+      if(resend)resend.style.display="block";
+      setAccountStatus("Check your email for your secure PrepHub login link. Your plan is already saved.");
+      return;
+    }
+
+    if(logout)logout.style.display="block";
+    if(resend)resend.style.display="none";
+    setAccountStatus("Signed in as "+session.user.email+". Your progress saves automatically.");
+
+    if(leadId){
+      const claim=await prephubDb.rpc("claim_prephub_lead",{p_lead_id:leadId});
+      if(claim.error){
+        setAccountStatus("Signed in, but this plan belongs to a different email address. Call 1-833-302-8953 for help.");
+        return;
+      }
+    }
+
+    const profileResult=await prephubDb.from("prephub_leads")
+      .select("id,first_name,current_readiness_score")
+      .order("created_at",{ascending:false}).limit(1).maybeSingle();
+    if(profileResult.error||!profileResult.data){
+      setAccountStatus("Your account is active, but no saved preparation plan was found. Call 1-833-302-8953 for help.");
+      return;
+    }
+
+    const profile=profileResult.data;
+    setScore(profile.current_readiness_score);
+    const tasksResult=await prephubDb.from("preparation_tasks")
+      .select("id,task_key,completed,action_url")
+      .eq("lead_id",profile.id).order("position",{ascending:true});
+    if(tasksResult.error){
+      setAccountStatus("Your account is active, but your checklist could not load. Please refresh.");
+      return;
+    }
+
+    const tasks=tasksResult.data||[];
+    const byKey={};
+    tasks.forEach(function(task){byKey[task.task_key]=task});
+    document.querySelectorAll("#prephub-desktop-results .ph-card[data-task-key]").forEach(function(card){
+      const task=byKey[card.dataset.taskKey];
+      card.style.display=task?"grid":"none";
+      card.classList.toggle("account-ready",!!task);
+      card.classList.toggle("completed",!!task&&task.completed);
+      if(task){
+        card.href=task.action_url;
+        const button=card.querySelector(".ph-complete");
+        button.dataset.taskId=task.id;
+        button.dataset.completed=task.completed?"true":"false";
+        button.textContent=task.completed?"COMPLETED ✓":"MARK DONE";
+      }
+    });
+
+    const empty=document.getElementById("prephubEmptyDesktop");
+    if(empty){
+      empty.style.display=tasks.length===0?"block":"none";
+      empty.textContent=tasks.length===0?(profile.first_name+", your assessment is already at 100%. You’re ready for the next step."):"";
+    }
+  }
+
+  document.querySelectorAll("#prephub-desktop-results .ph-complete").forEach(function(button){
+    button.addEventListener("click",async function(event){
+      event.preventDefault();event.stopPropagation();
+      button.disabled=true;
+      const completed=button.dataset.completed==="true";
+      const result=await prephubDb.rpc("set_preparation_task_status",{
+        p_task_id:button.dataset.taskId,
+        p_completed:!completed
+      });
+      button.disabled=false;
+      if(result.error){setAccountStatus("We couldn’t save that update. Please try again.");return;}
+      await loadAccount();
+    });
+  });
+
+  const resendButton=document.getElementById("prephubResendDesktop");
+  if(resendButton)resendButton.addEventListener("click",async function(){
+    const saved=localStorage.getItem("dpa_prephub_email")||"";
+    const email=saved||window.prompt("Enter the email used for your DPA Help Center assessment:","");
+    if(!email)return;
+    resendButton.disabled=true;
+    const redirectTo=PREPHUB_DESKTOP_LINK+(leadId?"?lead="+encodeURIComponent(leadId):"");
+    const result=await prephubDb.auth.signInWithOtp({email:email,options:{emailRedirectTo:redirectTo}});
+    resendButton.disabled=false;
+    setAccountStatus(result.error?"We couldn’t send the login email. Please try again.":"A new secure login link was sent to "+email+".");
+  });
+
+  const logoutButton=document.getElementById("prephubLogoutDesktop");
+  if(logoutButton)logoutButton.addEventListener("click",async function(){
+    await prephubDb.auth.signOut();
+    showInitialPlan();
+    await loadAccount();
+  });
+
+  showInitialPlan();
+  loadAccount().catch(function(){setAccountStatus("PrepHub could not load. Please refresh or call 1-833-302-8953.")});
 })();
 </script>
 </div>
