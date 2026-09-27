@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DTI Readiness | DPA Help Center</title>
+<meta name="description" content="Estimate how debt-to-income ratio may affect your homebuying power.">
+<style>html,body{margin:0;min-height:100%;background:#fff}</style>
+</head>
+<body>
+<div id="dpa-dti-page">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+html,body{margin:0;padding:0;background:#fff;scrollbar-width:none;-ms-overflow-style:none;overflow-x:hidden}
+html::-webkit-scrollbar,body::-webkit-scrollbar,div::-webkit-scrollbar{display:none;width:0;height:0}
+#dpa-dti-page{width:100%;max-width:1100px;margin:0 auto;padding:28px 18px 36px;background:#fff;font-family:Inter,Arial,sans-serif;color:#081F5C;overflow:hidden}
+#dpa-dti-page *{box-sizing:border-box;font-family:Inter,Arial,sans-serif}
+.dti-brand{font-size:42px;font-weight:950;letter-spacing:-1.5px;color:#081F5C;margin:0 0 18px;text-align:center}
+.dti-brand:after{content:"";display:block;width:170px;height:7px;background:#D22630;border-radius:999px;margin:6px auto 0;transform:rotate(-2deg)}
+.dti-hero{display:grid;grid-template-columns:1fr 410px;gap:26px;align-items:center;margin-bottom:26px}
+.dti-kicker{font-size:12px;font-weight:900;letter-spacing:5px;color:#0057B8;text-transform:uppercase;margin-bottom:12px}
+.dti-title{font-size:56px;font-weight:950;line-height:.94;letter-spacing:-4px;margin:0 0 16px;color:#081F5C}
+.dti-title span{color:#D22630}
+.dti-sub{font-size:18px;font-weight:750;line-height:1.42;color:#5f6b7f;max-width:610px;margin-bottom:20px}
+.dti-pill-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:610px}
+.dti-pill{border:1px solid rgba(255,255,255,.72);border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.94),rgba(255,255,255,.62));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:13px 14px;font-size:13px;font-weight:850;color:#081F5C;box-shadow:0 10px 24px rgba(8,31,92,.05)}
+.dti-pill span{color:#0057B8;font-weight:950}
+.dti-score-card{border-radius:28px;background:linear-gradient(145deg,rgba(255,255,255,.92),rgba(255,255,255,.62));border:1px solid rgba(255,255,255,.76);box-shadow:0 18px 42px rgba(8,31,92,.08);padding:24px;text-align:center}
+.dti-score-label{font-size:11px;font-weight:900;letter-spacing:4px;text-transform:uppercase;color:#0057B8;margin-bottom:12px}
+.dti-score-num{font-size:78px;font-weight:950;letter-spacing:-6px;color:#081F5C;line-height:.9}
+.dti-score-num span{color:#D22630}
+.dti-score-copy{font-size:15px;font-weight:850;line-height:1.28;margin-top:14px;color:#081F5C}
+.dti-section{margin-top:18px;padding:26px;border-radius:28px;background:linear-gradient(145deg,rgba(255,255,255,.92),rgba(255,255,255,.68));border:1px solid rgba(255,255,255,.76);box-shadow:0 14px 36px rgba(8,31,92,.06)}
+.dti-section-title{font-size:30px;font-weight:950;letter-spacing:-1.5px;color:#081F5C;margin:0 0 10px}
+.dti-section-copy{font-size:15px;font-weight:720;line-height:1.55;color:#5f6b7f;max-width:920px;margin:0}
+.dti-info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.dti-info-card{border-radius:20px;background:rgba(255,255,255,.72);border:1px solid rgba(8,31,92,.08);padding:16px;min-height:132px}
+.dti-info-card h3{font-size:16px;font-weight:950;color:#081F5C;margin:0 0 8px}
+.dti-info-card p{font-size:12.5px;font-weight:720;line-height:1.42;color:#5f6b7f;margin:0}
+.dti-tool-wrap{display:grid;grid-template-columns:390px 1fr;gap:18px;align-items:start}
+.dti-tool-side{position:sticky;top:12px}
+.dti-tool-badge{border-radius:26px;background:linear-gradient(145deg,#081F5C,#0B2B78);color:#fff;padding:22px;box-shadow:0 18px 36px rgba(8,31,92,.18)}
+.dti-tool-badge h2{font-size:28px;font-weight:950;line-height:1;letter-spacing:-1.5px;margin:0 0 10px}
+.dti-tool-badge p{font-size:13px;font-weight:720;line-height:1.48;color:rgba(255,255,255,.82);margin:0}
+.dti-mini-note{margin-top:12px;border-radius:18px;background:rgba(0,87,184,.06);padding:13px;font-size:12px;font-weight:780;line-height:1.35;color:#081F5C}
+.dti-form{display:grid;gap:12px}
+.dti-card{border-radius:24px;background:linear-gradient(145deg,rgba(255,255,255,.94),rgba(255,255,255,.66));border:1px solid rgba(255,255,255,.76);box-shadow:0 12px 30px rgba(8,31,92,.055);padding:18px}
+.dti-card h3{font-size:19px;font-weight:950;color:#081F5C;margin:0 0 12px;letter-spacing:-.5px}
+.dti-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dti-field label{display:block;font-size:11px;font-weight:900;color:#081F5C;margin:0 0 5px}
+.dti-field small{display:block;font-size:9.5px;font-weight:700;line-height:1.25;color:#7c8496;margin:0 0 6px}
+.dti-input,.dti-select{width:100%;height:43px;border-radius:14px;border:1px solid rgba(8,31,92,.14);background:rgba(255,255,255,.84);padding:0 12px;color:#081F5C;font-size:13px;font-weight:800;outline:none}
+.dti-input:focus,.dti-select:focus{border-color:rgba(0,87,184,.55);box-shadow:0 10px 22px rgba(8,31,92,.08)}
+.dti-calc-btn,.dti-cta{
+width:100%;
+min-height:52px;
+border:none;
+border-radius:18px;
+background:linear-gradient(145deg,#081F5C,#0B2B78);
+color:#fff;
+font-size:14px;
+font-weight:950;
+letter-spacing:.7px;
+cursor:pointer;
+box-shadow:0 14px 28px rgba(8,31,92,.18);
+transition:.2s ease;
+display:block;
+margin-top:26px;
+margin-bottom:8px;
+}
+.dti-calc-btn:hover,.dti-cta:hover{transform:translateY(-2px);box-shadow:0 20px 36px rgba(8,31,92,.24)}
+.dti-result{display:none;margin-top:14px}
+.dti-result.show{display:block}
+.dti-result-top{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.dti-metric{border-radius:18px;background:rgba(255,255,255,.82);border:1px solid rgba(8,31,92,.08);padding:14px;text-align:center}
+.dti-metric-label{font-size:9px;font-weight:900;letter-spacing:1.6px;color:#0057B8;text-transform:uppercase;margin-bottom:6px}
+.dti-metric-num{font-size:28px;font-weight:950;letter-spacing:-1.5px;color:#081F5C}
+.dti-metric-num.red{color:#D22630}
+.dti-breakdown{font-size:12px;font-weight:760;line-height:1.65;color:#5f6b7f;border-radius:18px;background:rgba(255,255,255,.78);border:1px solid rgba(8,31,92,.08);padding:14px;margin-bottom:12px}
+.dti-slider-box{border-radius:18px;background:rgba(0,87,184,.05);padding:14px}
+.dti-slider-title{font-size:13px;font-weight:950;color:#081F5C;margin-bottom:5px}
+.dti-slider-copy{font-size:11px;font-weight:720;color:#5f6b7f;line-height:1.35;margin-bottom:10px}
+.dti-range{width:100%;appearance:none;-webkit-appearance:none;height:8px;border-radius:999px;background:linear-gradient(90deg,#9fc5ff,#081F5C);outline:none}
+.dti-range::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:23px;height:23px;border-radius:50%;background:#081F5C;border:3px solid #fff;cursor:pointer}
+.dti-range::-moz-range-thumb{width:23px;height:23px;border-radius:50%;background:#081F5C;border:3px solid #fff;cursor:pointer}
+.dti-adjust-line{display:flex;justify-content:space-between;gap:10px;margin-top:10px;font-size:12px;font-weight:900;color:#081F5C}
+.dti-next{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:center}
+.dti-video{border-radius:22px;overflow:hidden;background:#081F5C;min-height:250px}
+.dti-video iframe{width:100%;height:250px;border:0;display:block}
+.dti-steps{display:grid;gap:9px}
+.dti-step{display:flex;gap:10px;align-items:flex-start;border-radius:16px;background:rgba(255,255,255,.78);border:1px solid rgba(8,31,92,.08);padding:12px}
+.dti-step-num{width:26px;height:26px;border-radius:50%;background:#081F5C;color:#fff;display:grid;place-items:center;font-size:12px;font-weight:950;flex:0 0 26px}
+.dti-step-copy{font-size:13px;font-weight:800;line-height:1.35;color:#081F5C}
+.dti-links{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.dti-secondary{display:block;text-align:center;text-decoration:none;border-radius:18px;border:1px solid rgba(8,31,92,.12);background:rgba(255,255,255,.82);color:#081F5C;font-size:13px;font-weight:950;padding:15px 10px}
+.dti-cta{text-decoration:none;display:grid;place-items:center}
+
+@media(max-width:900px){
+#dpa-dti-page{padding:18px 14px 28px}
+.dti-brand{font-size:32px;white-space:nowrap}
+.dti-hero,.dti-tool-wrap,.dti-next{grid-template-columns:1fr}
+.dti-title{font-size:39px;letter-spacing:-2.3px;text-align:center}
+.dti-kicker,.dti-sub{text-align:center;margin-left:auto;margin-right:auto}
+.dti-pill-grid,.dti-info-grid,.dti-row,.dti-result-top,.dti-links{grid-template-columns:1fr}
+.dti-score-card{padding:19px}
+.dti-score-num{font-size:60px}
+.dti-section{padding:18px}
+.dti-tool-side{position:static}
+}
+</style>
+
+<div class="dti-brand">DPA HELP CENTER</div>
+
+<section class="dti-hero">
+  <div>
+    <div class="dti-kicker">Debt-to-Income Review</div>
+    <h1 class="dti-title">Your DTI can decide how much home you can <span>afford.</span></h1>
+    <div class="dti-sub">Debt-to-income is one of the biggest numbers lenders review. It compares your monthly debt payments to your monthly income and helps determine how much home payment you may qualify for.</div>
+    <div class="dti-pill-grid">
+      <div class="dti-pill"><span>✓</span> Helps estimate buying power</div>
+      <div class="dti-pill"><span>✓</span> Impacts loan approval</div>
+      <div class="dti-pill"><span>✓</span> Shows what debts may need reducing</div>
+      <div class="dti-pill"><span>✓</span> Helps prepare for DPA approval</div>
+    </div>
+  </div>
+
+  <div class="dti-score-card">
+    <div class="dti-score-label">Common DPA Target</div>
+    <div class="dti-score-num">57<span>%</span></div>
+    <div class="dti-score-copy">Some programs may allow higher ratios, but lower DTI usually gives you a stronger file.</div>
+  </div>
+</section>
+
+<section class="dti-section">
+  <h2 class="dti-section-title">How DTI impacts approval</h2>
+  <p class="dti-section-copy">DTI is not your credit score, but it works with your credit score. A buyer with good credit and low monthly debt can usually qualify for more home. A buyer with high car payments, credit cards, student loans, or personal loans may qualify for less even with the same income.</p>
+  <div class="dti-info-grid">
+    <div class="dti-info-card">
+      <h3>Income</h3>
+      <p>Lenders look at stable monthly income before taxes. W2, salary, hourly income, bonus, commission, and self-employed income may be reviewed differently.</p>
+    </div>
+    <div class="dti-info-card">
+      <h3>Monthly debt</h3>
+      <p>Car payments, minimum credit card payments, student loans, child support, alimony, and personal loans can reduce your buying power.</p>
+    </div>
+    <div class="dti-info-card">
+      <h3>Home payment</h3>
+      <p>Your future mortgage payment, taxes, insurance, HOA, and mortgage insurance all count toward your housing affordability.</p>
+    </div>
+  </div>
+</section>
+
+<section class="dti-section">
+  <div class="dti-tool-wrap">
+    <div class="dti-tool-side">
+      <div class="dti-tool-badge">
+        <h2>DTI Buying Power Tool</h2>
+        <p>Enter your income and monthly debts. The tool will estimate your home buying power and show how reducing debt can improve your number.</p>
+      </div>
+      <div class="dti-mini-note">This is an estimate only. A loan officer will still need to verify income, debts, credit, taxes, and program rules.</div>
+    </div>
+
+    <div class="dti-form">
+      <div class="dti-card">
+        <h3>Household Income</h3>
+        <div class="dti-row">
+          <div class="dti-field">
+            <label>Applicant Income</label>
+            <small>Annual income before taxes.</small>
+            <input class="dti-input" id="incomeA" type="text" placeholder="$ Annual Income" oninput="formatDollar(this)">
+          </div>
+          <div class="dti-field">
+            <label>Co-Applicant Income</label>
+            <small>Optional annual income.</small>
+            <input class="dti-input" id="incomeB" type="text" placeholder="$ Annual Income" oninput="formatDollar(this)">
+          </div>
+        </div>
+      </div>
+
+      <div class="dti-card">
+        <h3>Monthly Debts</h3>
+        <div class="dti-row">
+          <div class="dti-field">
+            <label>Car Payment 1</label>
+            <small>Skip if less than 12 months left.</small>
+            <select class="dti-select" id="car1"><option value="0">None</option></select>
+          </div>
+          <div class="dti-field">
+            <label>Car Payment 2</label>
+            <small>Skip if less than 12 months left.</small>
+            <select class="dti-select" id="car2"><option value="0">None</option></select>
+          </div>
+        </div>
+
+        <div class="dti-row">
+          <div class="dti-field">
+            <label>Credit Card Minimums</label>
+            <small>Add all monthly minimums together.</small>
+            <select class="dti-select" id="credit"><option value="0">None</option></select>
+          </div>
+          <div class="dti-field">
+            <label>Student Loans</label>
+            <small>Estimated at 0.5% monthly.</small>
+            <select class="dti-select" id="student"><option value="0">None</option></select>
+          </div>
+        </div>
+
+        <div class="dti-row">
+          <div class="dti-field">
+            <label>Child Support / Alimony</label>
+            <small>Monthly required payment.</small>
+            <select class="dti-select" id="childsupport"><option value="0">None</option></select>
+          </div>
+          <div class="dti-field">
+            <label>Other Personal Loans</label>
+            <small>Monthly installment payments.</small>
+            <select class="dti-select" id="other"><option value="0">None</option></select>
+          </div>
+        </div>
+
+        <button class="dti-calc-btn" id="getResults" type="button">CALCULATE MY BUYING POWER</button>
+      </div>
+
+      <div class="dti-card dti-result" id="resultBubble">
+        <h3>Your Estimated Results</h3>
+        <div class="dti-result-top">
+          <div class="dti-metric">
+            <div class="dti-metric-label">Estimated Price</div>
+            <div class="dti-metric-num" id="estimatedPrice">$0</div>
+          </div>
+          <div class="dti-metric">
+            <div class="dti-metric-label">Monthly Debts</div>
+            <div class="dti-metric-num red" id="debtTotalTop">$0</div>
+          </div>
+        </div>
+
+        <div class="dti-breakdown" id="resultText"></div>
+
+        <div class="dti-slider-box">
+          <div class="dti-slider-title">Debt Reduction Simulator</div>
+          <div class="dti-slider-copy">Slide down your monthly debt and watch how your estimated home buying power may improve.</div>
+          <input type="range" min="0" max="0" step="50" class="dti-range" id="debtSlider">
+          <div class="dti-adjust-line">
+            <span>Adjusted Debt: $<span id="adjustedDebt">0</span></span>
+            <span>New Price: <span id="newHomePrice">$0</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="dti-section">
+  <h2 class="dti-section-title">What to do next</h2>
+  <p class="dti-section-copy">Once you understand your DTI, the next step is to reduce the debts that are limiting your buying power or start your official application so a lender can review your full profile.</p>
+
+<script>
+const carSelects=[document.getElementById("car1"),document.getElementById("car2")];
+for(let select of carSelects){for(let p=200;p<=2000;p+=50){let opt=document.createElement("option");opt.value=p;opt.text="$"+p.toLocaleString();select.add(opt);}}
+const creditSelect=document.getElementById("credit");
+for(let p=50;p<=3000;p+=50){let opt=document.createElement("option");opt.value=p;opt.text="$"+p.toLocaleString();creditSelect.add(opt);}
+const studentSelect=document.getElementById("student");
+for(let p=0;p<=150000;p+=5000){let opt=document.createElement("option");opt.value=p*0.005;opt.text="$"+p.toLocaleString();studentSelect.add(opt);}
+const childSelect=document.getElementById("childsupport");
+for(let p=0;p<=3000;p+=100){let opt=document.createElement("option");opt.value=p;opt.text="$"+p.toLocaleString();childSelect.add(opt);}
+const otherSelect=document.getElementById("other");
+for(let p=100;p<=10000;p+=100){let opt=document.createElement("option");opt.value=p;opt.text="$"+p.toLocaleString();otherSelect.add(opt);}
+
+function formatDollar(input){
+  let val=input.value.replace(/\D/g,'');
+  input.value=val.length>0?"$"+Number(val).toLocaleString():"";
+}
+
+let totalDebt=0,maxDTIAmount=0,monthlyIncome=0;
+
+function showResults(){
+  let incomeA=parseFloat(document.getElementById("incomeA").value.replace(/\$|,/g,''))||0;
+  let incomeB=parseFloat(document.getElementById("incomeB").value.replace(/\$|,/g,''))||0;
+  let car1=parseFloat(document.getElementById("car1").value)||0;
+  let car2=parseFloat(document.getElementById("car2").value)||0;
+  let credit=parseFloat(document.getElementById("credit").value)||0;
+  let student=parseFloat(document.getElementById("student").value)||0;
+  let childsupport=parseFloat(document.getElementById("childsupport").value)||0;
+  let other=parseFloat(document.getElementById("other").value)||0;
+
+  let totalIncome=incomeA+incomeB;
+  monthlyIncome=totalIncome/12;
+  totalDebt=car1+car2+credit+student+childsupport+other;
+  maxDTIAmount=monthlyIncome*0.57;
+  let estimatedHomePrice=Math.max(0,(maxDTIAmount-totalDebt)*(100000/700));
+
+  document.getElementById("resultText").innerHTML=
+  "<b>Total Annual Household Income:</b> $"+Math.round(totalIncome).toLocaleString()+"<br>"+
+  "<b>Monthly Income:</b> $"+monthlyIncome.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+"<br>"+
+  "<b>Max Usable for Housing at 57% DTI:</b> $"+maxDTIAmount.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+"<br>"+
+  "<b>Total Monthly Debts:</b> $"+totalDebt.toLocaleString();
+
+  document.getElementById("estimatedPrice").innerText="$"+Math.round(estimatedHomePrice).toLocaleString();
+  document.getElementById("debtTotalTop").innerText="$"+Math.round(totalDebt).toLocaleString();
+  document.getElementById("resultBubble").classList.add("show");
+
+  const slider=document.getElementById("debtSlider");
+  slider.max=totalDebt;
+  slider.value=totalDebt;
+  document.getElementById("adjustedDebt").innerText=totalDebt.toLocaleString();
+  document.getElementById("newHomePrice").innerText="$"+Math.round(estimatedHomePrice).toLocaleString();
+
+  document.getElementById("resultBubble").scrollIntoView({behavior:"smooth",block:"center"});
+}
+
+document.getElementById("getResults").addEventListener("click",showResults);
+
+document.getElementById("debtSlider").addEventListener("input",function(){
+  let adjustedDebt=parseFloat(this.value)||0;
+  let newHomePrice=Math.max(0,(maxDTIAmount-adjustedDebt)*(100000/700));
+  document.getElementById("adjustedDebt").innerText=adjustedDebt.toLocaleString();
+  document.getElementById("newHomePrice").innerText="$"+Math.round(newHomePrice).toLocaleString();
+});
+</script>
+</div>
+</body>
+</html>
