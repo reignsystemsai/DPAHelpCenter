@@ -100,6 +100,8 @@
 
     /* Bright, branded operating workspace */
     html,body{overflow-x:hidden}
+    .app{align-items:stretch}.sidebar{position:relative;height:auto;min-height:100vh;align-self:stretch;padding-bottom:120px}.side-card{position:fixed;left:17px;bottom:18px;width:218px;z-index:25;margin-top:0;box-shadow:0 14px 30px rgba(0,0,0,.18)}
+    .month-strip,.pipeline,.kanban,.subtabs,.flow-steps,.nav,.table-wrap{scrollbar-width:none;-ms-overflow-style:none}.month-strip::-webkit-scrollbar,.pipeline::-webkit-scrollbar,.kanban::-webkit-scrollbar,.subtabs::-webkit-scrollbar,.flow-steps::-webkit-scrollbar,.nav::-webkit-scrollbar,.table-wrap::-webkit-scrollbar{width:0;height:0;display:none}
     .brand strong{color:#fff}.brand strong span{color:#c8102e}
     .nav-count{background:#c8102e!important;color:#fff;border:2px solid rgba(255,255,255,.92);box-shadow:0 4px 10px rgba(200,16,46,.24)}
     .preview-badge{display:inline-flex;align-items:center;gap:7px;background:var(--navy);color:#fff;border:2px solid var(--red);box-shadow:0 6px 16px rgba(8,31,92,.12)}.preview-badge:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--red)}
@@ -109,6 +111,7 @@
     .crm-group{min-width:2940px;margin-bottom:18px;border:1px solid var(--line);border-radius:15px;background:#fff;box-shadow:0 8px 22px rgba(8,31,92,.055);transition:.2s}
     .crm-group.drag-over{transform:translateY(-2px);box-shadow:0 0 0 3px rgba(0,87,184,.16),0 14px 34px rgba(8,31,92,.13)}
     .crm-group-title{display:flex;align-items:center;gap:10px;padding:13px 15px;color:var(--group);font-size:13px;font-weight:900}.crm-group-title b{color:var(--muted);font-size:11px;font-weight:700}
+    .crm-collapse{display:inline-flex;align-items:center;gap:8px;padding:0;border:0;background:transparent;color:var(--group);font:inherit;font-weight:900}.crm-arrow{display:inline-block;font-size:16px;transition:transform .18s}.crm-group.collapsed .crm-arrow{transform:rotate(-90deg)}.crm-group.collapsed .crm-head,.crm-group.collapsed .group-body,.crm-group.collapsed .crm-summary{display:none}
     .crm-grid{display:grid;grid-template-columns:210px 105px 135px 130px 115px 115px 128px 190px 95px 110px 80px 110px 112px 100px 130px 120px 110px 120px 125px 115px 120px 130px 130px 125px 130px 145px 145px 140px 155px 285px;min-width:max-content}
     .crm-head>div,.crm-row>div{padding:11px 10px;border-top:1px solid var(--line);border-right:1px solid var(--line);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .crm-head{background:#f2f5fb;color:#68758f;font-weight:900}.crm-row{background:#fff;color:#44516c;cursor:grab;transition:transform .14s,background .14s,box-shadow .14s}.crm-row:active{cursor:grabbing;transform:scale(.998)}.crm-row:hover{position:relative;z-index:2;background:#f8fbff;box-shadow:0 5px 16px rgba(8,31,92,.08)}
@@ -116,7 +119,7 @@
     .crm-summary{background:#f8faff;color:#79859b}.crm-summary>div{min-height:38px;padding:11px 10px;border-top:1px solid var(--line);border-right:1px solid var(--line);font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.crm-summary>div:last-child{color:var(--navy);font-size:11px;font-weight:800}.crm-status{display:inline-block;min-width:56px;padding:5px 7px;border-radius:7px;text-align:center;background:#eef2f8;color:#53617b;font-weight:800}.crm-status.yes{background:#e7f8ef;color:#08734b}.crm-status.no{background:#f0f2f6;color:#727d91}.crm-status.score{background:#eaf1ff;color:#174fa5}
     .dpa-meter{height:8px;margin-top:11px;border-radius:99px;background:#e8edf5;overflow:hidden}.dpa-meter i{display:block;height:100%;border-radius:99px;background:#0057b8!important;background-image:none!important;width:var(--meter,0%);transition:width .35s ease}.dpa-ratio{color:#0057b8;font-weight:900}
     @media(max-width:1320px){.stats.crm-stats{grid-template-columns:repeat(3,1fr)}}
-    @media(max-width:760px){.stats.crm-stats{grid-template-columns:1fr 1fr}.crm-board{padding:10px}.crm-group-title{position:sticky;left:0;background:#fff;z-index:4;width:max-content;min-width:310px}.crm-head>div,.crm-row>div{font-size:12px;padding:12px 10px}}
+    @media(max-width:760px){.sidebar{position:sticky;height:auto;min-height:0;padding-bottom:13px}.side-card{display:none}.stats.crm-stats{grid-template-columns:1fr 1fr}.crm-board{padding:10px}.crm-group-title{position:sticky;left:0;background:#fff;z-index:4;width:max-content;min-width:310px}.crm-head>div,.crm-row>div{font-size:12px;padding:12px 10px}}
     @media(max-width:430px){.stats.crm-stats{grid-template-columns:1fr}}
   </style>
 </head>
@@ -141,7 +144,6 @@
     <main class="main">
       <header class="topbar">
         <div class="top-title"><h1 id="topTitle">DPA Department</h1><p id="topSub">Qualified buyers moving from readiness to closing.</p></div>
-        <label class="search"><input id="globalSearch" type="search" placeholder="Search buyers, partners or campaigns"><span>⌕</span></label>
         <div class="preview-badge">Live Board Snapshot</div>
       </header>
 
@@ -285,6 +287,7 @@
       {name:"Closed Date",color:"#22a06b",weight:1}
     ];
     const kanban=document.getElementById("kanbanBoard");
+    const collapsedStages=new Set();
     const prepHead=document.getElementById("prepHead");
     const prepRows=document.getElementById("prepRows");
     const drawer=document.getElementById("buyerDrawer");
@@ -298,7 +301,8 @@
       const ready=buyers.filter(b=>b.score===100);
       const headers=["Name","Owner","lead_Id","Updated_Date","First_Name","Last_Name","Phone","Email","First_Home","City","Zip","Home_Price","Estimated_Dpa","Credit_Score","Household_Income","Employment","Taxes_Filed","Readiness_Score","App_started_confirm","Call_Inspector","I_Date_scheduled","Inspection_results","Moving_Forward","Call_Insurance_quote","Insurance_quote_amount","Cordinate_title","DPA_Realtor_Name","DPA_Realtor_Phone","Route","Source"];
       const rowValues=b=>[b.name,b.owner,b.leadId,b.updated,b.firstName,b.lastName,b.phone,b.email,b.firstHome,b.city,b.zip,b.home,b.dpa,b.credit,b.income,b.employment,b.taxes,`${b.score}%`,b.stage==="New Leads"?"No":"Yes","—","—","—",b.stage==="Closed Date"?"Closed":b.stage==="New Leads"?"Pending":"Yes","—","—","—","—","—",b.route,b.source];
-      kanban.innerHTML=stages.map(s=>{const rows=ready.filter(b=>b.stage===s.name),volume=rows.reduce((n,b)=>n+priceOf(b),0),dpa=rows.reduce((n,b)=>n+Number(b.dpa.replace(/[^0-9]/g,"")),0),summary=headers.map(()=>"");summary[0]="+ Add lead";summary[11]=money(volume);summary[12]=money(dpa);summary[29]=`${money(volume*.025)} potential`;return `<section class="crm-group" data-stage="${s.name}" style="--group:${s.color}"><div class="crm-group-title"><span>⌄ ${s.name}</span><b>${rows.length} ${rows.length===1?"lead":"leads"}</b></div><div class="crm-grid crm-head">${headers.map(h=>`<div>${h}</div>`).join("")}</div><div class="group-body">${rows.map(b=>`<div class="crm-grid crm-row" draggable="true" data-buyer="${b.id}" style="--group:${s.color}">${rowValues(b).map((v,i)=>`<div class="${i===0?"crm-name":""}">${i===0?`<span class="stage-dot"></span><span class="grab-handle">⠿</span>${v}`:i===8?`<span class="crm-status ${v==="Yes"?"yes":"no"}">${v}</span>`:i===17?`<span class="crm-status score">${v}</span>`:i===18?`<span class="crm-status ${v==="Yes"?"yes":"no"}">${v}</span>`:v}</div>`).join("")}</div>`).join("")}</div><div class="crm-grid crm-summary">${summary.map(v=>`<div>${v}</div>`).join("")}</div></section>`}).join("");
+      kanban.innerHTML=stages.map(s=>{const rows=ready.filter(b=>b.stage===s.name),volume=rows.reduce((n,b)=>n+priceOf(b),0),dpa=rows.reduce((n,b)=>n+Number(b.dpa.replace(/[^0-9]/g,"")),0),summary=headers.map(()=>"");summary[0]="+ Add lead";summary[11]=money(volume);summary[12]=money(dpa);summary[29]=`${money(volume*.025)} potential`;return `<section class="crm-group ${collapsedStages.has(s.name)?"collapsed":""}" data-stage="${s.name}" style="--group:${s.color}"><div class="crm-group-title"><button class="crm-collapse" type="button" aria-expanded="${!collapsedStages.has(s.name)}"><span class="crm-arrow">⌄</span>${s.name}</button><b>${rows.length} ${rows.length===1?"lead":"leads"}</b></div><div class="crm-grid crm-head">${headers.map(h=>`<div>${h}</div>`).join("")}</div><div class="group-body">${rows.map(b=>`<div class="crm-grid crm-row" draggable="true" data-buyer="${b.id}" style="--group:${s.color}">${rowValues(b).map((v,i)=>`<div class="${i===0?"crm-name":""}">${i===0?`<span class="stage-dot"></span><span class="grab-handle">⠿</span>${v}`:i===8?`<span class="crm-status ${v==="Yes"?"yes":"no"}">${v}</span>`:i===17?`<span class="crm-status score">${v}</span>`:i===18?`<span class="crm-status ${v==="Yes"?"yes":"no"}">${v}</span>`:v}</div>`).join("")}</div>`).join("")}</div><div class="crm-grid crm-summary">${summary.map(v=>`<div>${v}</div>`).join("")}</div></section>`}).join("");
+      kanban.querySelectorAll(".crm-collapse").forEach(button=>button.addEventListener("click",()=>{const group=button.closest(".crm-group"),stage=group.dataset.stage,isCollapsed=group.classList.toggle("collapsed");button.setAttribute("aria-expanded",String(!isCollapsed));isCollapsed?collapsedStages.add(stage):collapsedStages.delete(stage)}));
       kanban.querySelectorAll(".crm-row").forEach(row=>{row.addEventListener("dragstart",e=>e.dataTransfer.setData("text/plain",row.dataset.buyer));row.addEventListener("click",()=>openBuyer(row.dataset.buyer))});
       kanban.querySelectorAll(".crm-group").forEach(group=>{group.addEventListener("dragover",e=>{e.preventDefault();group.classList.add("drag-over")});group.addEventListener("dragleave",()=>group.classList.remove("drag-over"));group.addEventListener("drop",e=>{e.preventDefault();group.classList.remove("drag-over");const b=buyers.find(x=>x.id===Number(e.dataTransfer.getData("text/plain")));if(b){b.stage=group.dataset.stage;renderKanban();updateMetrics();showToast(`${b.name} moved to ${b.stage}. Visual preview only—Monday was not changed.`)}})});
     }
@@ -343,7 +347,6 @@
     document.querySelectorAll("[data-prep]").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll("[data-prep]").forEach(x=>x.classList.remove("active"));btn.classList.add("active");renderPrep(btn.dataset.prep)}));
     document.getElementById("drawerClose").addEventListener("click",()=>{drawer.classList.remove("open");drawer.setAttribute("aria-hidden","true")});
     drawer.addEventListener("click",e=>{if(e.target===drawer)document.getElementById("drawerClose").click()});
-    document.getElementById("globalSearch").addEventListener("input",e=>{document.querySelector('[data-view="prephub"]').click();document.querySelector('[data-prep="all"]').click();const term=e.target.value.trim().toLowerCase();prepRows.querySelectorAll("tr[data-buyer]").forEach(row=>row.style.display=!term||row.textContent.toLowerCase().includes(term)?"":"none")});
     function showToast(message){toast.textContent=message;toast.classList.add("show");setTimeout(()=>toast.classList.remove("show"),2600)}
     function bindToasts(){document.querySelectorAll("[data-toast]").forEach(btn=>{if(!btn.dataset.bound){btn.dataset.bound="1";btn.addEventListener("click",()=>showToast(btn.dataset.toast))}})}
     document.addEventListener("keydown",e=>{if(e.key==="Escape"&&drawer.classList.contains("open"))document.getElementById("drawerClose").click()});
