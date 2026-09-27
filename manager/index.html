@@ -67,6 +67,7 @@
     .stat:after{content:"";position:absolute;right:-22px;bottom:-32px;width:78px;height:78px;border-radius:50%;background:var(--tint,#edf3ff)}
     .stat-top{display:flex;align-items:center;justify-content:space-between;gap:10px}.stat-label{color:var(--muted);font-size:9px;font-weight:900;letter-spacing:.8px;text-transform:uppercase}.stat-icon{width:32px;height:32px;border-radius:10px;background:var(--tint,#edf3ff);color:var(--accent,var(--blue));display:grid;place-items:center;font-weight:900}
     .stat-value{margin-top:10px;color:var(--navy);font-size:28px;font-weight:900;letter-spacing:-1px}.stat-sub{margin-top:4px;color:var(--muted);font-size:9px;font-weight:700}.up{color:var(--green)}
+    .crm-stats .stat{text-align:center}.crm-stats .stat-top{justify-content:center}
     .panel{background:#fff;border:1px solid var(--line);border-radius:19px;box-shadow:0 9px 28px rgba(8,31,92,.045);overflow:hidden}
     .panel-head{padding:15px 17px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}
     .panel-head h3{margin:0;color:var(--navy);font-size:13px;font-weight:900}.panel-head small{display:block;margin-top:4px;color:var(--muted);font-size:9px;font-weight:650}
@@ -155,12 +156,12 @@
 
       <div class="content">
         <section class="view active" id="view-crm">
-          <div class="page-head"><div><div class="eyebrow">100% Ready DPA Buyers</div><h2>REVIEW</h2><p>Only buyers who reached 100% readiness enter this board. Drag each buyer forward until the sale is closed.</p></div><button class="primary" data-toast="New qualified leads will enter automatically from the website while Monday remains active in parallel.">+ ADD QUALIFIED LEAD</button></div>
+          <div class="page-head"><div><div class="eyebrow">100% Ready DPA Buyers</div><h2>REVEVIEW</h2><p>Only buyers who reached 100% readiness enter this board. Drag each buyer forward until the sale is closed.</p></div><button class="primary" data-toast="New qualified leads will enter automatically from the website while Monday remains active in parallel.">+ ADD QUALIFIED LEAD</button></div>
           <div class="stats crm-stats">
             <article class="stat" style="--accent:#0057b8;--tint:#edf4ff"><div class="stat-top"><span class="stat-label">Ready buyers</span></div><div class="stat-value" id="readyBuyerCount">2</div><div class="stat-sub">100% readiness records</div></article>
             <article class="stat" style="--accent:#6c4bd3;--tint:#f1edff"><div class="stat-top"><span class="stat-label">Pipeline volume</span></div><div class="stat-value" id="pipelineVolume">$800K</div><div class="stat-sub">Sum of Home_Price</div></article>
-            <article class="stat" style="--accent:#d22630;--tint:#fff0f1"><div class="stat-top"><span class="stat-label">Potential revenue · 2.5%</span><span class="stat-icon">↗</span></div><div class="stat-value" id="potentialRevenue">$20K</div><div class="stat-sub">All active pipeline × 2.5%</div></article>
-            <article class="stat" style="--accent:#138a5b;--tint:#eaf8f2"><div class="stat-top"><span class="stat-label">Actual revenue · 2.5%</span><span class="stat-icon">✓</span></div><div class="stat-value" id="actualRevenue">$0</div><div class="stat-sub">Closed Date home volume × 2.5%</div></article>
+            <article class="stat" style="--accent:#d22630;--tint:#fff0f1"><div class="stat-top"><span class="stat-label">Potential revenue</span></div><div class="stat-value" id="potentialRevenue">$20K</div><div class="stat-sub">2.5% of active pipeline volume</div></article>
+            <article class="stat" style="--accent:#138a5b;--tint:#eaf8f2"><div class="stat-top"><span class="stat-label">Actual revenue</span></div><div class="stat-value" id="actualRevenue">$0</div><div class="stat-sub">2.5% of Closed Date volume</div></article>
             <article class="stat" style="--accent:#0057b8;--tint:#edf4ff"><div class="stat-top"><span class="stat-label">Potential DPA going out</span><span class="stat-icon">⇢</span></div><div class="stat-value" id="dpaVolume">$40K</div><div class="stat-sub"><span class="dpa-ratio" id="dpaRatio">5%</span> of pipeline purchase volume</div><div class="dpa-meter"><i id="dpaMeter"></i></div></article>
           </div>
 
