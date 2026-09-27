@@ -152,6 +152,7 @@
       <div class="nav-label">Workspace</div>
       <nav class="nav" aria-label="Manager navigation">
         <button class="nav-btn" data-view="ai">Helux Workforce</button>
+        <div class="nav-divider" aria-hidden="true"></div>
         <button class="nav-btn" data-view="prephub">PrepHub<span class="nav-count">2</span></button>
         <button class="nav-btn active" data-view="crm">DPA Department<span class="nav-count" id="dpaNavCount">0</span></button>
         <button class="nav-btn" data-view="credit">Credit Department</button>
@@ -281,8 +282,9 @@
         </section>
 
         <section class="view" id="view-ai">
-          <div class="page-head"><div><div class="eyebrow">Helux Workforce</div><h2>Outbound Call Control</h2><p>Control call attempts, callbacks, outcomes, consent, and human handoffs from one live board.</p></div><button class="primary" data-toast="New call-control records will enter through the connected lead routes.">+ ADD CALL RECORD</button></div>
-          <section class="panel"><div class="panel-head"><div><h3>HELUX AI Workforce - Outbound Call Control</h3><small>Five call-control groups, 24 fields, and no subitems.</small></div></div><div class="helux-board" id="heluxBoard"></div></section>
+          <div class="page-head"><div><div class="eyebrow">Helux Workforce</div><h2 id="heluxPageTitle">Outbound Call Control · Qualified</h2><p>Keep every qualified and unqualified inbound and outbound call queue separate for command and control.</p></div><button class="primary" data-toast="New call-control records will enter through the connected lead routes.">+ ADD CALL RECORD</button></div>
+          <div class="subtabs" id="heluxTabs"><button class="subtab active" data-helux-board="outbound-q">Outbound (Q)</button><button class="subtab" data-helux-board="outbound-uq">Outbound (UQ)</button><button class="subtab" data-helux-board="inbound-q">Inbound (Q)</button><button class="subtab" data-helux-board="inbound-uq">Inbound (UQ)</button></div>
+          <section class="panel"><div class="panel-head"><div><h3 id="heluxBoardTitle">Helux Workforce - Outbound (Q)</h3><small>Five call-control groups, 24 fields, and no subitems.</small></div></div><div class="helux-board" id="heluxBoard"></div></section>
         </section>
       </div>
     </main>
@@ -439,8 +441,15 @@
     let prepCollapsed=false;
     let deleteSelectionType="buyers";
     const selectedPrepIds=new Set();
-    const heluxRecords=[];
-    const collapsedHeluxGroups=new Set();
+    const heluxBoardConfigs={
+      "outbound-q":{title:"Helux Workforce - Outbound (Q)",page:"Outbound Call Control · Qualified"},
+      "outbound-uq":{title:"Helux Workforce - Outbound (UQ)",page:"Outbound Call Control · Unqualified"},
+      "inbound-q":{title:"Helux Workforce - Inbound (Q)",page:"Inbound Call Control · Qualified"},
+      "inbound-uq":{title:"Helux Workforce - Inbound (UQ)",page:"Inbound Call Control · Unqualified"}
+    };
+    const heluxRecords=Object.fromEntries(Object.keys(heluxBoardConfigs).map(key=>[key,[]]));
+    const collapsedHeluxGroups=Object.fromEntries(Object.keys(heluxBoardConfigs).map(key=>[key,new Set()]));
+    let activeHeluxBoard="outbound-q";
     const prepBoard=document.getElementById("prepBoard");
     const heluxBoard=document.getElementById("heluxBoard");
     const creditBoard=document.getElementById("creditBoard");
@@ -609,9 +618,11 @@
     const heluxColumns=["Lead","Case ID","Callback At","Max Attempts","Next Action","Last Call","Owner","Priority","Lead ID","Call Summary","Has_Realtor","Applied_With_Lender","App_Started_Confirm","Time_frame","Attempts Used","Business Outcome","Sequence Status","Next Call","Phone","Last Call Result","Consent","AI Agent","Do Not Call","Time Zone"];
     const heluxGroups=[{name:"New Leads",color:"#c8102e"},{name:"Callbacks",color:"#fdab3d"},{name:"Agent Needed",color:"#f5d33d"},{name:"Completed",color:"#22a06b"},{name:"Do Not Call",color:"#7b8498"}];
     function renderHelux(){
-      heluxBoard.innerHTML=heluxGroups.map(group=>{const rows=heluxRecords.filter(record=>record.group===group.name&&!record.archived);return `<section class="credit-group helux-group ${collapsedHeluxGroups.has(group.name)?"collapsed":""}" data-helux-group="${group.name}" style="--group:${group.color}"><div class="credit-group-title"><button class="credit-collapse helux-collapse" type="button" aria-expanded="${!collapsedHeluxGroups.has(group.name)}"><span class="credit-arrow">⌄</span>${group.name}</button></div><div class="credit-grid helux-grid credit-grid-head"><div class="crm-select-cell"><input class="stage-check" type="checkbox" aria-label="Select all ${group.name} call records" ${rows.length?"":"disabled"}></div>${heluxColumns.map(column=>`<div>${column}</div>`).join("")}</div>${rows.length?rows.map(record=>`<div class="credit-grid helux-grid credit-grid-row"><div class="crm-select-cell"><input class="lead-check" type="checkbox" aria-label="Select ${record.lead}"></div>${heluxColumns.map((column,index)=>`<div class="${index===0?"credit-name":""}">${index===0?`<span class="stage-dot"></span><span class="grab-handle">⠿</span>`:""}${record[column]??"—"}</div>`).join("")}</div>`).join(""):`<div class="helux-empty">No call records in ${group.name}.</div>`}</section>`}).join("");
+      const config=heluxBoardConfigs[activeHeluxBoard],records=heluxRecords[activeHeluxBoard],collapsed=collapsedHeluxGroups[activeHeluxBoard];
+      document.getElementById("heluxPageTitle").textContent=config.page;document.getElementById("heluxBoardTitle").textContent=config.title;document.querySelectorAll("[data-helux-board]").forEach(button=>button.classList.toggle("active",button.dataset.heluxBoard===activeHeluxBoard));
+      heluxBoard.innerHTML=heluxGroups.map(group=>{const rows=records.filter(record=>record.group===group.name&&!record.archived);return `<section class="credit-group helux-group ${collapsed.has(group.name)?"collapsed":""}" data-helux-group="${group.name}" style="--group:${group.color}"><div class="credit-group-title"><button class="credit-collapse helux-collapse" type="button" aria-expanded="${!collapsed.has(group.name)}"><span class="credit-arrow">⌄</span>${group.name}</button></div><div class="credit-grid helux-grid credit-grid-head"><div class="crm-select-cell"><input class="stage-check" type="checkbox" aria-label="Select all ${group.name} call records" ${rows.length?"":"disabled"}></div>${heluxColumns.map(column=>`<div>${column}</div>`).join("")}</div>${rows.length?rows.map(record=>`<div class="credit-grid helux-grid credit-grid-row"><div class="crm-select-cell"><input class="lead-check" type="checkbox" aria-label="Select ${record.lead}"></div>${heluxColumns.map((column,index)=>`<div class="${index===0?"credit-name":""}">${index===0?`<span class="stage-dot"></span><span class="grab-handle">⠿</span>`:""}${record[column]??"—"}</div>`).join("")}</div>`).join(""):`<div class="helux-empty">No call records in ${group.name}.</div>`}</section>`}).join("");
       heluxBoard.scrollLeft=0;
-      heluxBoard.querySelectorAll(".helux-collapse").forEach(button=>button.addEventListener("click",()=>{const group=button.closest(".helux-group").dataset.heluxGroup;collapsedHeluxGroups.has(group)?collapsedHeluxGroups.delete(group):collapsedHeluxGroups.add(group);renderHelux()}));
+      heluxBoard.querySelectorAll(".helux-collapse").forEach(button=>button.addEventListener("click",()=>{const group=button.closest(".helux-group").dataset.heluxGroup;collapsed.has(group)?collapsed.delete(group):collapsed.add(group);renderHelux()}));
     }
 
     const creditColumns=["Name","Owner","Updated_Date","lead_id","First_Name","Last_Name","Phone","City","email","ZIP","Utilization","Credit_score","Trans","Exp","Equ","Mid_Fico_Score","Homeowner","Route","Source","FICO_Status"];
@@ -733,6 +744,7 @@
       if(btn.dataset.view==="credit")renderCredit();if(btn.dataset.view==="tax")renderTax();if(btn.dataset.view==="review")renderReview();if(btn.dataset.view==="prephub")renderPrep();if(btn.dataset.view==="ai")renderHelux();updateBatchBar();
       window.scrollTo({top:0,behavior:"smooth"});
     }));
+    document.querySelectorAll("[data-helux-board]").forEach(button=>button.addEventListener("click",()=>{activeHeluxBoard=button.dataset.heluxBoard;renderHelux()}));
     document.querySelectorAll("[data-prep]").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll("[data-prep]").forEach(x=>x.classList.remove("active"));btn.classList.add("active");renderPrep(btn.dataset.prep)}));
     document.getElementById("drawerClose").addEventListener("click",()=>{drawer.classList.remove("open");drawer.setAttribute("aria-hidden","true")});
     drawer.addEventListener("click",e=>{if(e.target===drawer)document.getElementById("drawerClose").click()});
