@@ -550,6 +550,7 @@ border-radius:16px;
 
 <div id="dpaApp"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.3/dist/umd/supabase.min.js"></script>
 <script>
 (function(){
 const SUPABASE_URL="https://fklchtsxahepzfzgcqdp.supabase.co";
@@ -565,6 +566,14 @@ const JOB_URL="https://www.dpahelpcenter.com/employment/";
 const TAXES_URL="https://www.dpahelpcenter.com/taxes";
 const app=document.getElementById("dpaApp");
 const path=(window.location.pathname||"/").toLowerCase();
+
+if(window.supabase){
+  const websitePresenceDb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+  const websitePresenceId=sessionStorage.getItem("dpa_website_presence_id")||crypto.randomUUID();
+  sessionStorage.setItem("dpa_website_presence_id",websitePresenceId);
+  const websitePresence=websitePresenceDb.channel("dpa-website-presence",{config:{presence:{key:websitePresenceId}}});
+  websitePresence.subscribe(function(status){if(status==="SUBSCRIBED")websitePresence.track({page:path,online_at:new Date().toISOString()})});
+}
 
 let audioReady=false;
 let audioCtx=null;
