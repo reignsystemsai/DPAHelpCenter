@@ -851,7 +851,7 @@ return APPLICATION_URL;
 
 leadData.route=d.map(i=>i.key+"_review").join("|");
 const q=d.map(i=>i.param).join("&");
-leadData.results_url=PREPHUB_URL+"?"+q+"&route="+encodeURIComponent(leadData.route)+"&lead="+encodeURIComponent(leadData.lead_id);
+leadData.results_url=PREPHUB_URL+"?"+q+"&score="+encodeURIComponent(leadData.readiness_score)+"&route="+encodeURIComponent(leadData.route)+"&lead="+encodeURIComponent(leadData.lead_id);
 return leadData.results_url;
 }
 
