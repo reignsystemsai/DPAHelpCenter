@@ -30,7 +30,7 @@ const taskCatalog = {
   credit: {
     title: "Credit Readiness",
     description: "Build toward the 640+ credit range used by many DPA programs.",
-    action_url: "https://www.creditjump.ai",
+    action_url: "https://www.dpahelpcenter.com/credit/",
     position: 1,
   },
   dti: {
@@ -42,16 +42,55 @@ const taskCatalog = {
   job: {
     title: "Employment Readiness",
     description: "Document a stable work, school, military, or qualifying income history.",
-    action_url: "https://www.dpahelpcenter.com/job",
+    action_url: "https://www.dpahelpcenter.com/employment/",
     position: 3,
   },
   taxes: {
     title: "Tax Document Readiness",
     description: "Prepare the tax records needed to verify qualifying income.",
-    action_url: "https://www.estimatemytaxreturn.com",
+    action_url: "https://www.dpahelpcenter.com/taxes/",
     position: 4,
   },
 } as const;
+
+const HELUX_BASE_URL = clean(
+  Deno.env.get("HELUX_BASE_URL") || "https://helux-os.onrender.com",
+  500,
+).replace(/\/+$/, "");
+
+async function forwardToHelux(payload: Record<string, unknown>) {
+  const apiKey = clean(Deno.env.get("HELUX_API_KEY"), 500);
+  if (!apiKey) {
+    console.error("HELUX forwarding skipped: HELUX_API_KEY is missing.");
+    return { ok: false, status: "not_configured" };
+  }
+
+  try {
+    const response = await fetch(`${HELUX_BASE_URL}/api/v1/leads`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-helux-key": apiKey,
+      },
+      body: JSON.stringify(payload),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      console.error("HELUX forwarding failed", response.status, result);
+      return { ok: false, status: `http_${response.status}` };
+    }
+    return {
+      ok: true,
+      status: result.duplicate ? "duplicate" : "submitted",
+      monday_prephub_sync: result.monday_prephub_sync?.status || null,
+      monday_dpa_sync: result.monday_dpa_sync?.status || null,
+      ai_outbound_call: result.ai_outbound_call?.status || null,
+    };
+  } catch (error) {
+    console.error("HELUX forwarding failed", error);
+    return { ok: false, status: "request_failed" };
+  }
+}
 
 Deno.serve(async (req: Request) => {
   const origin = req.headers.get("origin");
@@ -124,6 +163,8 @@ Deno.serve(async (req: Request) => {
       if (taskError) throw taskError;
     }
 
+    const helux = await forwardToHelux(payload);
+
     const redirectTo = `https://www.dpahelpcenter.com/prephub?lead=${encodeURIComponent(leadId)}`;
     const { error: authError } = await supabase.auth.signInWithOtp({
       email,
@@ -137,9 +178,18 @@ Deno.serve(async (req: Request) => {
         },
       },
     });
-    if (authError) throw authError;
+    const emailSent = !authError;
+    if (authError) {
+      console.warn("PrepHub login email was not sent", authError.code || authError.message);
+    }
 
-    return json({ ok: true, lead_id: leadId, email_sent: true }, 200, origin);
+    return json({
+      ok: true,
+      lead_id: leadId,
+      email_sent: emailSent,
+      email_status: emailSent ? "sent" : "temporarily_unavailable",
+      helux,
+    }, 200, origin);
   } catch (error) {
     console.error("PrepHub intake failed", error);
     return json({ error: "We could not save your PrepHub plan. Please try again." }, 500, origin);
