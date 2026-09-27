@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Credit Readiness | DPA Help Center</title>
+<meta name="description" content="Understand how your credit profile affects down payment assistance readiness.">
+<style>html,body{margin:0;min-height:100%;background:#fff}</style>
+</head>
+<body>
+<div id="dpa-credit-page">
+<style>
+#dpa-credit-page{
+  width:100%;
+  max-width:1060px;
+  margin:0 auto;
+  padding:34px 24px 42px;
+  background:#ffffff;
+  color:#081F5C;
+  font-family:Inter,Arial,sans-serif;
+  overflow:hidden;
+}
+#dpa-credit-page *{
+  box-sizing:border-box;
+  font-family:Inter,Arial,sans-serif;
+}
+.dpa-credit-brand{
+  text-align:center;
+  font-size:42px;
+  font-weight:950;
+  letter-spacing:-1px;
+  margin:0 0 28px;
+}
+.dpa-credit-brand:after{
+  content:"";
+  display:block;
+  width:160px;
+  height:7px;
+  background:#D22630;
+  border-radius:999px;
+  margin:7px auto 0;
+  transform:rotate(-2deg);
+}
+.dpa-credit-hero{
+  display:grid;
+  grid-template-columns:1fr 360px;
+  gap:28px;
+  align-items:center;
+}
+.dpa-credit-kicker{
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:5px;
+  color:#0057B8;
+  text-transform:uppercase;
+  margin-bottom:12px;
+}
+.dpa-credit-title{
+  font-size:58px;
+  line-height:.94;
+  letter-spacing:-4px;
+  font-weight:950;
+  margin:0 0 16px;
+}
+.dpa-credit-title span{color:#D22630}
+.dpa-credit-sub{
+  font-size:18px;
+  line-height:1.45;
+  font-weight:750;
+  color:#5f6b7f;
+  margin:0 0 20px;
+}
+.dpa-credit-pills{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.dpa-credit-pill{
+  background:#fff;
+  border:1px solid rgba(8,31,92,.08);
+  border-radius:17px;
+  padding:14px;
+  font-size:13px;
+  font-weight:850;
+  box-shadow:0 12px 28px rgba(8,31,92,.055);
+}
+.dpa-credit-pill span{
+  color:#0057B8;
+  font-weight:950;
+}
+.dpa-score-box{
+  background:#081F5C;
+  color:#fff;
+  border-radius:30px;
+  padding:28px 22px;
+  text-align:center;
+  box-shadow:0 24px 48px rgba(8,31,92,.2);
+}
+.dpa-score-label{
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:4px;
+  color:rgba(255,255,255,.78);
+  text-transform:uppercase;
+}
+.dpa-score-num{
+  font-size:86px;
+  font-weight:950;
+  letter-spacing:-6px;
+  line-height:.9;
+  margin:12px 0;
+}
+.dpa-score-num span{color:#D22630}
+.dpa-score-copy{
+  font-size:15px;
+  font-weight:800;
+  line-height:1.35;
+  color:rgba(255,255,255,.86);
+}
+.dpa-credit-section{
+  margin-top:20px;
+  padding:28px;
+  border-radius:30px;
+  background:#fff;
+  border:1px solid rgba(8,31,92,.08);
+  box-shadow:0 16px 38px rgba(8,31,92,.06);
+}
+.dpa-credit-section-title{
+  font-size:32px;
+  font-weight:950;
+  letter-spacing:-1.4px;
+  margin:0 0 10px;
+}
+.dpa-credit-section-copy{
+  font-size:15px;
+  font-weight:720;
+  line-height:1.6;
+  color:#5f6b7f;
+  margin:0;
+}
+.dpa-info-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:12px;
+  margin-top:18px;
+}
+.dpa-info-card{
+  background:#fff;
+  border:1px solid rgba(8,31,92,.08);
+  border-radius:20px;
+  padding:17px;
+  box-shadow:0 12px 26px rgba(8,31,92,.05);
+}
+.dpa-info-card h3{
+  font-size:18px;
+  font-weight:950;
+  margin:0 0 8px;
+}
+.dpa-info-card p{
+  font-size:12.5px;
+  line-height:1.45;
+  font-weight:720;
+  color:#5f6b7f;
+  margin:0;
+}
+.dpa-path-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  margin-top:18px;
+}
+.dpa-path-card{
+  background:#fff;
+  border:1px solid rgba(8,31,92,.08);
+  border-radius:26px;
+  padding:24px;
+  box-shadow:0 16px 34px rgba(8,31,92,.06);
+}
+.dpa-path-top{
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:#0057B8;
+  margin-bottom:10px;
+}
+.dpa-path-card h3{
+  font-size:28px;
+  line-height:1;
+  letter-spacing:-1px;
+  font-weight:950;
+  margin:0 0 10px;
+}
+.dpa-path-card h3 span{color:#D22630}
+.dpa-path-card p{
+  font-size:13.5px;
+  font-weight:720;
+  line-height:1.52;
+  color:#5f6b7f;
+  margin:0 0 15px;
+}
+.dpa-check-list{
+  display:grid;
+  gap:8px;
+}
+.dpa-check-item{
+  border-radius:15px;
+  background:rgba(0,87,184,.045);
+  border:1px solid rgba(8,31,92,.06);
+  padding:10px 11px;
+  font-size:12px;
+  font-weight:830;
+  line-height:1.32;
+}
+.dpa-check-item span{
+  color:#0057B8;
+  font-weight:950;
+}
+.dpa-credit-btn{
+  display:grid;
+  place-items:center;
+  width:100%;
+  min-height:54px;
+  margin-top:16px;
+  border-radius:18px;
+  background:#081F5C;
+  color:#fff;
+  text-decoration:none;
+  font-size:13px;
+  font-weight:950;
+  letter-spacing:.6px;
+}
+.dpa-credit-btn.red{background:#D22630}
+.dpa-note-box{
+  margin-top:16px;
+  border-radius:22px;
+  background:rgba(210,38,48,.055);
+  border:1px solid rgba(210,38,48,.1);
+  padding:18px;
+  font-size:13px;
+  font-weight:800;
+  line-height:1.45;
+}
+.dpa-note-box span{
+  color:#D22630;
+  font-weight:950;
+}
+@media(max-width:900px){
+  #dpa-credit-page{
+    max-width:390px;
+    padding:18px 12px 28px;
+  }
+  .dpa-credit-brand{
+    font-size:30px;
+    white-space:nowrap;
+  }
+  .dpa-credit-hero,
+  .dpa-info-grid,
+  .dpa-path-grid{
+    grid-template-columns:1fr;
+  }
+  .dpa-credit-title{
+    font-size:38px;
+    letter-spacing:-2px;
+    text-align:center;
+  }
+  .dpa-credit-kicker,
+  .dpa-credit-sub{
+    text-align:center;
+  }
+  .dpa-credit-pills{
+    grid-template-columns:1fr 1fr;
+  }
+  .dpa-score-num{
+    font-size:64px;
+  }
+  .dpa-credit-section{
+    padding:18px;
+  }
+  .dpa-credit-section-title{
+    font-size:25px;
+    text-align:center;
+  }
+  .dpa-credit-section-copy{
+    text-align:center;
+  }
+}
+</style>
+
+<div class="dpa-credit-brand">DPA HELP CENTER</div>
+
+<section class="dpa-credit-hero">
+  <div>
+    <div class="dpa-credit-kicker">Credit Readiness</div>
+    <h1 class="dpa-credit-title">Your credit score can decide if you’re <span>DPA ready.</span></h1>
+    <div class="dpa-credit-sub">
+      Most down payment assistance programs look for a credit score around 640 or higher. If your DTI is acceptable but your score is being held down by negative items or high credit card utilization, your next move may be a credit strategy.
+    </div>
+
+    <div class="dpa-credit-pills">
+      <div class="dpa-credit-pill"><span>✓</span> Many programs look for 640+</div>
+      <div class="dpa-credit-pill"><span>✓</span> High utilization can lower scores</div>
+      <div class="dpa-credit-pill"><span>✓</span> Negative items can block approval</div>
+      <div class="dpa-credit-pill"><span>✓</span> Credit strategy can improve readiness</div>
+    </div>
+  </div>
+
+  <div class="dpa-score-box">
+    <div class="dpa-score-label">Common Program Target</div>
+    <div class="dpa-score-num">640<span>+</span></div>
+    <div class="dpa-score-copy">A stronger credit profile can help you move from almost ready to application ready.</div>
+  </div>
+</section>
+
+<section class="dpa-credit-section">
+  <h2 class="dpa-credit-section-title">Why credit matters for DPA approval</h2>
+  <p class="dpa-credit-section-copy">
+    Down payment assistance is not only about needing help with the down payment. Lenders and programs still review your credit score, payment history, debt-to-income ratio, and ability to qualify for the mortgage. If your DTI works but your score is low, your next move may be fixing credit instead of waiting months.
+  </p>
+
+  <div class="dpa-info-grid">
+    <div class="dpa-info-card">
+      <h3>Credit Score</h3>
+      <p>Your score helps determine if your file meets minimum program and loan requirements.</p>
+    </div>
+    <div class="dpa-info-card">
+      <h3>Negative Items</h3>
+      <p>Collections, charge-offs, late payments, and inaccurate items may weaken your approval profile.</p>
+    </div>
+    <div class="dpa-info-card">
+      <h3>Utilization</h3>
+      <p>High credit card balances compared to limits can pull down your score even when income is strong.</p>
+    </div>
+  </div>
+</section>
+
+<section class="dpa-credit-section">
+  <h2 class="dpa-credit-section-title">Two fast credit paths for homebuyers</h2>
+  <p class="dpa-credit-section-copy">
+    Depending on what is hurting your score, you may need negative items removed, utilization lowered, or both.
+  </p>
+
+  <div class="dpa-path-grid">
+    <div class="dpa-path-card">
+      <div class="dpa-path-top">Path 1</div>
+      <h3>Remove negative items with <span>CreditJump.ai</span></h3>
+      <p>
+        If collections, charge-offs, late payments, or inaccurate negative items are dragging your score down, CreditJump.ai can help target the issues that may be blocking your approval.
+      </p>
+      <div class="dpa-check-list">
+        <div class="dpa-check-item"><span>✓</span> Helps identify negative items hurting your score</div>
+        <div class="dpa-check-item"><span>✓</span> Helps clean up report issues before applying</div>
+        <div class="dpa-check-item"><span>✓</span> Built for buyers who need to become mortgage-ready faster</div>
+      </div>
+      <a class="dpa-credit-btn red" href="https://creditjump.ai" target="_top">GO TO CREDITJUMP.AI</a>
+    </div>
+
+    <div class="dpa-path-card">
+      <div class="dpa-path-top">Path 2</div>
+      <h3>Lower utilization with <span>TradelinesQuick.com</span></h3>
+      <p>
+        If your DTI is acceptable but your score is being hit by high credit card utilization, adding a tradeline may help lower your utilization percentage without paying off large debts immediately.
+      </p>
+      <div class="dpa-check-list">
+        <div class="dpa-check-item"><span>✓</span> Strategic option for high card utilization</div>
+        <div class="dpa-check-item"><span>✓</span> May improve score positioning without paying off every balance</div>
+        <div class="dpa-check-item"><span>✓</span> Useful when DTI is okay but score needs help</div>
+      </div>
+      <a class="dpa-credit-btn" href="https://tradelinesquick.com" target="_top">GO TO TRADELINESQUICK.COM</a>
+    </div>
+  </div>
+
+  <div class="dpa-note-box">
+    <span>Important:</span> Tradelines are not a replacement for paying bills on time or managing debt. They are a strategy for certain buyers whose main issue is utilization, not income or DTI.
+  </div>
+</section>
+
+<section class="dpa-credit-section">
+  <h2 class="dpa-credit-section-title">Your next step</h2>
+  <p class="dpa-credit-section-copy">
+    If your score is under 640, fix the issue first so you can come back stronger. If your score is already around 640 or higher, return to DPA Help Center and continue your eligibility review.
+  </p>
+
+  <div class="dpa-path-grid">
+    <div class="dpa-path-card">
+      <h3>Score under 640?</h3>
+      <p>Work on the credit issue first so you do not waste time with a weak file.</p>
+      <a class="dpa-credit-btn red" href="https://creditjump.ai" target="_top">FIX MY CREDIT FIRST</a>
+    </div>
+
+    <div class="dpa-path-card">
+      <h3>Score 640+?</h3>
+      <p>Return to the DPA Help Center and continue your eligibility review.</p>
+      <a class="dpa-credit-btn" href="https://www.dpahelpcenter.com" target="_top">RETURN TO DPA HELP CENTER</a>
+    </div>
+  </div>
+</section>
+</div>
+</body>
+</html>
