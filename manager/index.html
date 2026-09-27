@@ -39,6 +39,7 @@
     .nav-btn{width:100%;border:0;border-radius:14px;background:transparent;color:rgba(255,255,255,.72);padding:13px 14px;display:flex;align-items:center;gap:12px;text-align:left;font-size:13px;font-weight:800;transition:.2s}
     .nav-btn:hover{background:rgba(255,255,255,.08);color:#fff}
     .nav-btn.active{background:#fff;color:var(--navy);box-shadow:0 10px 24px rgba(0,0,0,.16)}
+    .nav-btn.nav-placeholder{color:rgba(255,255,255,.34);cursor:not-allowed;filter:grayscale(1)}.nav-btn.nav-placeholder:hover{background:transparent;color:rgba(255,255,255,.34)}.nav-placeholder-tag{margin-left:auto;border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:3px 6px;font-size:7px;font-weight:900;letter-spacing:.5px;text-transform:uppercase}
     .nav-icon{width:29px;height:29px;border-radius:9px;display:grid;place-items:center;background:rgba(255,255,255,.09);font-size:14px}
     .nav-btn.active .nav-icon{background:#edf3ff;color:var(--blue)}
     .nav-count{margin-left:auto;min-width:23px;height:23px;border-radius:999px;background:var(--red);color:#fff;display:grid;place-items:center;font-size:9px;font-weight:900}
@@ -163,6 +164,7 @@
         <button class="nav-btn active" data-view="crm">DPA Department<span class="nav-count" id="dpaNavCount">0</span></button>
         <button class="nav-btn" data-view="credit">Credit Department</button>
         <button class="nav-btn" data-view="tax">Tax Department</button>
+        <button class="nav-btn nav-placeholder" type="button" disabled aria-disabled="true">Solar Department<span class="nav-placeholder-tag">Later</span></button>
         <button class="nav-btn" data-view="review">Review Department</button>
         <div class="nav-divider" aria-hidden="true"></div>
         <button class="nav-btn" data-view="marketing">Marketing</button>
