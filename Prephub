@@ -302,6 +302,35 @@
   border-color:rgba(210,38,48,.24);
   background:rgba(255,255,255,.86);
 }
+#prephub-desktop-results .ph-card.deficient{
+  border:2px solid #D22630;
+  animation:phDeficientBeam 2.2s linear infinite;
+}
+#prephub-desktop-results .ph-card.deficient::before{
+  content:"";
+  position:absolute;
+  inset:-3px;
+  border-radius:20px;
+  pointer-events:none;
+  background:conic-gradient(from var(--beam-angle,0deg),transparent 0deg,transparent 278deg,rgba(210,38,48,.12) 302deg,#ff3340 333deg,#fff 342deg,#D22630 350deg,transparent 360deg);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  padding:3px;
+}
+@property --beam-angle{
+  syntax:"<angle>";
+  initial-value:0deg;
+  inherits:false;
+}
+@keyframes phDeficientBeam{
+  0%{--beam-angle:0deg;box-shadow:0 -7px 18px rgba(210,38,48,.34)!important}
+  25%{box-shadow:7px 0 18px rgba(210,38,48,.34)!important}
+  50%{--beam-angle:180deg;box-shadow:0 7px 18px rgba(210,38,48,.34)!important}
+  75%{box-shadow:-7px 0 18px rgba(210,38,48,.34)!important}
+  100%{--beam-angle:360deg;box-shadow:0 -7px 18px rgba(210,38,48,.34)!important}
+}
+#prephub-desktop-results .ph-card.deficient.completed{animation:none;box-shadow:none!important;border-color:rgba(0,87,184,.35)}
 #prephub-desktop-results .ph-icon{
   width:64px;
   height:64px;
@@ -828,6 +857,25 @@
 #prephub-desktop-results .ph-empty{display:none;text-align:center;padding:30px;border-radius:18px;background:rgba(0,87,184,.06);color:#081F5C;font-weight:850}
 #prephub-desktop-results .ph-support{margin-top:14px;text-align:center;color:#52617c;font-size:12px;font-weight:750}
 #prephub-desktop-results .ph-support a{color:#0057B8;font-weight:950;text-decoration:none}
+#prephub-desktop-results .ph-login-modal{
+  position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;padding:22px;
+  background:rgba(4,15,45,.76);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);
+}
+#prephub-desktop-results .ph-login-modal.open{display:flex}
+#prephub-desktop-results .ph-login-box{
+  position:relative;width:min(440px,100%);border-radius:24px;background:#fff;padding:30px;
+  box-shadow:0 24px 80px rgba(0,0,0,.34);border:2px solid rgba(210,38,48,.28);color:#081F5C;
+}
+#prephub-desktop-results .ph-login-close{position:absolute;right:16px;top:13px;border:0;background:transparent;color:#52617c;font-size:28px;line-height:1;cursor:pointer}
+#prephub-desktop-results .ph-login-kicker{color:#D22630;font-size:10px;font-weight:950;letter-spacing:1.8px;text-transform:uppercase}
+#prephub-desktop-results .ph-login-box h2{margin:8px 32px 8px 0;font-size:28px;line-height:1.08;font-weight:950;letter-spacing:-.7px}
+#prephub-desktop-results .ph-login-box p{margin:0 0 18px;color:#52617c;font-size:14px;font-weight:650;line-height:1.5}
+#prephub-desktop-results .ph-login-label{display:block;margin-bottom:7px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1px}
+#prephub-desktop-results .ph-login-input{width:100%;border:1px solid rgba(8,31,92,.2);border-radius:12px;padding:14px 15px;font-size:16px;color:#081F5C;outline:none}
+#prephub-desktop-results .ph-login-input:focus{border-color:#D22630;box-shadow:0 0 0 3px rgba(210,38,48,.11)}
+#prephub-desktop-results .ph-login-submit{width:100%;margin-top:12px;border:0;border-radius:12px;background:#D22630;color:#fff;padding:14px;font-size:12px;font-weight:950;letter-spacing:.5px;cursor:pointer}
+#prephub-desktop-results .ph-login-submit:disabled{opacity:.55;cursor:wait}
+#prephub-desktop-results .ph-login-message{min-height:20px;margin-top:12px;color:#081F5C;font-size:12px;font-weight:750;line-height:1.4}
 </style>
 
 <div class="ph-top">
@@ -973,6 +1021,21 @@
   </div>
 </div>
 
+<div class="ph-login-modal" id="prephubLoginModalDesktop" role="dialog" aria-modal="true" aria-labelledby="prephubLoginTitleDesktop">
+  <div class="ph-login-box">
+    <button class="ph-login-close" id="prephubLoginCloseDesktop" type="button" aria-label="Close login">×</button>
+    <div class="ph-login-kicker">Secure PrepHub access</div>
+    <h2 id="prephubLoginTitleDesktop">Sign in to open this step</h2>
+    <p>Use the same email from your assessment. We’ll send a secure login link—no password needed.</p>
+    <form id="prephubLoginFormDesktop">
+      <label class="ph-login-label" for="prephubLoginEmailDesktop">Email address</label>
+      <input class="ph-login-input" id="prephubLoginEmailDesktop" type="email" autocomplete="email" required placeholder="you@example.com">
+      <button class="ph-login-submit" id="prephubLoginSubmitDesktop" type="submit">SEND SECURE LOGIN LINK</button>
+    </form>
+    <div class="ph-login-message" id="prephubLoginMessageDesktop" aria-live="polite"></div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.3/dist/umd/supabase.min.js"></script>
 <script>
 (function(){
@@ -985,6 +1048,7 @@
     try{pageParams=new URL(document.referrer).searchParams}catch(e){}
   }
   const leadId=pageParams.get("lead")||localStorage.getItem("dpa_prephub_lead_id")||"";
+  let activeSession=null;
   const HOMEBUYER_DESKTOP_FACE_IDS=[
     12,15,33,36,47,
     52,55,57,60,61,
@@ -1060,14 +1124,45 @@
   function showInitialPlan(){
     const requested=["credit","dti","job","taxes"].filter(function(key){return pageParams.get(key)==="1"});
     document.querySelectorAll("#prephub-desktop-results .ph-card[data-task-key]").forEach(function(card){
-      card.style.display=requested.length===0||requested.includes(card.dataset.taskKey)?"grid":"none";
+      const isDeficient=requested.includes(card.dataset.taskKey);
+      card.style.display=requested.length===0||isDeficient?"grid":"none";
+      card.classList.toggle("deficient",isDeficient);
+      card.classList.remove("account-ready","completed");
     });
-    setScore(localStorage.getItem("dpa_prephub_score")||0);
+    const score=pageParams.get("score")||localStorage.getItem("dpa_prephub_score")||0;
+    localStorage.setItem("dpa_prephub_score",score);
+    setScore(score);
+  }
+
+  function buildLoginRedirect(){
+    const params=new URLSearchParams();
+    if(leadId)params.set("lead",leadId);
+    const score=pageParams.get("score")||localStorage.getItem("dpa_prephub_score")||"";
+    if(score!=="")params.set("score",score);
+    ["credit","dti","job","taxes"].forEach(function(key){if(pageParams.get(key)==="1")params.set(key,"1")});
+    const query=params.toString();
+    return PREPHUB_DESKTOP_LINK+(query?"?"+query:"");
+  }
+
+  function openLogin(){
+    const modal=document.getElementById("prephubLoginModalDesktop");
+    const email=document.getElementById("prephubLoginEmailDesktop");
+    const message=document.getElementById("prephubLoginMessageDesktop");
+    if(email)email.value=localStorage.getItem("dpa_prephub_email")||"";
+    if(message)message.textContent="";
+    if(modal)modal.classList.add("open");
+    setTimeout(function(){if(email)email.focus()},0);
+  }
+
+  function closeLogin(){
+    const modal=document.getElementById("prephubLoginModalDesktop");
+    if(modal)modal.classList.remove("open");
   }
 
   async function loadAccount(){
     const sessionResult=await prephubDb.auth.getSession();
     const session=sessionResult.data&&sessionResult.data.session;
+    activeSession=session||null;
     const logout=document.getElementById("prephubLogoutDesktop");
     const resend=document.getElementById("prephubResendDesktop");
 
@@ -1116,6 +1211,7 @@
       card.style.display=task?"grid":"none";
       card.classList.toggle("account-ready",!!task);
       card.classList.toggle("completed",!!task&&task.completed);
+      card.classList.toggle("deficient",!!task&&!task.completed);
       if(task){
         card.href=task.action_url;
         const button=card.querySelector(".ph-complete");
@@ -1147,16 +1243,40 @@
     });
   });
 
+  document.querySelectorAll("#prephub-desktop-results .ph-card[data-task-key]").forEach(function(card){
+    card.addEventListener("click",function(event){
+      if(!activeSession){
+        event.preventDefault();
+        openLogin();
+      }
+    });
+  });
+
   const resendButton=document.getElementById("prephubResendDesktop");
-  if(resendButton)resendButton.addEventListener("click",async function(){
-    const saved=localStorage.getItem("dpa_prephub_email")||"";
-    const email=saved||window.prompt("Enter the email used for your DPA Help Center assessment:","");
+  if(resendButton)resendButton.addEventListener("click",openLogin);
+
+  const loginClose=document.getElementById("prephubLoginCloseDesktop");
+  if(loginClose)loginClose.addEventListener("click",closeLogin);
+  const loginModal=document.getElementById("prephubLoginModalDesktop");
+  if(loginModal)loginModal.addEventListener("click",function(event){if(event.target===loginModal)closeLogin()});
+  document.addEventListener("keydown",function(event){if(event.key==="Escape")closeLogin()});
+
+  const loginForm=document.getElementById("prephubLoginFormDesktop");
+  if(loginForm)loginForm.addEventListener("submit",async function(event){
+    event.preventDefault();
+    const emailInput=document.getElementById("prephubLoginEmailDesktop");
+    const submit=document.getElementById("prephubLoginSubmitDesktop");
+    const message=document.getElementById("prephubLoginMessageDesktop");
+    const email=(emailInput.value||"").trim().toLowerCase();
     if(!email)return;
-    resendButton.disabled=true;
-    const redirectTo=PREPHUB_DESKTOP_LINK+(leadId?"?lead="+encodeURIComponent(leadId):"");
-    const result=await prephubDb.auth.signInWithOtp({email:email,options:{emailRedirectTo:redirectTo}});
-    resendButton.disabled=false;
-    setAccountStatus(result.error?"We couldn’t send the login email. Please try again.":"A new secure login link was sent to "+email+".");
+    submit.disabled=true;
+    message.textContent="Sending your secure login link…";
+    const result=await prephubDb.auth.signInWithOtp({email:email,options:{emailRedirectTo:buildLoginRedirect()}});
+    submit.disabled=false;
+    if(result.error){message.textContent="We couldn’t send the login email. Please check the address and try again.";return;}
+    localStorage.setItem("dpa_prephub_email",email);
+    message.textContent="Check "+email+" for your secure login link. You can close this window after it arrives.";
+    setAccountStatus("A secure login link was sent to "+email+".");
   });
 
   const logoutButton=document.getElementById("prephubLogoutDesktop");
