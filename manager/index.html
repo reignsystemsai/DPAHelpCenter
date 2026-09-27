@@ -596,8 +596,8 @@
       prepRows.querySelectorAll("tr[data-buyer]").forEach(row=>row.addEventListener("click",()=>openBuyer(row.dataset.buyer)));
     }
 
-    const creditColumns=["Name","Owner / Agent","Updated_Date","lead_id","First_Name","Last_Name","Phone","City","email","ZIP","Utilization","Credit_score","Trans","Exp","Equ","Mid_Fico_Score","Homeowner","Route","Source","FICO_Status"];
-    const creditWorkflowColumns=["Name","Owner / Agent","Credit_score","Mid_Fico_Score","Credit_Status","Last Updated","collections","Charge_offs","BK","Inquires","Disputes_Sent","FTC_Sent","CFPB_Sent","FICO_Status","Sent_to_Hub"];
+    const creditColumns=["Name","Owner","Updated_Date","lead_id","First_Name","Last_Name","Phone","City","email","ZIP","Utilization","Credit_score","Trans","Exp","Equ","Mid_Fico_Score","Homeowner","Route","Source","FICO_Status"];
+    const creditWorkflowColumns=["Name","Owner","Credit_score","Mid_Fico_Score","Credit_Status","Last Updated","collections","Charge_offs","BK","Inquires","Disputes_Sent","FTC_Sent","CFPB_Sent","FICO_Status","Sent_to_Hub"];
     const creditStatusOptions={Homeowner:["Yes","No"],Credit_Status:["Complete","Department"],Disputes_Sent:["Working on it","Done","Stuck"],FTC_Sent:["Working on it","Done","Stuck"],CFPB_Sent:["Working on it","Done","Stuck"],Sent_to_Hub:["Sent","Not Sent"]};
     function creditSelect(b,key){
       b.creditDepartment??={};
@@ -606,7 +606,7 @@
     }
     function creditValue(b,key){
       b.creditDepartment??={};
-      if(key==="Owner / Agent")return ownerButton(b);
+      if(key==="Owner")return ownerButton(b);
       const values={Name:b.name,Updated_Date:b.updated,lead_id:b.leadId,First_Name:b.firstName,Last_Name:b.lastName,Phone:b.phone,City:b.city,email:b.email,ZIP:b.zip,Utilization:b.creditDepartment.Utilization||"—",Credit_score:b.credit,Trans:b.creditDepartment.Trans||"—",Exp:b.creditDepartment.Exp||"—",Equ:b.creditDepartment.Equ||"—",Mid_Fico_Score:b.creditDepartment.Mid_Fico_Score||"—","Last Updated":b.creditDepartment.lastUpdated||"—",collections:b.creditDepartment.collections||"—",Charge_offs:b.creditDepartment.Charge_offs||"—",BK:b.creditDepartment.BK||"—",Inquires:b.creditDepartment.Inquires||"—",Route:b.route,Source:b.source,FICO_Status:Number(b.credit)>=640?"Qualified 640+":"Below 640"};
       if(creditStatusOptions[key])return creditSelect(b,key);
       if(key==="FICO_Status")return `<span class="credit-fico">${values[key]}</span>`;
@@ -626,11 +626,11 @@
       creditBoard.querySelectorAll(".owner-assign").forEach(button=>button.addEventListener("click",event=>{event.stopPropagation();openOwner(button.dataset.buyer)}));
     }
 
-    const taxColumns=["Name","Owner / Agent","Updated_Date","lead_id","First_Name","Last_Name","Phone","Email","City","Taxes_status","Taxes_filed","Estimate_return","Dependents","Source","Route"];
-    const taxWorkflowColumns=["Name","Owner / Agent","Taxes_status","Taxes_filed","Estimate_return","Dependents","Updated_Date","lead_id"];
+    const taxColumns=["Name","Owner","Updated_Date","lead_id","First_Name","Last_Name","Phone","Email","City","Taxes_status","Taxes_filed","Estimate_return","Dependents","Source","Route"];
+    const taxWorkflowColumns=["Name","Owner","Taxes_status","Taxes_filed","Estimate_return","Dependents","Updated_Date","lead_id"];
     function taxField(b,key){
       b.taxDepartment??={};
-      if(key==="Owner / Agent")return ownerButton(b);
+      if(key==="Owner")return ownerButton(b);
       if(key==="Taxes_status")return `<select class="credit-status" data-tax-field="${key}" data-buyer="${b.id}" aria-label="Taxes status for ${b.name}"><option value="">—</option>${["Complete","Department"].map(option=>`<option${option===b.taxDepartment[key]?" selected":""}>${option}</option>`).join("")}</select>`;
       if(key==="Taxes_filed"){const value=b.taxDepartment[key]||b.taxes||"";return `<select class="credit-status" data-tax-field="${key}" data-buyer="${b.id}" aria-label="Taxes filed for ${b.name}"><option value="">—</option>${["filed_1_year","filed_2_years","not_filed_recently","not_sure"].map(option=>`<option${option===value?" selected":""}>${option}</option>`).join("")}</select>`}
       if(key==="Estimate_return")return `<input class="workflow-field" type="number" min="0" step="1" data-tax-field="${key}" data-buyer="${b.id}" value="${b.taxDepartment[key]||""}" placeholder="$0">`;
@@ -652,11 +652,11 @@
       taxBoard.querySelectorAll(".owner-assign").forEach(button=>button.addEventListener("click",event=>{event.stopPropagation();openOwner(button.dataset.buyer)}));
     }
 
-    const reviewColumns=["Name","Owner / Agent","Updated_Date","lead_id","First_Name","Last_Name","City","Zip","Email","Phone","Job","Job_Status","Income","Income_Status","Co-signer","DTI%","DTI_Status","Taxes_Filed","Credit_score","Route","Source"];
-    const reviewWorkflowColumns=["Name","Owner / Agent","Job","Job_Status","Income","Income_Status","Co-signer","DTI%","DTI_Status","Taxes_Filed","Credit_score"];
+    const reviewColumns=["Name","Owner","Updated_Date","lead_id","First_Name","Last_Name","City","Zip","Email","Phone","Job","Job_Status","Income","Income_Status","Co-signer","DTI%","DTI_Status","Taxes_Filed","Credit_score","Route","Source"];
+    const reviewWorkflowColumns=["Name","Owner","Job","Job_Status","Income","Income_Status","Co-signer","DTI%","DTI_Status","Taxes_Filed","Credit_score"];
     function reviewField(b,key,workflow=false){
       b.reviewDepartment??={};
-      if(key==="Owner / Agent")return ownerButton(b);
+      if(key==="Owner")return ownerButton(b);
       if(key==="Job_Status"||key==="Income_Status")return `<select class="credit-status" data-review-field="${key}" data-buyer="${b.id}" aria-label="${key} for ${b.name}"><option value="">—</option>${b.reviewDepartment[key]?`<option selected>${b.reviewDepartment[key]}</option>`:""}</select>`;
       if(key==="Co-signer")return `<select class="credit-status" data-review-field="${key}" data-buyer="${b.id}" aria-label="Co-signer status for ${b.name}"><option value="">—</option>${["Working on it","Done","Stuck"].map(option=>`<option${option===b.reviewDepartment[key]?" selected":""}>${option}</option>`).join("")}</select>`;
       if(key==="DTI_Status")return `<select class="credit-status" data-review-field="${key}" data-buyer="${b.id}" aria-label="DTI status for ${b.name}"><option value="">—</option>${["Yes","No"].map(option=>`<option${option===b.reviewDepartment[key]?" selected":""}>${option}</option>`).join("")}</select>`;
