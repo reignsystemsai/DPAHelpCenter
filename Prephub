@@ -1,0 +1,991 @@
+<div id="prephub-desktop-results">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+#prephub-desktop-results{
+  width:100%;
+  max-width:1180px;
+  margin:0 auto;
+  padding:24px 28px 38px;
+  background:#fff;
+  font-family:Inter,Arial,sans-serif;
+  color:#081F5C;
+  overflow-x:hidden!important;
+  -ms-overflow-style:none!important;
+  scrollbar-width:none!important;
+}
+#prephub-desktop-results,
+#prephub-desktop-results *{
+  box-sizing:border-box;
+  font-family:Inter,Arial,sans-serif;
+}
+#prephub-desktop-results::-webkit-scrollbar,
+#prephub-desktop-results *::-webkit-scrollbar{
+  width:0!important;
+  height:0!important;
+  display:none!important;
+}
+
+/* HEADER */
+#prephub-desktop-results .ph-top{
+  display:grid;
+  grid-template-columns:320px 1fr 270px;
+  gap:24px;
+  align-items:start;
+  margin-bottom:30px;
+}
+#prephub-desktop-results .ph-logo-wrap{
+  text-align:left;
+}
+#prephub-desktop-results .ph-logo{
+  font-size:34px;
+  line-height:.95;
+  font-weight:950;
+  letter-spacing:-1px;
+  color:#081F5C;
+  white-space:nowrap;
+}
+#prephub-desktop-results .ph-logo:after{
+  content:"";
+  display:block;
+  width:145px;
+  height:7px;
+  background:#D22630;
+  border-radius:999px;
+  margin:6px 0 12px 54px;
+}
+#prephub-desktop-results .ph-kicker{
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:5px;
+  color:#0057B8;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+
+/* HERO */
+#prephub-desktop-results .ph-hero{
+  text-align:center;
+  margin:0 auto;
+}
+#prephub-desktop-results .ph-small-kicker{
+  font-size:11px;
+  font-weight:950;
+  letter-spacing:5px;
+  color:#0057B8;
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+#prephub-desktop-results .ph-hero h1{
+  font-size:46px;
+  line-height:.96;
+  letter-spacing:-2.6px;
+  font-weight:950;
+  margin:0 0 12px;
+  color:#081F5C;
+}
+#prephub-desktop-results .ph-hero h1 span{
+  color:#D22630;
+}
+#prephub-desktop-results .ph-hero p{
+  font-size:15px;
+  font-weight:700;
+  line-height:1.45;
+  color:#5f6b7f;
+  margin:0 auto;
+  max-width:620px;
+}
+
+/* TRUST BAR */
+#prephub-desktop-results .dpa-right-trust{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  margin:0 auto;
+  width:100%;
+  max-width:270px;
+  padding:13px 14px;
+  border:1px solid rgba(8,31,92,.08);
+  border-radius:18px;
+  background:#fff;
+  box-shadow:0 14px 34px rgba(8,31,92,.07);
+  overflow:hidden;
+}
+#prephub-desktop-results .dpa-face-stack{
+  width:148px;
+  height:38px;
+  position:relative;
+  flex:0 0 148px;
+}
+#prephub-desktop-results .dpa-face{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  position:absolute;
+  top:0;
+  border:2.5px solid #fff;
+  overflow:hidden;
+  opacity:0;
+  transform:scale(.86);
+  animation:prephubDesktopFaceCycle 20s infinite;
+  background:#eef3ff;
+  box-shadow:0 8px 14px rgba(8,31,92,.08);
+}
+#prephub-desktop-results .dpa-face img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+#prephub-desktop-results .dpa-face:nth-child(1),
+#prephub-desktop-results .dpa-face:nth-child(6),
+#prephub-desktop-results .dpa-face:nth-child(11),
+#prephub-desktop-results .dpa-face:nth-child(16){left:0}
+#prephub-desktop-results .dpa-face:nth-child(2),
+#prephub-desktop-results .dpa-face:nth-child(7),
+#prephub-desktop-results .dpa-face:nth-child(12),
+#prephub-desktop-results .dpa-face:nth-child(17){left:28px}
+#prephub-desktop-results .dpa-face:nth-child(3),
+#prephub-desktop-results .dpa-face:nth-child(8),
+#prephub-desktop-results .dpa-face:nth-child(13),
+#prephub-desktop-results .dpa-face:nth-child(18){left:56px}
+#prephub-desktop-results .dpa-face:nth-child(4),
+#prephub-desktop-results .dpa-face:nth-child(9),
+#prephub-desktop-results .dpa-face:nth-child(14),
+#prephub-desktop-results .dpa-face:nth-child(19){left:84px}
+#prephub-desktop-results .dpa-face:nth-child(5),
+#prephub-desktop-results .dpa-face:nth-child(10),
+#prephub-desktop-results .dpa-face:nth-child(15),
+#prephub-desktop-results .dpa-face:nth-child(20){left:112px}
+#prephub-desktop-results .dpa-face:nth-child(1),
+#prephub-desktop-results .dpa-face:nth-child(2),
+#prephub-desktop-results .dpa-face:nth-child(3),
+#prephub-desktop-results .dpa-face:nth-child(4),
+#prephub-desktop-results .dpa-face:nth-child(5){animation-delay:0s}
+#prephub-desktop-results .dpa-face:nth-child(6),
+#prephub-desktop-results .dpa-face:nth-child(7),
+#prephub-desktop-results .dpa-face:nth-child(8),
+#prephub-desktop-results .dpa-face:nth-child(9),
+#prephub-desktop-results .dpa-face:nth-child(10){animation-delay:5s}
+#prephub-desktop-results .dpa-face:nth-child(11),
+#prephub-desktop-results .dpa-face:nth-child(12),
+#prephub-desktop-results .dpa-face:nth-child(13),
+#prephub-desktop-results .dpa-face:nth-child(14),
+#prephub-desktop-results .dpa-face:nth-child(15){animation-delay:10s}
+#prephub-desktop-results .dpa-face:nth-child(16),
+#prephub-desktop-results .dpa-face:nth-child(17),
+#prephub-desktop-results .dpa-face:nth-child(18),
+#prephub-desktop-results .dpa-face:nth-child(19),
+#prephub-desktop-results .dpa-face:nth-child(20){animation-delay:15s}
+
+@keyframes prephubDesktopFaceCycle{
+  0%,21%{opacity:1;transform:scale(1)}
+  25%,100%{opacity:0;transform:scale(.86)}
+}
+
+#prephub-desktop-results .dpa-trust-copy{
+  font-size:13px;
+  font-weight:750;
+  line-height:1.1;
+  color:#6f7890;
+  text-align:left;
+  min-width:0;
+}
+#prephub-desktop-results .dpa-trust-copy strong{
+  color:#081F5C;
+  font-weight:950;
+}
+#prephub-desktop-results .dpa-stars{
+  margin-top:5px;
+  color:#F5B301;
+  font-size:15px;
+  letter-spacing:2px;
+}
+#prephub-desktop-results .ph-dots{
+  display:none;
+}
+
+/* MAIN LAYOUT */
+#prephub-desktop-results .ph-shell{
+  display:grid;
+  grid-template-columns:1.08fr .92fr;
+  gap:22px;
+  align-items:start;
+}
+#prephub-desktop-results .ph-left,
+#prephub-desktop-results .ph-right{
+  min-width:0;
+}
+
+/* STEPS */
+#prephub-desktop-results .ph-steps{
+  width:100%;
+  margin:0;
+  padding:22px;
+  border:1px solid rgba(8,31,92,.08);
+  border-radius:24px;
+  background:rgba(255,255,255,.66);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  box-shadow:none!important;
+  overflow:hidden!important;
+}
+#prephub-desktop-results .ph-section-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin:0 0 16px;
+}
+#prephub-desktop-results .ph-section-title{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-size:25px;
+  line-height:1.05;
+  font-weight:950;
+  letter-spacing:-1px;
+  margin:0;
+  color:#081F5C;
+  min-width:0;
+}
+#prephub-desktop-results .ph-target{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:rgba(210,38,48,.08);
+  color:#D22630;
+  font-size:22px;
+  flex:0 0 auto;
+}
+#prephub-desktop-results .ph-focus{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:#D22630;
+  color:#fff;
+  font-size:12px;
+  font-weight:900;
+  border-radius:8px;
+  padding:9px 14px;
+  white-space:nowrap;
+  flex:0 0 auto;
+}
+#prephub-desktop-results .ph-cards{
+  display:grid;
+  gap:13px;
+}
+#prephub-desktop-results .ph-card{
+  position:relative;
+  width:100%;
+  min-height:105px;
+  border-radius:18px;
+  border:1px solid rgba(8,31,92,.08);
+  background:rgba(255,255,255,.70);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  padding:18px 82px 18px 18px;
+  display:grid;
+  grid-template-columns:74px minmax(0,1fr);
+  gap:16px;
+  align-items:center;
+  text-decoration:none;
+  overflow:hidden;
+  box-shadow:none!important;
+  transition:transform .22s ease, border-color .22s ease, background .22s ease;
+}
+#prephub-desktop-results .ph-card:hover{
+  transform:translateY(-3px);
+  border-color:rgba(210,38,48,.24);
+  background:rgba(255,255,255,.86);
+}
+#prephub-desktop-results .ph-icon{
+  width:64px;
+  height:64px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:rgba(210,38,48,.08);
+  color:#D22630;
+  font-size:31px;
+}
+#prephub-desktop-results .ph-tag{
+  display:block;
+  color:#D22630;
+  font-size:9px;
+  font-weight:950;
+  letter-spacing:1.4px;
+  text-transform:uppercase;
+  margin-bottom:5px;
+}
+#prephub-desktop-results .ph-card h3{
+  font-size:20px;
+  line-height:1.05;
+  font-weight:950;
+  letter-spacing:-.5px;
+  margin:0 0 6px;
+  color:#081F5C;
+}
+#prephub-desktop-results .ph-card p{
+  font-size:13px;
+  font-weight:650;
+  line-height:1.35;
+  color:#1b2b55;
+  margin:0;
+}
+#prephub-desktop-results .ph-check{
+  position:absolute;
+  right:44px;
+  top:50%;
+  transform:translateY(-50%);
+  width:31px;
+  height:31px;
+  border-radius:50%;
+  background:#D22630;
+  color:#fff;
+  display:grid;
+  place-items:center;
+  font-size:13px;
+  font-weight:950;
+  box-shadow:none!important;
+}
+#prephub-desktop-results .ph-arrow{
+  position:absolute;
+  right:18px;
+  top:50%;
+  transform:translateY(-50%);
+  color:#081F5C;
+  font-size:30px;
+  line-height:1;
+  font-weight:400;
+}
+
+/* ALERT */
+#prephub-desktop-results .ph-alert{
+  display:grid;
+  grid-template-columns:54px minmax(0,1fr);
+  gap:14px;
+  align-items:center;
+  width:100%;
+  border:1px solid rgba(210,38,48,.16);
+  background:rgba(210,38,48,.045);
+  border-radius:17px;
+  padding:16px 18px;
+  margin:14px 0 0;
+  box-shadow:none!important;
+}
+#prephub-desktop-results .ph-alert-icon{
+  width:54px;
+  height:54px;
+  border-radius:50%;
+  background:#D22630;
+  color:#fff;
+  display:grid;
+  place-items:center;
+  font-size:28px;
+  font-weight:950;
+}
+#prephub-desktop-results .ph-alert strong{
+  display:block;
+  font-size:17px;
+  color:#D22630;
+  line-height:1.2;
+}
+#prephub-desktop-results .ph-alert span{
+  display:block;
+  font-size:13px;
+  font-weight:650;
+  color:#081F5C;
+  line-height:1.35;
+}
+
+/* PREPHUB SAVE BOX */
+#prephub-desktop-results .ph-prep-blue{
+  width:100%;
+  margin:0 auto 16px;
+  border-radius:24px;
+  background:linear-gradient(135deg,#081F5C,#001B4F);
+  color:#fff;
+  padding:28px 28px 24px;
+  box-shadow:none!important;
+  overflow:hidden;
+}
+#prephub-desktop-results .ph-prep-blue small{
+  display:block;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.78);
+  margin:0 0 11px;
+}
+#prephub-desktop-results .ph-prep-blue h2{
+  margin:0 0 10px;
+  font-size:38px;
+  line-height:.9;
+  letter-spacing:-1.6px;
+  font-weight:950;
+  color:#fff;
+}
+#prephub-desktop-results .ph-prep-blue h2 span{
+  color:#D22630;
+}
+#prephub-desktop-results .ph-prep-blue p{
+  margin:0 0 20px;
+  font-size:13px;
+  font-weight:750;
+  line-height:1.4;
+  color:rgba(255,255,255,.9);
+}
+#prephub-desktop-results .ph-prep-blue .ph-copy-label{
+  font-size:12px;
+  font-weight:700;
+  color:rgba(255,255,255,.88);
+  margin:0 0 8px;
+}
+#prephub-desktop-results .ph-copy{
+  width:100%;
+  min-width:0;
+  display:grid;
+  grid-template-columns:42px minmax(0,1fr) 110px;
+  height:46px;
+  border-radius:13px;
+  overflow:hidden;
+  background:rgba(255,255,255,.95);
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:none!important;
+}
+#prephub-desktop-results .ph-link-icon{
+  display:grid;
+  place-items:center;
+  color:#081F5C;
+  font-size:18px;
+  background:#fff;
+}
+#prephub-desktop-results .ph-url{
+  display:flex;
+  align-items:center;
+  padding:0 12px;
+  font-size:12px;
+  font-weight:800;
+  color:#081F5C;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  min-width:0;
+}
+#prephub-desktop-results .ph-copy button{
+  border:0;
+  background:#D22630;
+  color:#fff;
+  font-size:11px;
+  font-weight:950;
+  cursor:pointer;
+  transition:transform .22s ease, background .22s ease;
+}
+#prephub-desktop-results .ph-copy button:hover{
+  background:#b91d27;
+  transform:translateY(-1px);
+}
+#prephub-desktop-results #copyStatusDesktop{
+  font-size:10px;
+  font-weight:800;
+  margin:9px 0 0;
+  color:rgba(255,255,255,.72);
+}
+#prephub-desktop-results .ph-benefits{
+  display:grid;
+  gap:12px;
+  margin-top:18px;
+  padding-top:16px;
+  border-top:1px solid rgba(255,255,255,.12);
+}
+#prephub-desktop-results .ph-benefit{
+  display:grid;
+  grid-template-columns:34px 1fr;
+  gap:12px;
+  align-items:center;
+  color:#fff;
+  font-size:13px;
+  font-weight:750;
+  line-height:1.25;
+}
+#prephub-desktop-results .ph-benefit i{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  font-style:normal;
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  font-weight:950;
+  font-size:14px;
+}
+
+/* EMAIL */
+#prephub-desktop-results .ph-email{
+  width:100%;
+  margin:0 auto;
+  border:1px solid rgba(0,87,184,.12);
+  border-radius:20px;
+  background:rgba(255,255,255,.66);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  padding:22px;
+  display:grid;
+  grid-template-columns:60px minmax(0,1fr);
+  gap:14px;
+  align-items:center;
+  box-shadow:none!important;
+}
+#prephub-desktop-results .ph-email-icon{
+  width:54px;
+  height:54px;
+  border-radius:16px;
+  display:grid;
+  place-items:center;
+  color:#081F5C;
+  font-size:32px;
+}
+#prephub-desktop-results .ph-email h3{
+  font-size:21px;
+  margin:0 0 6px;
+  font-weight:950;
+}
+#prephub-desktop-results .ph-email p{
+  font-size:13px;
+  font-weight:700;
+  color:#5f6b7f;
+  margin:0;
+  line-height:1.4;
+}
+
+/* MOBILE SAFE */
+@media(max-width:900px){
+  #prephub-desktop-results{
+    max-width:390px;
+    padding:18px 10px 28px;
+  }
+
+  #prephub-desktop-results .ph-top{
+    grid-template-columns:1fr;
+    gap:10px;
+    margin-bottom:18px;
+  }
+  #prephub-desktop-results .ph-logo-wrap{
+    text-align:center;
+  }
+  #prephub-desktop-results .ph-logo{
+    font-size:28px;
+    letter-spacing:-1.4px;
+  }
+  #prephub-desktop-results .ph-logo:after{
+    width:168px;
+    height:5px;
+    margin:7px auto 9px;
+  }
+  #prephub-desktop-results .ph-kicker{
+    font-size:7.5px;
+    letter-spacing:4.2px;
+  }
+
+  #prephub-desktop-results .dpa-right-trust{
+    max-width:245px;
+    padding:0;
+    box-shadow:none!important;
+    border:0;
+  }
+  #prephub-desktop-results .dpa-face-stack{
+    width:110px;
+    height:30px;
+    flex:0 0 110px;
+  }
+  #prephub-desktop-results .dpa-face{
+    width:30px;
+    height:30px;
+  }
+  #prephub-desktop-results .dpa-face:nth-child(1),
+  #prephub-desktop-results .dpa-face:nth-child(6),
+  #prephub-desktop-results .dpa-face:nth-child(11),
+  #prephub-desktop-results .dpa-face:nth-child(16){left:0}
+  #prephub-desktop-results .dpa-face:nth-child(2),
+  #prephub-desktop-results .dpa-face:nth-child(7),
+  #prephub-desktop-results .dpa-face:nth-child(12),
+  #prephub-desktop-results .dpa-face:nth-child(17){left:20px}
+  #prephub-desktop-results .dpa-face:nth-child(3),
+  #prephub-desktop-results .dpa-face:nth-child(8),
+  #prephub-desktop-results .dpa-face:nth-child(13),
+  #prephub-desktop-results .dpa-face:nth-child(18){left:40px}
+  #prephub-desktop-results .dpa-face:nth-child(4),
+  #prephub-desktop-results .dpa-face:nth-child(9),
+  #prephub-desktop-results .dpa-face:nth-child(14),
+  #prephub-desktop-results .dpa-face:nth-child(19){left:60px}
+  #prephub-desktop-results .dpa-face:nth-child(5),
+  #prephub-desktop-results .dpa-face:nth-child(10),
+  #prephub-desktop-results .dpa-face:nth-child(15),
+  #prephub-desktop-results .dpa-face:nth-child(20){left:80px}
+
+  #prephub-desktop-results .dpa-trust-copy{
+    font-size:8.5px;
+  }
+  #prephub-desktop-results .dpa-stars{
+    font-size:9px;
+  }
+  #prephub-desktop-results .ph-dots{
+    display:flex;
+    justify-content:center;
+    gap:7px;
+    margin:0 0 18px;
+  }
+
+  #prephub-desktop-results .ph-hero{
+    margin-bottom:18px;
+  }
+  #prephub-desktop-results .ph-small-kicker{
+    font-size:8px;
+    letter-spacing:4px;
+  }
+  #prephub-desktop-results .ph-hero h1{
+    font-size:28px;
+    letter-spacing:-1.35px;
+  }
+  #prephub-desktop-results .ph-hero p{
+    font-size:12.5px;
+    max-width:315px;
+  }
+
+  #prephub-desktop-results .ph-shell{
+    grid-template-columns:1fr;
+    gap:14px;
+  }
+
+  #prephub-desktop-results .ph-steps{
+    width:100%;
+    padding:0;
+    border:0!important;
+    border-radius:0;
+    background:transparent!important;
+  }
+  #prephub-desktop-results .ph-section-head{
+    gap:8px;
+    margin-bottom:10px;
+  }
+  #prephub-desktop-results .ph-section-title{
+    gap:6px;
+    font-size:13px;
+    letter-spacing:-.45px;
+  }
+  #prephub-desktop-results .ph-target{
+    width:20px;
+    height:20px;
+    font-size:13px;
+  }
+  #prephub-desktop-results .ph-focus{
+    font-size:7.5px;
+    border-radius:7px;
+    padding:6px 7px;
+  }
+
+  #prephub-desktop-results .ph-cards{
+    gap:9px;
+  }
+  #prephub-desktop-results .ph-card{
+    min-height:78px;
+    border-radius:13px;
+    padding:10px 40px 10px 10px;
+    grid-template-columns:44px minmax(0,1fr);
+    gap:10px;
+  }
+  #prephub-desktop-results .ph-icon{
+    width:40px;
+    height:40px;
+    font-size:19px;
+  }
+  #prephub-desktop-results .ph-tag{
+    font-size:6.5px;
+    letter-spacing:.85px;
+  }
+  #prephub-desktop-results .ph-card h3{
+    font-size:13px;
+  }
+  #prephub-desktop-results .ph-card p{
+    font-size:9.5px;
+  }
+  #prephub-desktop-results .ph-check{
+    right:20px;
+    top:38%;
+    width:22px;
+    height:22px;
+    font-size:10px;
+  }
+  #prephub-desktop-results .ph-arrow{
+    right:6px;
+    top:38%;
+    font-size:20px;
+  }
+
+  #prephub-desktop-results .ph-alert{
+    grid-template-columns:38px minmax(0,1fr);
+    gap:10px;
+    padding:11px 10px;
+    margin:11px 0 14px;
+  }
+  #prephub-desktop-results .ph-alert-icon{
+    width:38px;
+    height:38px;
+    font-size:20px;
+  }
+  #prephub-desktop-results .ph-alert strong{
+    font-size:12px;
+  }
+  #prephub-desktop-results .ph-alert span{
+    font-size:10px;
+  }
+
+  #prephub-desktop-results .ph-prep-blue{
+    border-radius:15px;
+    padding:14px 14px;
+  }
+  #prephub-desktop-results .ph-prep-blue small{
+    font-size:8px;
+  }
+  #prephub-desktop-results .ph-prep-blue h2{
+    font-size:28px;
+  }
+  #prephub-desktop-results .ph-prep-blue p{
+    font-size:11.5px;
+  }
+  #prephub-desktop-results .ph-copy{
+    grid-template-columns:34px minmax(0,1fr) 86px;
+    height:38px;
+    border-radius:10px;
+  }
+  #prephub-desktop-results .ph-url{
+    font-size:8.5px;
+  }
+  #prephub-desktop-results .ph-copy button{
+    font-size:8.5px;
+  }
+  #prephub-desktop-results #copyStatusDesktop{
+    font-size:8px;
+  }
+  #prephub-desktop-results .ph-benefit{
+    grid-template-columns:26px 1fr;
+    font-size:10.5px;
+  }
+  #prephub-desktop-results .ph-benefit i{
+    width:26px;
+    height:26px;
+    font-size:11px;
+  }
+
+  #prephub-desktop-results .ph-email{
+    padding:12px;
+    grid-template-columns:40px minmax(0,1fr);
+    gap:10px;
+    border-radius:15px;
+  }
+  #prephub-desktop-results .ph-email-icon{
+    width:36px;
+    height:36px;
+    font-size:23px;
+  }
+  #prephub-desktop-results .ph-email h3{
+    font-size:16px;
+  }
+  #prephub-desktop-results .ph-email p{
+    font-size:10px;
+  }
+}
+</style>
+
+<div class="ph-top">
+  <div class="ph-logo-wrap">
+    <div class="ph-logo">DPA HELP CENTER</div>
+    <div class="ph-kicker">Down Payment Assistance</div>
+  </div>
+
+  <div class="ph-hero">
+    <div class="ph-small-kicker">Homebuyer Readiness Results</div>
+    <h1>You’re not denied.<br>You’re just a little <span>unprepared.</span></h1>
+    <p>Save the links below. Check your email for the specific areas you need to work on.</p>
+  </div>
+
+  <div class="dpa-right-trust">
+    <div class="dpa-face-stack" id="dpaFaceStackDesktop"></div>
+    <div class="dpa-trust-copy">
+      Trusted by <strong>Thousands</strong>
+      <div class="dpa-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+    </div>
+  </div>
+</div>
+
+<div class="ph-dots">
+  <span class="ph-dot active"></span>
+  <span class="ph-dot"></span>
+  <span class="ph-dot"></span>
+  <span class="ph-dot"></span>
+  <span class="ph-dot"></span>
+</div>
+
+<div class="ph-shell">
+  <div class="ph-left">
+    <div class="ph-steps">
+      <div class="ph-section-head">
+        <h2 class="ph-section-title"><span class="ph-target">◎</span>HELP IS HERE - YOUR NEXT STEPS</h2>
+        <span class="ph-focus">Focus on these first</span>
+      </div>
+
+      <div class="ph-cards">
+        <a class="ph-card" href="https://www.creditjump.ai" target="_top">
+          <div class="ph-icon">◴</div>
+          <div>
+            <span class="ph-tag">Needs Attention</span>
+            <h3>Credit Readiness</h3>
+            <p>Most DPA programs want to see a 640+ credit score.</p>
+          </div>
+          <div class="ph-check">✓</div>
+          <div class="ph-arrow">›</div>
+        </a>
+
+        <a class="ph-card" href="https://www.dpahelpcenter.com/dti" target="_top">
+          <div class="ph-icon">▦</div>
+          <div>
+            <span class="ph-tag">Needs Attention</span>
+            <h3>Income / DTI Review</h3>
+            <p>If household income is below the target range, calculate your buying power.</p>
+          </div>
+          <div class="ph-check">✓</div>
+          <div class="ph-arrow">›</div>
+        </a>
+
+        <a class="ph-card" href="https://www.dpahelpcenter.com/job" target="_top">
+          <div class="ph-icon">▣</div>
+          <div>
+            <span class="ph-tag">Needs Attention</span>
+            <h3>Employment Readiness</h3>
+            <p>A stable 2-year work, school, military, or income history can help your file.</p>
+          </div>
+          <div class="ph-check">✓</div>
+          <div class="ph-arrow">›</div>
+        </a>
+
+        <a class="ph-card" href="https://www.estimatemytaxreturn.com" target="_top">
+          <div class="ph-icon">▤</div>
+          <div>
+            <span class="ph-tag">Needs Attention</span>
+            <h3>Tax Document Readiness</h3>
+            <p>Tax returns may be needed to verify income, especially for self-employed or 1099 income.</p>
+          </div>
+          <div class="ph-check">✓</div>
+          <div class="ph-arrow">›</div>
+        </a>
+      </div>
+
+      <div class="ph-alert">
+        <div class="ph-alert-icon">!</div>
+        <div>
+          <strong>Important: Complete the steps above first.</strong>
+          <span>After you are prepared, return to DPA Help Center and continue your readiness review.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ph-right">
+    <div class="ph-prep-blue">
+      <small>Welcome to PrepHub - Save this page</small>
+      <h2>Prep<span>Hub</span></h2>
+      <p>This page keeps all your next steps in one place.</p>
+
+      <div class="ph-copy-label">Copy this page link to return later.</div>
+      <div class="ph-copy">
+        <div class="ph-link-icon">⌁</div>
+        <div class="ph-url" id="prephubUrlDesktop">https://www.dpahelpcenter.com/prephub</div>
+        <button type="button" onclick="copyPrephubDesktopLink()">COPY LINK</button>
+      </div>
+      <div id="copyStatusDesktop">Save this link to return later.</div>
+
+      <div class="ph-benefits">
+        <div class="ph-benefit"><i>✓</i><span>Save this link to return later.</span></div>
+        <div class="ph-benefit"><i>✉</i><span>We’ll also email you these steps.</span></div>
+        <div class="ph-benefit"><i>!</i><span>Check your email for more details.</span></div>
+      </div>
+    </div>
+
+    <div class="ph-email">
+      <div class="ph-email-icon">✉</div>
+      <div>
+        <h3>Check your email</h3>
+        <p>Below are the links for areas that need attention based on your answers.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const PREPHUB_DESKTOP_LINK="https://www.dpahelpcenter.com/prephub";
+  const HOMEBUYER_DESKTOP_FACE_IDS=[
+    12,15,33,36,47,
+    52,55,57,60,61,
+    63,68,70,75,78,
+    82,84,88,91,94
+  ];
+
+  function prephubDesktopFaces(){
+    let h="";
+    for(let i=0;i<HOMEBUYER_DESKTOP_FACE_IDS.length;i++){
+      h+='<span class="dpa-face"><img src="https://randomuser.me/api/portraits/'+(i%2===0?'women':'men')+'/'+HOMEBUYER_DESKTOP_FACE_IDS[i]+'.jpg" alt="Homebuyer"></span>';
+    }
+    return h;
+  }
+
+  const stack=document.getElementById("dpaFaceStackDesktop");
+  if(stack)stack.innerHTML=prephubDesktopFaces();
+
+  const urlEl=document.getElementById("prephubUrlDesktop");
+  if(urlEl)urlEl.textContent=PREPHUB_DESKTOP_LINK;
+
+  window.copyPrephubDesktopLink=function(){
+    const s=document.querySelector("#prephub-desktop-results #copyStatusDesktop");
+
+    if(navigator.clipboard&&window.isSecureContext){
+      navigator.clipboard.writeText(PREPHUB_DESKTOP_LINK).then(function(){
+        if(s)s.textContent="Link copied to your clipboard.";
+      }).catch(function(){
+        fallbackCopyPrephubDesktopLink();
+      });
+    }else{
+      fallbackCopyPrephubDesktopLink();
+    }
+  };
+
+  function fallbackCopyPrephubDesktopLink(){
+    const s=document.querySelector("#prephub-desktop-results #copyStatusDesktop");
+    const temp=document.createElement("textarea");
+    temp.value=PREPHUB_DESKTOP_LINK;
+    temp.setAttribute("readonly","");
+    temp.style.position="fixed";
+    temp.style.left="-9999px";
+    temp.style.top="-9999px";
+    document.body.appendChild(temp);
+    temp.focus();
+    temp.select();
+
+    try{
+      const copied=document.execCommand("copy");
+      if(s)s.textContent=copied?"Link copied to your clipboard.":"Press and hold the link to copy it.";
+    }catch(e){
+      if(s)s.textContent="Press and hold the link to copy it.";
+    }
+
+    document.body.removeChild(temp);
+  }
+})();
+</script>
+</div>
