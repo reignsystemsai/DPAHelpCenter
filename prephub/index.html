@@ -1106,7 +1106,7 @@
   };
   const READINESS_NAMES={
     credit:"credit",
-    dti:"income & debt-to-income",
+    dti:"income & DTI",
     job:"work history",
     taxes:"documents"
   };
@@ -1260,10 +1260,10 @@
       };
       const completedNames=completedKeys.map(function(key){return READINESS_NAMES[key]});
       const remainingNames=remainingKeys.map(function(key){return READINESS_NAMES[key]});
-      let status=completedNames.length?"Your "+list(completedNames)+(completedNames.length===1?" is":" are")+" 100% ready.":"Your personalized preparation plan is ready.";
+      let status=completedNames.length?"Your "+list(completedNames)+(completedNames.length===1?" preparation is":" preparation areas are")+" 100% ready.":"Your personalized preparation plan is ready.";
       if(remainingNames.length){
         const remainingList=list(remainingNames);
-        status+=" Finish "+remainingList.charAt(0).toUpperCase()+remainingList.slice(1)+" to reach 100%.";
+        status+=" Finish preparing your "+remainingList+" to reach 100%.";
       }else if(score===100){
         status+=" You are ready for the next step.";
       }
