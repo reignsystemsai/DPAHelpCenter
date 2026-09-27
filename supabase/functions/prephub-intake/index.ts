@@ -391,12 +391,126 @@ async function sendPrepHubEmail(
   }
 }
 
+async function sendPrepHubLoginEmail(
+  email: string,
+  firstName: string,
+  loginUrl: string,
+) {
+  const apiKey = clean(Deno.env.get("RESEND_API_KEY"), 500);
+  if (!apiKey) return { ok: false, status: "not_configured" };
+
+  const safeFirstName = escapeHtml(firstName || "Homebuyer");
+  const safeLoginUrl = escapeHtml(loginUrl);
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        from: "DPA Help Center PrepHub <ready@mail.dpahelpcenter.com>",
+        to: [email],
+        reply_to: "info@dpahelpcenter.com",
+        subject: "Your secure PrepHub login link",
+        html: `<!doctype html><html><body style="margin:0;background:#eef2f8;font-family:Arial,Helvetica,sans-serif;color:#081f5c;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td align="center" style="padding:24px 12px;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;background:#fff;border-radius:20px;overflow:hidden;"><tr><td align="center" style="padding:28px 24px;background:#081f5c;color:#fff;"><div style="font-size:25px;font-weight:900;">DPA HELP CENTER</div><div style="width:135px;height:5px;margin:9px auto;background:#d22630;border-radius:99px;"></div><div style="font-size:11px;font-weight:800;letter-spacing:2.4px;color:#dce9ff;">HOMEBUYER PREPHUB</div></td></tr><tr><td style="padding:32px 30px 36px;"><h1 style="margin:0 0 12px;font-size:28px;line-height:1.15;">${safeFirstName}, return to your PrepHub.</h1><p style="margin:0 0 24px;font-size:15px;line-height:1.55;color:#52617c;">Use the secure button below to continue your homebuyer preparation. This link can only be used once.</p><table role="presentation" cellspacing="0" cellpadding="0" border="0"><tr><td style="border-radius:10px;background:#d22630;"><a href="${safeLoginUrl}" style="display:inline-block;padding:15px 22px;color:#fff;text-decoration:none;font-size:14px;font-weight:900;">LOG IN TO MY HOMEBUYER PREPHUB</a></td></tr></table><p style="margin:24px 0 0;font-size:12px;line-height:1.5;color:#71809a;">If you did not request this link, you can ignore this email.</p></td></tr></table></td></tr></table></body></html>`,
+        text: `${firstName || "Homebuyer"}, return to your PrepHub.\n\nUse this secure one-time link to continue your homebuyer preparation:\n${loginUrl}\n\nIf you did not request this link, you can ignore this email.`,
+        tags: [{ name: "email_type", value: "prephub_login_link" }],
+      }),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) return { ok: false, status: `http_${response.status}` };
+    return { ok: true, status: "sent", id: clean(result.id, 250) || null };
+  } catch (_error) {
+    return { ok: false, status: "request_failed" };
+  }
+}
+
 Deno.serve(async (req: Request) => {
   const origin = req.headers.get("origin");
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors(origin) });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405, origin);
   try {
     const payload = await req.json();
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      { auth: { persistSession: false, autoRefreshToken: false } },
+    );
+
+    if (payload.action === "send_login") {
+      const loginEmail = clean(payload.email, 320).toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginEmail)) {
+        return json({ error: "Enter a valid email address." }, 400, origin);
+      }
+
+      const { data: loginLead } = await supabase
+        .from("prephub_leads")
+        .select("id,lead_id,first_name,current_readiness_score,focus_areas")
+        .eq("email", loginEmail)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!loginLead) return json({ ok: true }, 200, origin);
+
+      const oneMinuteAgo = new Date(Date.now() - 60_000).toISOString();
+      const { data: recentLogin } = await supabase
+        .from("lead_communications")
+        .select("id")
+        .eq("lead_id", loginLead.id)
+        .eq("template_key", "prephub_login_link")
+        .gte("occurred_at", oneMinuteAgo)
+        .limit(1)
+        .maybeSingle();
+      if (recentLogin) {
+        return json({ error: "A login email was just sent. Please wait one minute before requesting another." }, 429, origin);
+      }
+
+      const loginParams = new URLSearchParams({
+        lead: loginLead.lead_id,
+        score: String(loginLead.current_readiness_score || 0),
+      });
+      const loginFocusAreas = Array.isArray(loginLead.focus_areas) ? loginLead.focus_areas : [];
+      for (const key of loginFocusAreas) {
+        if (["credit", "dti", "job", "taxes"].includes(key)) loginParams.set(key, "1");
+      }
+      const redirectTo = `https://www.dpahelpcenter.com/prephub?${loginParams.toString()}`;
+      const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
+        type: "magiclink",
+        email: loginEmail,
+        options: { redirectTo },
+      });
+      if (linkError || !linkData.properties?.action_link) {
+        return json({ error: "We could not create the login link. Please try again." }, 503, origin);
+      }
+
+      const actionLink = new URL(linkData.properties.action_link);
+      actionLink.searchParams.set("redirect_to", redirectTo);
+      const sent = await sendPrepHubLoginEmail(
+        loginEmail,
+        clean(loginLead.first_name, 100) || "Homebuyer",
+        actionLink.toString(),
+      );
+
+      await supabase.from("lead_communications").insert({
+        lead_id: loginLead.id,
+        channel: "email",
+        direction: "outbound",
+        provider: "resend",
+        template_key: "prephub_login_link",
+        subject: "Your secure PrepHub login link",
+        summary: "Passwordless PrepHub login link",
+        status: sent.ok ? "sent" : "failed",
+        provider_message_id: "id" in sent ? sent.id : null,
+        metadata: { email_status: sent.status },
+        occurred_at: new Date().toISOString(),
+      });
+
+      if (!sent.ok) return json({ error: "We could not send the login email. Please try again." }, 503, origin);
+      return json({ ok: true }, 200, origin);
+    }
+
     const leadId = clean(payload.lead_id, 100);
     const email = clean(payload.email, 320).toLowerCase();
     const firstName = clean(payload.first_name, 100);
@@ -413,12 +527,6 @@ Deno.serve(async (req: Request) => {
     if (bool(payload.income_70k_plus) === false) focusAreas.push("dti");
     if (bool(payload.job_history_2yrs) === false) focusAreas.push("job");
     if (bool(payload.tax_returns_2yrs) === false) focusAreas.push("taxes");
-
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-      { auth: { persistSession: false, autoRefreshToken: false } },
-    );
 
     const { data: lead, error: leadError } = await supabase
       .from("prephub_leads")
