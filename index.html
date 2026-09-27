@@ -87,8 +87,19 @@ font-size:18px;
 font-weight:750;
 line-height:1.4;
 color:#5f6b7f;
-margin-bottom:24px;
+margin-bottom:14px;
 }
+
+.dpa-home-phone{
+display:inline-block;
+margin:0 0 24px;
+color:#081F5C;
+font-size:18px;
+font-weight:900;
+text-decoration:none;
+}
+
+.dpa-home-phone span{color:#D22630}
 
 .dpa-benefit-grid{
 display:grid;
@@ -409,7 +420,7 @@ const APPLICATION_URL="https://www.dpahelpcenter.com";
 const AGENT_PHONE_URL="tel:+18333028953";
 const CREDIT_URL="https://www.dpahelpcenter.com/credit";
 const DTI_URL="https://www.dpahelpcenter.com/dti";
-const JOB_URL="https://www.dpahelpcenter.com/job";
+const JOB_URL="https://www.dpahelpcenter.com/employment/";
 const TAXES_URL="https://www.dpahelpcenter.com/taxes";
 const app=document.getElementById("dpaApp");
 const path=(window.location.pathname||"/").toLowerCase();
@@ -506,6 +517,7 @@ app.innerHTML=`
 <div class="dpa-left-kicker">Down Payment Assistance</div>
 <h1 class="dpa-left-title">First-Time Homebuyers<br>Buy a Home No Money Down<br><span>Programs are offering up to 100k</span></h1>
 <div class="dpa-left-sub">First-time homebuyers can get up to $100,000 in assistance (varies by state). Answer a few simple questions and see where you stand.</div>
+<a class="dpa-home-phone" href="${AGENT_PHONE_URL}">Call <span>1-833-302-8953</span></a>
 <div class="dpa-benefit-grid">
 <div class="dpa-benefit-pill"><span>&#10003;</span> Buy with less cash out of pocket</div>
 <div class="dpa-benefit-pill"><span>&#10003;</span> Programs up to $100,000</div>
@@ -603,7 +615,7 @@ app.innerHTML=`
 </div>
 <div id="resultsIntro" class="dpa-route-copy">Please wait. We are sending you to your next step.</div>
 <button type="button" id="beginAppBtn" class="dpa-final-btn" style="display:none" onclick="dpaStartApplication()">BEGIN APPLICATION</button>
-<a id="agentBtn" class="dpa-agent-btn" style="display:none" href="${1-866-281-5271}">CALL TO SPEAK TO AN AGENT</a>
+<a id="agentBtn" class="dpa-agent-btn" style="display:none" href="${AGENT_PHONE_URL}">CALL 1-833-302-8953</a>
 </div>
 
 <div class="dpa-footer">
@@ -1250,8 +1262,9 @@ dpaGoToStep(4);
 document.getElementById("finalTitle").textContent="Saving your personal plan...";
 document.getElementById("resultsIntro").textContent="We’re creating your secure PrepHub login and emailing your next steps.";
 
+let intakeResult={};
 try{
-await sendPrepHubIntake("qualification_final");
+intakeResult=await sendPrepHubIntake("qualification_final");
 }catch(error){
 qualificationSubmitted=false;
 document.getElementById("finalTitle").textContent="We couldn’t save your plan yet.";
@@ -1261,12 +1274,16 @@ return;
 
 if(leadData.readiness_score===100){
 document.getElementById("finalTitle").textContent="You’re 100% ready.";
-document.getElementById("resultsIntro").textContent="Your credit, income, employment, and tax history look ready. Your DPA Help Center login link is in your email.";
+document.getElementById("resultsIntro").textContent=intakeResult.email_sent
+?"Your credit, income, employment, and tax history look ready. Your DPA Help Center login link is in your email."
+:"Your credit, income, employment, and tax history look ready. Your plan is saved—continue below while your login email becomes available.";
 document.getElementById("beginAppBtn").style.display="block";
 document.getElementById("agentBtn").style.display="block";
 }else{
 document.getElementById("finalTitle").textContent="Sending you to your prep hub...";
-document.getElementById("resultsIntro").textContent="Your plan is saved. Check your email for your secure PrepHub login.";
+document.getElementById("resultsIntro").textContent=intakeResult.email_sent
+?"Your plan is saved. Check your email for your secure PrepHub login."
+:"Your plan is saved. Continue to PrepHub now; you can request a secure login link there.";
 setTimeout(()=>{window.top.location.href=destination},900);
 }
 };
