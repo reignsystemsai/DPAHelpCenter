@@ -43,20 +43,31 @@ Deno.serve(async(req:Request)=>{
     const rawBody=await req.text(),expected=await signature(secret,`${timestamp}.${rawBody}`);
     if(!safeEqual(provided,expected))return json({error:"Unauthorized"},401);
     const payload=JSON.parse(rawBody) as Record<string,unknown>,result=(payload.result&&typeof payload.result==="object"?payload.result:{}) as Record<string,unknown>;
-    const externalLeadId=clean(payload.lead_id,150),phone=clean(payload.phone,30).replace(/\D/g,"");
+    const externalLeadId=clean(payload.lead_id,150),phoneDigits=clean(payload.phone,30).replace(/\D/g,""),phone=phoneDigits.length===11&&phoneDigits.startsWith("1")?phoneDigits.slice(1):phoneDigits,email=clean(payload.email,320).toLowerCase();
     const db=createClient(Deno.env.get("SUPABASE_URL")!,Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,{auth:{persistSession:false,autoRefreshToken:false}});
-    let leadQuery=db.from("prephub_leads").select("id,lead_id,initial_readiness_score,phone").limit(1);
-    leadQuery=externalLeadId?leadQuery.eq("lead_id",externalLeadId):leadQuery.eq("phone",phone);
-    const {data:lead,error:leadError}=await leadQuery.maybeSingle();
-    if(leadError)throw leadError;
+    const requestedQualification=clean(payload.qualification,20).toLowerCase();
+    let leads:Array<{id:string;lead_id:string;initial_readiness_score:number;phone:string;email:string;created_at:string}>=[];
+    if(externalLeadId){
+      const lookup=await db.from("prephub_leads").select("id,lead_id,initial_readiness_score,phone,email,created_at").eq("lead_id",externalLeadId).limit(1);
+      if(lookup.error)throw lookup.error;leads=lookup.data||[];
+    }else if(email){
+      const lookup=await db.from("prephub_leads").select("id,lead_id,initial_readiness_score,phone,email,created_at").ilike("email",email).order("created_at",{ascending:false}).limit(25);
+      if(lookup.error)throw lookup.error;leads=lookup.data||[];
+    }
+    if(!leads.length&&phone){
+      const lookup=await db.from("prephub_leads").select("id,lead_id,initial_readiness_score,phone,email,created_at").eq("phone",phone).order("created_at",{ascending:false}).limit(25);
+      if(lookup.error)throw lookup.error;leads=lookup.data||[];
+    }
+    const matchingLead=leads.find(candidate=>requestedQualification==="qualified"?Number(candidate.initial_readiness_score)===100:requestedQualification==="unqualified"?Number(candidate.initial_readiness_score)<100:true);
+    const lead=matchingLead||leads[0];
     if(!lead)return json({error:"Lead not found",lead_id:externalLeadId||null},404);
 
     const direction=clean(payload.direction,20).toLowerCase()==="inbound"?"inbound":"outbound";
-    const qualification=clean(payload.qualification,20).toLowerCase()==="unqualified"||Number(lead.initial_readiness_score)<100?"unqualified":"qualified";
+    const qualification=requestedQualification==="qualified"||requestedQualification==="unqualified"?requestedQualification:Number(lead.initial_readiness_score)<100?"unqualified":"qualified";
     const existing=await db.from("helux_cases").select("metadata").eq("lead_id",lead.id).eq("direction",direction).eq("qualification",qualification).maybeSingle();
     if(existing.error)throw existing.error;
-    const callbackAt=clean(result.callback_at,60)||null,nextAction=clean(payload.next_action||result.next_action,2000);
-    const metadata={...(existing.data?.metadata||{}),case_id:clean(payload.case_id,150),call_id:clean(payload.call_id,150),twilio_call_sid:clean(payload.twilio_call_sid,150),has_realtor:yesNo(result.has_realtor),applied_with_lender:yesNo(result.applied_with_lender||result.has_lender),time_frame:crmTimeFrame(result.purchase_timeline_detail||result.time_frame),purchase_area:clean(result.purchase_area,250),interest_level:clean(result.interest_level,120),next_action:nextAction,sentiment:clean(payload.sentiment,80),call_status:clean(payload.status,80),transcript_count:Math.max(0,Number(payload.transcript_count)||0),last_result_at:new Date().toISOString()};
+    const callbackAt=clean(result.callback_at||result.follow_up_at,60)||null,nextAction=clean(payload.next_action||result.next_action,2000);
+    const metadata={...(existing.data?.metadata||{}),case_id:clean(payload.case_id,150),call_id:clean(payload.call_id,150),twilio_call_sid:clean(payload.twilio_call_sid,150),has_realtor:yesNo(result.has_realtor),applied_with_lender:yesNo(result.applied_with_lender||result.has_lender),time_frame:crmTimeFrame(result.purchase_timeline_detail||result.homebuying_timeline||result.time_frame),purchase_area:clean(result.purchase_area||result.purchase_city,250),interest_level:clean(result.interest_level,120),next_action:nextAction,sentiment:clean(payload.sentiment,80),call_status:clean(payload.status,80),transcript_count:Math.max(0,Number(payload.transcript_count)||0),last_result_at:new Date().toISOString()};
     const lastResult=callResult(payload.status,payload.outcome||result.final_outcome),sequence=sequenceStatus(payload),completed=["Completed","Do Not Call","Wrong Number","Exhausted"].includes(sequence);
     const {data:call,error:callError}=await db.from("helux_cases").upsert({lead_id:lead.id,direction,qualification,ai_agent:"Daisy",sequence_status:sequence,priority:qualification==="qualified"?"High":"Normal",attempts_used:Math.max(0,Number(payload.attempts_used)||0),max_attempts:5,next_call_at:callbackAt,callback_at:callbackAt,last_call_at:new Date().toISOString(),last_call_result:lastResult,business_outcome:title(payload.outcome||result.final_outcome),call_summary:clean(payload.summary||result.summary,4000),consent:"Confirmed",do_not_call:sequence==="Do Not Call",metadata},{onConflict:"lead_id,direction,qualification"}).select("id").single();
     if(callError)throw callError;
