@@ -1090,6 +1090,10 @@
   const SUPABASE_URL="https://fklchtsxahepzfzgcqdp.supabase.co";
   const SUPABASE_PUBLISHABLE_KEY="sb_publishable_TUIi5-8ISzGLtdFKxO-k6g_HCHz7nOk";
   const prephubDb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+  const prephubPresenceId=sessionStorage.getItem("dpa_prephub_presence_id")||crypto.randomUUID();
+  sessionStorage.setItem("dpa_prephub_presence_id",prephubPresenceId);
+  const prephubPresence=prephubDb.channel("dpa-prephub-presence",{config:{presence:{key:prephubPresenceId}}});
+  prephubPresence.subscribe(function(status){if(status==="SUBSCRIBED")prephubPresence.track({page:"prephub",online_at:new Date().toISOString()})});
   let pageParams=new URLSearchParams(window.location.search||"");
   if(!pageParams.get("lead")&&document.referrer){
     try{pageParams=new URL(document.referrer).searchParams}catch(e){}
