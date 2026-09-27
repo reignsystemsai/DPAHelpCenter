@@ -100,9 +100,9 @@
 
     /* Bright, branded operating workspace */
     .brand strong{color:#fff}.brand strong span{color:#c8102e}
-    .nav-count{background:var(--red);color:#fff;border:2px solid rgba(255,255,255,.92);box-shadow:0 4px 10px rgba(210,38,48,.24)}
+    .nav-count{background:#c8102e!important;color:#fff;border:2px solid rgba(255,255,255,.92);box-shadow:0 4px 10px rgba(200,16,46,.24)}
     .preview-badge{display:inline-flex;align-items:center;gap:7px;background:var(--navy);color:#fff;border:2px solid var(--red);box-shadow:0 6px 16px rgba(8,31,92,.12)}.preview-badge:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--red)}
-    .primary{background:var(--red);color:#fff;border:2px solid var(--red);box-shadow:0 10px 22px rgba(210,38,48,.2)}.primary:hover{background:var(--navy);border-color:var(--navy)}
+    .primary{background:#c8102e!important;color:#fff;border:2px solid #c8102e!important;box-shadow:0 10px 22px rgba(200,16,46,.2)}.primary:hover{background:var(--navy)!important;border-color:var(--navy)!important}
     .stats.crm-stats{grid-template-columns:repeat(5,minmax(0,1fr))}
     .crm-board{padding:16px;overflow:auto;background:linear-gradient(135deg,#fbfdff 0%,#f5f8ff 100%)}
     .crm-group{min-width:2940px;margin-bottom:18px;border:1px solid var(--line);border-radius:15px;background:#fff;box-shadow:0 8px 22px rgba(8,31,92,.055);transition:.2s}
@@ -279,9 +279,9 @@
     };
 
     const stages=[
-      {name:"New Leads",color:"#f5d33d",weight:.20},
+      {name:"New Leads",color:"#c8102e",weight:.20},
       {name:"Under Contract",color:"#fdab3d",weight:.65},
-      {name:"Clear to Close",color:"#e2445c",weight:.90},
+      {name:"Clear to Close",color:"#f5d33d",weight:.90},
       {name:"Closed Date",color:"#22a06b",weight:1}
     ];
     const kanban=document.getElementById("kanbanBoard");
