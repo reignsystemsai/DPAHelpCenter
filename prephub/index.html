@@ -896,6 +896,8 @@
 #prephub-desktop-results .ph-login-input:focus{border-color:#D22630;box-shadow:0 0 0 3px rgba(210,38,48,.11)}
 #prephub-desktop-results .ph-login-submit{width:100%;margin-top:12px;border:0;border-radius:12px;background:#D22630;color:#fff;padding:14px;font-size:12px;font-weight:950;letter-spacing:.5px;cursor:pointer}
 #prephub-desktop-results .ph-login-submit:disabled{opacity:.55;cursor:wait}
+#prephub-desktop-results .ph-login-help{margin:10px 0 0;text-align:center;color:#52617c;font-size:11px;font-weight:800}
+#prephub-desktop-results .ph-login-help a{color:#0057B8;font-weight:950;text-decoration:none}
 #prephub-desktop-results .ph-login-message{min-height:20px;margin-top:12px;color:#081F5C;font-size:12px;font-weight:750;line-height:1.4}
 @media(max-width:720px){
   #prephub-desktop-results .ph-login-modal{justify-content:center;padding:16px;background:rgba(4,15,45,.62)}
@@ -1017,7 +1019,7 @@
 
       <div class="ph-account-status" id="prephubAccountStatusDesktop">Your personalized homebuying readiness plan is ready.</div>
       <div class="ph-account-actions">
-        <button class="ph-account-btn red" id="prephubResendDesktop" type="button">LOGIN TO PREPHUB</button>
+        <button class="ph-account-btn red" id="prephubResendDesktop" type="button">LOGIN TO MY HOMEBUYER PREPHUB</button>
         <button class="ph-account-btn" id="prephubLogoutDesktop" type="button" style="display:none">LOG OUT</button>
       </div>
 
@@ -1062,8 +1064,9 @@
     <form id="prephubLoginFormDesktop">
       <label class="ph-login-label" for="prephubLoginEmailDesktop">Email address</label>
       <input class="ph-login-input" id="prephubLoginEmailDesktop" type="email" autocomplete="email" required placeholder="you@example.com">
-      <button class="ph-login-submit" id="prephubLoginSubmitDesktop" type="submit">LOGIN TO MY PREPHUB</button>
+      <button class="ph-login-submit" id="prephubLoginSubmitDesktop" type="submit">LOGIN TO MY HOMEBUYER PREPHUB</button>
     </form>
+    <div class="ph-login-help">Need help? <a href="tel:+18333028953">1-833-302-8953</a></div>
     <div class="ph-login-message" id="prephubLoginMessageDesktop" aria-live="polite"></div>
   </div>
 </div>
