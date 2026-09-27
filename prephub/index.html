@@ -883,6 +883,11 @@
 #prephub-desktop-results .ph-login-kicker{color:#D22630;font-size:10px;font-weight:950;letter-spacing:1.8px;text-transform:uppercase}
 #prephub-desktop-results .ph-login-box h2{margin:8px 32px 8px 0;font-size:28px;line-height:1.08;font-weight:950;letter-spacing:-.7px}
 #prephub-desktop-results .ph-login-box p{margin:0 0 18px;color:#52617c;font-size:14px;font-weight:650;line-height:1.5}
+#prephub-desktop-results .ph-readiness-summary{margin:0 0 16px;padding:15px 16px;border-radius:14px;background:#081F5C;color:#fff}
+#prephub-desktop-results .ph-readiness-summary strong{display:block;font-size:17px;font-weight:950;line-height:1.25}
+#prephub-desktop-results .ph-readiness-summary p{margin:6px 0 10px;color:rgba(255,255,255,.82);font-size:11px;font-weight:750;line-height:1.4}
+#prephub-desktop-results .ph-readiness-track{height:8px;border-radius:999px;background:rgba(255,255,255,.18);overflow:hidden}
+#prephub-desktop-results .ph-readiness-fill{height:100%;width:0;border-radius:999px;background:#D22630;transition:width .35s ease}
 #prephub-desktop-results .ph-login-focus{margin:0 0 18px;padding:14px 16px;border-left:4px solid #D22630;border-radius:12px;background:rgba(210,38,48,.07)}
 #prephub-desktop-results .ph-login-focus strong{display:block;margin-bottom:7px;color:#081F5C;font-size:12px;font-weight:950;line-height:1.35}
 #prephub-desktop-results .ph-login-focus ul{display:grid;gap:7px;margin:0;padding:0;list-style:none}
@@ -890,6 +895,8 @@
 #prephub-desktop-results .ph-login-focus li::before{content:"✓";width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#D22630;color:#fff;font-size:11px;font-weight:950}
 #prephub-desktop-results .ph-focus-title{display:block;font-size:11px;font-weight:950;line-height:1.25}
 #prephub-desktop-results .ph-focus-detail{display:block;margin-top:2px;color:#52617c;font-size:10px;font-weight:700;line-height:1.35}
+#prephub-desktop-results .ph-focus-progress{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px;color:#D22630;font-size:9px;font-weight:950;text-transform:uppercase;letter-spacing:.25px}
+#prephub-desktop-results .ph-focus-progress strong{display:inline;margin:0;color:#0057B8;font-size:9px;white-space:nowrap}
 #prephub-desktop-results .ph-login-focus-empty{color:#52617c;font-size:12px;font-weight:750;line-height:1.45}
 #prephub-desktop-results .ph-login-label{display:block;margin-bottom:7px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1px}
 #prephub-desktop-results .ph-login-input{width:100%;border:1px solid rgba(8,31,92,.2);border-radius:12px;padding:14px 15px;font-size:16px;color:#081F5C;outline:none}
@@ -1053,10 +1060,15 @@
   <div class="ph-login-box">
     <button class="ph-login-close" id="prephubLoginCloseDesktop" type="button" aria-label="Close login">×</button>
     <div class="ph-login-kicker">Your homebuying preparation hub</div>
-    <h2 id="prephubLoginTitleDesktop">Get Prepared for up to $100k in Down Payment Assistance</h2>
+    <h2 id="prephubLoginTitleDesktop">Get Prepared for up to $100K in Down Payment Assistance</h2>
     <p>Get your credit ready, strengthen your debt-to-income, review your work history, and organize the documents lenders may request—all in one place.</p>
+    <div class="ph-readiness-summary">
+      <strong id="prephubLoginGreetingDesktop">Your homebuyer readiness is 0%.</strong>
+      <p id="prephubLoginProgressCopyDesktop">Complete your personalized preparation areas to reach 100% readiness.</p>
+      <div class="ph-readiness-track"><div class="ph-readiness-fill" id="prephubLoginProgressFillDesktop"></div></div>
+    </div>
     <div class="ph-login-focus" aria-live="polite">
-      <strong>Your personalized readiness path:</strong>
+      <strong>Your remaining preparation areas:</strong>
       <ul id="prephubLoginFocusDesktop"></ul>
       <div class="ph-login-focus-empty" id="prephubLoginFocusEmptyDesktop" hidden>Sign in to save your score and open your next preparation step.</div>
     </div>
@@ -1083,6 +1095,8 @@
     try{pageParams=new URL(document.referrer).searchParams}catch(e){}
   }
   const leadId=pageParams.get("lead")||localStorage.getItem("dpa_prephub_lead_id")||"";
+  const buyerName=(pageParams.get("first_name")||localStorage.getItem("dpa_prephub_first_name")||"").trim().split(/\s+/)[0].slice(0,40);
+  if(pageParams.get("first_name"))localStorage.setItem("dpa_prephub_first_name",buyerName);
   let activeSession=null;
   const FOCUS_CONTENT={
     credit:{title:"Get your credit ready",detail:"Strengthen your credit before a lender reviews it."},
@@ -1201,12 +1215,21 @@
       const copy=document.createElement("span");
       const title=document.createElement("span");
       const detail=document.createElement("span");
+      const progress=document.createElement("span");
+      const progressState=document.createElement("span");
+      const progressValue=document.createElement("strong");
       title.className="ph-focus-title";
       detail.className="ph-focus-detail";
+      progress.className="ph-focus-progress";
       title.textContent=FOCUS_CONTENT[key].title;
       detail.textContent=FOCUS_CONTENT[key].detail;
+      progressState.textContent="0% complete";
+      progressValue.textContent="Adds 25% when completed";
+      progress.appendChild(progressState);
+      progress.appendChild(progressValue);
       copy.appendChild(title);
       copy.appendChild(detail);
+      copy.appendChild(progress);
       item.appendChild(copy);
       list.appendChild(item);
     });
@@ -1214,11 +1237,24 @@
     empty.hidden=keys.length!==0;
   }
 
+  function renderLoginSummary(){
+    const score=Math.max(0,Math.min(100,Number(pageParams.get("score")||localStorage.getItem("dpa_prephub_score")||0)||0));
+    const completed=Math.max(0,Math.min(4,Math.round(score/25)));
+    const remaining=initialFocusKeys().length||Math.max(0,4-completed);
+    const greeting=document.getElementById("prephubLoginGreetingDesktop");
+    const copy=document.getElementById("prephubLoginProgressCopyDesktop");
+    const fill=document.getElementById("prephubLoginProgressFillDesktop");
+    if(greeting)greeting.textContent=(buyerName?buyerName+", your":"Your")+" homebuyer readiness is "+score+"%.";
+    if(copy)copy.textContent=completed+" of 4 preparation areas complete. Finish "+remaining+" remaining "+(remaining===1?"area":"areas")+" to reach 100%.";
+    if(fill)fill.style.width=score+"%";
+  }
+
   function openLogin(clickedKey){
     const modal=document.getElementById("prephubLoginModalDesktop");
     const email=document.getElementById("prephubLoginEmailDesktop");
     const message=document.getElementById("prephubLoginMessageDesktop");
     renderLoginFocus(clickedKey);
+    renderLoginSummary();
     if(email)email.value=localStorage.getItem("dpa_prephub_email")||"";
     if(message)message.textContent="";
     if(modal)modal.classList.add("open");
