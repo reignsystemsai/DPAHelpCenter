@@ -931,6 +931,7 @@ if(!response.ok)throw new Error(result.error||"PrepHub could not save your plan.
 localStorage.setItem("dpa_prephub_email",leadData.email);
 localStorage.setItem("dpa_prephub_lead_id",leadData.lead_id);
 localStorage.setItem("dpa_prephub_score",String(leadData.readiness_score));
+localStorage.setItem("dpa_prephub_first_name",leadData.first_name);
 return result;
 }
 
