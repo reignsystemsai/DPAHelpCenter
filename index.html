@@ -666,12 +666,12 @@ app.innerHTML=`
 <div class="dpa-left">
 <div class="dpa-brand">DPA HELP CENTER</div>
 <div class="dpa-left-kicker">Down Payment Assistance</div>
-<h1 class="dpa-left-title">First-Time Homebuyers<br>Buy a Home No Money Down<br><span>Programs are offering up to 100k</span></h1>
-<div class="dpa-left-sub">First-time homebuyers can get up to $100,000 in assistance (varies by state). Answer a few simple questions and see where you stand.</div>
+<h1 class="dpa-left-title">First-Time Homebuyers<br>Buy a Home No Money Down<br><span>Programs are offering up to $35K</span></h1>
+<div class="dpa-left-sub">First-time homebuyers can get up to $35,000 in assistance (varies by state). Answer a few simple questions and see where you stand.</div>
 <a class="dpa-home-phone" href="${AGENT_PHONE_URL}">Call <span>1-833-302-8953</span></a>
 <div class="dpa-benefit-grid">
 <div class="dpa-benefit-pill"><span>&#10003;</span> Buy with less cash out of pocket</div>
-<div class="dpa-benefit-pill"><span>&#10003;</span> Programs up to $100,000</div>
+<div class="dpa-benefit-pill"><span>&#10003;</span> Programs up to $35,000</div>
 <div class="dpa-benefit-pill"><span>&#10003;</span> Available in all 50 states</div>
 <div class="dpa-benefit-pill"><span>&#10003;</span> FHA / VA / Conventional</div>
 </div>
@@ -691,7 +691,7 @@ app.innerHTML=`
 <div class="dpa-program-top">
 <div class="dpa-program-label">PROGRAMS UP TO</div>
 <div class="dpa-program-line"></div>
-<div id="desktopProgramNumber" class="dpa-program-number">$100<span class="dpa-red">K</span></div>
+<div id="desktopProgramNumber" class="dpa-program-number">$35<span class="dpa-red">K</span></div>
 <div class="dpa-program-line"></div>
 <div class="dpa-program-copy">Assistance may help reduce<br>your <span class="dpa-red">cash to close.</span></div>
 </div>
@@ -1098,15 +1098,7 @@ localStorage.setItem("dpa_prephub_first_name",leadData.first_name);
 return result;
 }
 
-function updateProgramNumber(){
-const a=Math.floor(Math.random()*91)+10;
-programEl.classList.add("flash");
-programEl.innerHTML="$"+a+'<span class="dpa-red">K</span>';
-setTimeout(()=>programEl.classList.remove("flash"),250);
-}
-
-updateProgramNumber();
-setInterval(updateProgramNumber,2600);
+programEl.innerHTML='$35<span class="dpa-red">K</span>';
 
 window.dpaBack=function(){
 if(currentStep>1)dpaGoToStep(currentStep-1);
