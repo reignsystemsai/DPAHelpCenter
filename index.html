@@ -546,6 +546,36 @@ border-radius:16px;
   .dpa-choice:hover,.dpa-submit:hover,.dpa-select-card:hover{transform:none}
 }
   
+
+/* Georgia homepage, separate from the existing readiness flow */
+.ga-home{max-width:1120px;margin:auto;color:#081f5c}
+.ga-header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:4px 6px 20px}
+.ga-logo{font-size:27px;font-weight:900;letter-spacing:-1px;line-height:1.05}
+.ga-logo small{display:block;font-size:10px;letter-spacing:4px;margin-top:7px;font-weight:800}
+.ga-nav{display:flex;align-items:center;gap:24px;font-size:15px;font-weight:800}
+.ga-nav a{color:#081f5c;text-decoration:none}
+.ga-menu{border:0;background:#081f5c;color:white;border-radius:11px;padding:12px 18px;font-size:15px;font-weight:800;cursor:pointer}
+.ga-hero{min-height:490px;position:relative;overflow:hidden;border-radius:28px;background:#edf3f9 url('georgia-homebuyers.webp') center center/cover no-repeat;display:flex;align-items:flex-start}
+.ga-hero:before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#fff 0%,rgba(255,255,255,.94) 35%,rgba(255,255,255,.27) 66%,rgba(255,255,255,0) 100%)}
+.ga-hero-content{position:relative;z-index:1;max-width:600px;padding:42px 42px 36px}
+.ga-eyebrow{font-size:13px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:#c9222e;margin-bottom:18px}
+.ga-hero h1{font-size:clamp(38px,4.4vw,64px);font-weight:900;line-height:1.02;letter-spacing:-3px;margin:0 0 16px}
+.ga-hero h1 span{color:#cb2430}
+.ga-hero p{font-size:19px;line-height:1.42;font-weight:650;max-width:450px;margin:0 0 22px;color:#344366}
+.ga-frost{display:flex;gap:18px;align-items:center;width:max-content;max-width:100%;padding:13px 20px;margin-bottom:18px;border:1px solid rgba(255,255,255,.92);border-radius:18px;background:rgba(255,255,255,.73);backdrop-filter:blur(12px);box-shadow:0 12px 35px rgba(8,31,92,.13)}
+.ga-frost strong{font-size:49px;line-height:1;letter-spacing:-3px;color:#081f5c}.ga-frost strong span{color:#c9222e}.ga-frost em{font-style:normal;border-left:2px solid #bbc6d8;padding-left:16px;font-size:17px;line-height:1.15;font-weight:800}
+.ga-button{background:#c9222e;color:#fff;border:0;border-radius:12px;padding:16px 24px;font-size:17px;font-weight:850;cursor:pointer;box-shadow:0 9px 20px rgba(201,34,46,.17)}
+.ga-button:hover,.ga-button:focus-visible{background:#a91722}.ga-button:focus-visible,.ga-program summary:focus-visible,.ga-answer:focus-visible{outline:3px solid #487df0;outline-offset:3px}
+.ga-section{padding:38px 5px 20px}.ga-section h2{font-size:38px;line-height:1.1;letter-spacing:-1.5px;margin:0 0 18px;text-align:center}
+.ga-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.ga-program{border:1px solid #e3eaf3;background:#fff;box-shadow:0 8px 26px rgba(8,31,92,.07);border-radius:16px;overflow:hidden}
+.ga-program[open]{border-color:#b8d6ff}.ga-program summary{display:flex;align-items:center;gap:15px;padding:17px 19px;cursor:pointer;list-style:none;min-height:82px}.ga-program summary::-webkit-details-marker{display:none}
+.ga-icon{font-size:31px;width:39px;text-align:center;flex:none}.ga-name{font-size:17px;font-weight:900;line-height:1.2;flex:1}.ga-name small{display:block;font-size:15px;color:#586781;font-weight:650;margin-top:3px}.ga-chevron{font-size:22px;transition:transform .2s}.ga-program[open] .ga-chevron{transform:rotate(90deg)}
+.ga-program-body{padding:0 19px 18px 73px}.ga-program-body p{font-size:15px;color:#405170;line-height:1.45;margin:0 0 12px}.ga-first-question{font-size:18px;font-weight:900;margin-bottom:10px}.ga-answers{display:flex;gap:10px}.ga-answer{border:1px solid #b9c7d8;border-radius:10px;background:#fff;color:#081f5c;min-height:46px;flex:1;font-size:16px;font-weight:850;cursor:pointer}.ga-answer:first-child{background:#c9222e;color:#fff;border-color:#c9222e}
+.ga-disclaimer{font-size:13px;text-align:center;color:#51617c;margin:18px 0}.ga-bottom{text-align:center;margin:10px auto 0}
+#gaFunnel[hidden],#gaLanding[hidden]{display:none!important}
+@media(max-width:850px){.ga-nav a{display:none}.ga-list{grid-template-columns:1fr}.ga-hero{min-height:550px;background-position:60% center}.ga-hero:before{background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(255,255,255,.93) 38%,rgba(255,255,255,.06) 78%)}.ga-hero-content{padding:28px;max-width:600px}.ga-hero h1{font-size:46px}.ga-section h2{font-size:31px}}
+@media(max-width:520px){.ga-header{padding:0 1px 14px}.ga-logo{font-size:20px}.ga-logo small{font-size:8px;letter-spacing:2.3px}.ga-menu{padding:10px;font-size:13px}.ga-hero{border-radius:20px;min-height:620px;background-position:62% bottom;background-size:auto 65%;background-color:#f4f7fb}.ga-hero:before{background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,.96) 43%,rgba(255,255,255,.12) 70%,transparent 100%)}.ga-hero-content{padding:21px 18px}.ga-eyebrow{font-size:11px;margin-bottom:12px}.ga-hero h1{font-size:34px;letter-spacing:-1.5px;margin-bottom:9px}.ga-hero p{font-size:15px;max-width:315px;margin-bottom:12px}.ga-frost{padding:9px 13px;gap:10px;margin-bottom:12px}.ga-frost strong{font-size:36px}.ga-frost em{font-size:12px;padding-left:10px}.ga-button{font-size:15px;padding:13px 16px}.ga-section{padding-top:26px}.ga-section h2{font-size:26px;margin-bottom:14px}.ga-program summary{padding:12px;min-height:70px;gap:10px}.ga-icon{font-size:25px;width:34px}.ga-name{font-size:15px}.ga-name small{font-size:13px}.ga-program-body{padding:0 12px 14px 56px}}
   </style>
 
 <div id="dpaApp"></div>
@@ -662,6 +692,18 @@ else renderMain();
 
 function renderMain(){
 app.innerHTML=`
+<div id="gaLanding" class="ga-home">
+<header class="ga-header"><div class="ga-logo">DPA HELP CENTER<small>DOWN PAYMENT ASSISTANCE</small></div><nav class="ga-nav" aria-label="Main navigation"><a href="#gaPrograms">Georgia programs</a><a href="/prephub/">PrepHub</a><button class="ga-menu" type="button" onclick="gaStart()">Check my options</button></nav></header>
+<section class="ga-hero" aria-labelledby="gaTitle"><div class="ga-hero-content"><div class="ga-eyebrow">Georgia homebuyers</div><h1 id="gaTitle">Is the Down Payment Stopping You From Buying a Home?<br><span>First-Time Homebuyers Get Up to $35K.</span></h1><p>See which Georgia program may fit you.</p><div class="ga-frost"><strong>$35<span>K</span></strong><em>Potential homebuyer<br>assistance</em></div><button class="ga-button" type="button" onclick="gaStart()">CHECK MY READINESS →</button></div></section>
+<section class="ga-section" id="gaPrograms"><h2>Georgia Homebuyer Programs</h2><div class="ga-list">
+<details class="ga-program"><summary><span class="ga-icon" aria-hidden="true">⌂</span><span class="ga-name">Georgia Dream Standard<small>Up to $10,000</small></span><span class="ga-chevron" aria-hidden="true">›</span></summary><div class="ga-program-body"><p>May help eligible Georgia buyers with down payment and closing costs.</p><div class="ga-first-question">Is this your first home?</div><div class="ga-answers"><button class="ga-answer" type="button" onclick="gaChoose('Georgia Dream Standard',true)">YES</button><button class="ga-answer" type="button" onclick="gaChoose('Georgia Dream Standard',false)">NO</button></div></div></details>
+<details class="ga-program"><summary><span class="ga-icon" aria-hidden="true">⌂</span><span class="ga-name">Georgia Dream PEN<small>Up to $12,500</small></span><span class="ga-chevron" aria-hidden="true">›</span></summary><div class="ga-program-body"><p>Additional assistance for eligible public protectors, educators, and nurses.</p><div class="ga-first-question">Is this your first home?</div><div class="ga-answers"><button class="ga-answer" type="button" onclick="gaChoose('Georgia Dream PEN',true)">YES</button><button class="ga-answer" type="button" onclick="gaChoose('Georgia Dream PEN',false)">NO</button></div></div></details>
+<details class="ga-program"><summary><span class="ga-icon" aria-hidden="true">⌂</span><span class="ga-name">Georgia Dream CHOICE<small>Up to $12,500</small></span><span class="ga-chevron" aria-hidden="true">›</span></summary><div class="ga-program-body"><p>Additional assistance for eligible buyers with a household member with a disability.</p><div class="ga-first-question">Is this your first home?</div><div class="ga-answers"><button class="ga-answer" type="button" onclick="gaChoose('Georgia Dream CHOICE',true)">YES</button><button class="ga-answer" type="button" onclick="gaChoose('Georgia Dream CHOICE',false)">NO</button></div></div></details>
+<details class="ga-program"><summary><span class="ga-icon" aria-hidden="true">♧</span><span class="ga-name">Peach Plus<small>Up to $12,500</small></span><span class="ga-chevron" aria-hidden="true">›</span></summary><div class="ga-program-body"><p>A Georgia assistance option for eligible homebuyers. Program terms vary.</p><div class="ga-first-question">Is this your first home?</div><div class="ga-answers"><button class="ga-answer" type="button" onclick="gaChoose('Peach Plus',true)">YES</button><button class="ga-answer" type="button" onclick="gaChoose('Peach Plus',false)">NO</button></div></div></details>
+<details class="ga-program"><summary><span class="ga-icon" aria-hidden="true">♧</span><span class="ga-name">Peach Advantage<small>Up to 5%</small></span><span class="ga-chevron" aria-hidden="true">›</span></summary><div class="ga-program-body"><p>Percentage-based assistance that may help with upfront purchase costs.</p><div class="ga-first-question">Is this your first home?</div><div class="ga-answers"><button class="ga-answer" type="button" onclick="gaChoose('Peach Advantage',true)">YES</button><button class="ga-answer" type="button" onclick="gaChoose('Peach Advantage',false)">NO</button></div></div></details>
+<details class="ga-program"><summary><span class="ga-icon" aria-hidden="true">☆</span><span class="ga-name">Peach Select VA<small>Lower-rate option</small></span><span class="ga-chevron" aria-hidden="true">›</span></summary><div class="ga-program-body"><p>A Georgia mortgage option for eligible VA borrowers; ask about current terms.</p><div class="ga-first-question">Is this your first home?</div><div class="ga-answers"><button class="ga-answer" type="button" onclick="gaChoose('Peach Select VA',true)">YES</button><button class="ga-answer" type="button" onclick="gaChoose('Peach Select VA',false)">NO</button></div></div></details>
+</div><p class="ga-disclaimer">Assistance amounts vary by program. Eligibility and funding requirements apply.</p><div class="ga-bottom"><button class="ga-button" type="button" onclick="gaStart()">CHECK MY GEORGIA OPTIONS</button></div></section>
+</div><div id="gaFunnel" hidden>
 <div class="dpa-grid">
 <div class="dpa-left">
 <div class="dpa-brand">DPA HELP CENTER</div>
@@ -781,8 +823,18 @@ app.innerHTML=`
 
 </div>
 </div>
-</div>`;
+</div></div>`;
 
+window.gaStart=function(){
+  document.getElementById("gaLanding").hidden=true;
+  document.getElementById("gaFunnel").hidden=false;
+  window.scrollTo(0,0);
+};
+window.gaChoose=function(program,firstHome){
+  sessionStorage.setItem("dpa_georgia_program",program);
+  gaStart();
+  if(firstHome)dpaShowLocation();else dpaNoPath();
+};
 startFaceRotation();
 initMain();
 }
