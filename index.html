@@ -196,7 +196,7 @@ backdrop-filter:blur(14px);
 
 .dpa-question-kicker{font-size:10px;font-weight:900;letter-spacing:3.5px;color:#0057B8;margin:0 0 8px;text-transform:uppercase}
 .dpa-question{font-size:24px;font-weight:900;line-height:1.08;color:#081F5C;margin:0 auto 10px;max-width:330px;letter-spacing:-.6px}
-.dpa-readiness-sub{max-width:360px;margin:0 auto 18px;color:#586781;font-size:15px;font-weight:650;line-height:1.4}
+#screenThree .dpa-question{font-size:clamp(36px,5vw,46px);max-width:450px;line-height:1;letter-spacing:-1.8px;margin-bottom:20px}
 .dpa-note{max-width:320px;margin:0 auto 14px;font-size:10.5px;font-weight:700;line-height:1.35;color:#7c8496}
 
 .dpa-btns{display:flex;flex-direction:column;gap:10px;margin:0 auto 14px;max-width:330px}
@@ -849,9 +849,8 @@ app.innerHTML=`
 </div>
 
 <div id="screenThree" class="dpa-step-screen">
-<div class="dpa-question-kicker">Program Readiness</div>
-<div class="dpa-question">Get Up to $35K</div>
-<p class="dpa-readiness-sub">Answer four quick questions about credit, income, work history, and taxes to see your next steps.</p>
+<div class="dpa-question-kicker">Program Readiness Check</div>
+<div class="dpa-question">GET UP TO $35K</div>
 <div class="dpa-score-top">
 <div class="dpa-score-label">DPA READINESS SCORE</div>
 <div id="readinessScore" class="dpa-score-num">0%</div>
