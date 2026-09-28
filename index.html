@@ -574,6 +574,21 @@ border-radius:16px;
 .ga-program-body{padding:0 19px 18px 73px}.ga-program-body p{font-size:15px;color:#405170;line-height:1.45;margin:0 0 12px}.ga-first-question{font-size:18px;font-weight:900;margin-bottom:10px}.ga-answers{display:flex;gap:10px}.ga-answer{border:1px solid #b9c7d8;border-radius:10px;background:#fff;color:#081f5c;min-height:46px;flex:1;font-size:16px;font-weight:850;cursor:pointer}.ga-answer:first-child{background:#c9222e;color:#fff;border-color:#c9222e}
 .ga-disclaimer{font-size:13px;text-align:center;color:#51617c;margin:18px 0}.ga-bottom{text-align:center;margin:10px auto 0}
 #gaFunnel[hidden],#gaLanding[hidden]{display:none!important}
+.ga-funnel-active{max-width:720px;margin:0 auto}
+.ga-funnel-header{display:flex;justify-content:space-between;align-items:center;padding:8px 4px 16px;border-bottom:1px solid #e4ebf5;margin-bottom:20px}
+.ga-funnel-header strong{font-size:23px;letter-spacing:-1px}.ga-funnel-header small{display:block;font-size:10px;letter-spacing:2.5px;margin-top:4px}
+.ga-funnel-back{background:none;border:0;color:#081f5c;font-size:15px;font-weight:800;cursor:pointer}
+.ga-funnel-active .dpa-grid{display:block;width:100%}.ga-funnel-active .dpa-left{display:none}
+.ga-funnel-active .dpa-right-wrap{width:100%;max-width:640px;margin:0 auto}
+.ga-funnel-active .dpa-card{min-height:0;padding:4px 0 20px}
+.ga-funnel-active .dpa-right-trust,.ga-funnel-active .dpa-program-top{display:none}
+.ga-funnel-active .dpa-question{font-size:clamp(30px,5vw,42px);line-height:1.1;letter-spacing:-1.5px;margin-bottom:16px}
+.ga-funnel-active .dpa-question-kicker{font-size:13px;letter-spacing:2px;color:#c9222e}
+.ga-funnel-active .dpa-location-box{max-width:100%;text-align:left}
+.ga-funnel-active .dpa-location-box .dpa-note{font-size:17px;text-align:left}
+.ga-funnel-active .dpa-premium-panel,.ga-funnel-active .dpa-estimate-card,.ga-funnel-active .dpa-score-top{animation:none;box-shadow:0 9px 25px rgba(8,31,92,.08);border:1px solid #dbe7f5}
+.ga-selected-program{display:none;padding:15px 18px;border:1px solid #cfe0f5;border-radius:13px;background:#f6faff;color:#081f5c;font-size:16px;font-weight:850;margin-bottom:24px}
+.ga-selected-program.show{display:block}.ga-selected-program span{display:block;font-size:12px;color:#64728a;margin-top:3px;font-weight:700}
 @media(max-width:850px){.ga-nav a{display:none}.ga-list{grid-template-columns:1fr}.ga-hero{min-height:550px;background-position:60% center}.ga-hero:before{background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(255,255,255,.93) 38%,rgba(255,255,255,.06) 78%)}.ga-hero-content{padding:28px;max-width:600px}.ga-hero h1{font-size:46px}.ga-section h2{font-size:31px}}
 @media(max-width:520px){.ga-header{padding:0 1px 14px}.ga-logo{font-size:20px}.ga-logo small{font-size:8px;letter-spacing:2.3px}.ga-menu{padding:10px;font-size:13px}.ga-hero{border-radius:20px;min-height:620px;background-position:62% bottom;background-size:auto 65%;background-color:#f4f7fb}.ga-hero:before{background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,.96) 43%,rgba(255,255,255,.12) 70%,transparent 100%)}.ga-hero-content{padding:21px 18px}.ga-eyebrow{font-size:11px;margin-bottom:12px}.ga-hero h1{font-size:34px;letter-spacing:-1.5px;margin-bottom:9px}.ga-hero p{font-size:15px;max-width:315px;margin-bottom:12px}.ga-frost{padding:9px 13px;gap:10px;margin-bottom:12px}.ga-frost strong{font-size:36px}.ga-frost em{font-size:12px;padding-left:10px}.ga-button{font-size:15px;padding:13px 16px}.ga-section{padding-top:26px}.ga-section h2{font-size:26px;margin-bottom:14px}.ga-program summary{padding:12px;min-height:70px;gap:10px}.ga-icon{font-size:25px;width:34px}.ga-name{font-size:15px}.ga-name small{font-size:13px}.ga-program-body{padding:0 12px 14px 56px}}
   </style>
@@ -703,7 +718,9 @@ app.innerHTML=`
 <details class="ga-program"><summary><span class="ga-icon" aria-hidden="true">♧</span><span class="ga-name">Peach Advantage<small>Up to 5%</small></span><span class="ga-chevron" aria-hidden="true">›</span></summary><div class="ga-program-body"><p>Percentage-based assistance that may help with upfront purchase costs.</p><div class="ga-first-question">Is this your first home?</div><div class="ga-answers"><button class="ga-answer" type="button" onclick="gaChoose('Peach Advantage',true)">YES</button><button class="ga-answer" type="button" onclick="gaChoose('Peach Advantage',false)">NO</button></div></div></details>
 <details class="ga-program"><summary><span class="ga-icon" aria-hidden="true">☆</span><span class="ga-name">Peach Select VA<small>Lower-rate option</small></span><span class="ga-chevron" aria-hidden="true">›</span></summary><div class="ga-program-body"><p>A Georgia mortgage option for eligible VA borrowers; ask about current terms.</p><div class="ga-first-question">Is this your first home?</div><div class="ga-answers"><button class="ga-answer" type="button" onclick="gaChoose('Peach Select VA',true)">YES</button><button class="ga-answer" type="button" onclick="gaChoose('Peach Select VA',false)">NO</button></div></div></details>
 </div><p class="ga-disclaimer">Assistance amounts vary by program. Eligibility and funding requirements apply.</p><div class="ga-bottom"><button class="ga-button" type="button" onclick="gaStart()">CHECK MY GEORGIA OPTIONS</button></div></section>
-</div><div id="gaFunnel" hidden>
+</div><div id="gaFunnel" class="ga-funnel-active" hidden>
+<header class="ga-funnel-header"><div><strong>DPA HELP CENTER</strong><small>DOWN PAYMENT ASSISTANCE</small></div><button type="button" class="ga-funnel-back" onclick="dpaBack()">← Back</button></header>
+<div id="gaSelectedProgram" class="ga-selected-program"></div>
 <div class="dpa-grid">
 <div class="dpa-left">
 <div class="dpa-brand">DPA HELP CENTER</div>
@@ -833,6 +850,9 @@ window.gaStart=function(){
 window.gaChoose=function(program,firstHome){
   sessionStorage.setItem("dpa_georgia_program",program);
   gaStart();
+  const badge=document.getElementById("gaSelectedProgram");
+  badge.innerHTML=program+'<span>Georgia homebuyer option selected</span>';
+  badge.classList.add("show");
   if(firstHome)dpaShowLocation();else dpaNoPath();
 };
 startFaceRotation();
@@ -1161,6 +1181,8 @@ window.dpaShowLocation=function(){
 leadData.first_home="yes";
 leadData.submission_stage="First Home Yes";
 document.getElementById("firstHomeBtns").style.display="none";
+document.querySelector("#screenOne .dpa-question-kicker").textContent="YOUR LOCATION";
+document.querySelector("#screenOne .dpa-question").textContent="Where are you buying in Georgia?";
 document.getElementById("locationBox").classList.add("show");
 updateHiddenPayload();
 };
@@ -1169,6 +1191,8 @@ window.dpaNoPath=function(){
 leadData.first_home="no";
 leadData.submission_stage="First Home No";
 document.getElementById("firstHomeBtns").style.display="none";
+document.querySelector("#screenOne .dpa-question-kicker").textContent="YOUR LOCATION";
+document.querySelector("#screenOne .dpa-question").textContent="Where are you buying in Georgia?";
 document.getElementById("locationBox").classList.add("show");
 updateHiddenPayload();
 };
