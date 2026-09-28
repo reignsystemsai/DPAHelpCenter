@@ -754,7 +754,7 @@ app.innerHTML=`
 <p>May help eligible Georgia buyers with down payment and closing costs.</p>
 <div id="screenOne" class="dpa-step-screen show">
 <div class="dpa-question-kicker">Check Your Eligibility</div>
-<div class="dpa-question">Is this your<br>first home?</div>
+<div class="dpa-question">Are you a first-time<br>homebuyer?</div>
 <div id="firstHomeBtns" class="dpa-btns">
 <button type="button" class="dpa-choice primary" onclick="dpaShowLocation()">YES</button>
 <button type="button" class="dpa-choice" onclick="dpaNoPath()">NO</button>
@@ -808,7 +808,7 @@ app.innerHTML=`
 </div>
 
 <p class="ga-disclaimer">Assistance amounts vary by program. Eligibility, lender, location, and funding requirements apply.</p>
-<button type="button" class="ga-bottom" onclick="dpaOpenGeorgiaMatch()">CHECK MY GEORGIA OPTIONS</button>
+<button type="button" class="ga-bottom" onclick="dpaOpenGeorgiaMatch()">GET UP TO $35K</button>
 </section>
 
 <div id="gaFunnelStage" class="ga-funnel-stage">
@@ -1236,6 +1236,8 @@ window.dpaShowLocation=function(){
 leadData.first_home="yes";
 leadData.submission_stage="First Home Yes";
 document.getElementById("firstHomeBtns").style.display="none";
+document.querySelector("#screenOne .dpa-question-kicker").textContent="YOUR LOCATION";
+document.querySelector("#screenOne .dpa-question").textContent="Where are you buying in Georgia?";
 document.getElementById("locationBox").classList.add("show");
 updateHiddenPayload();
 };
@@ -1244,6 +1246,8 @@ window.dpaNoPath=function(){
 leadData.first_home="no";
 leadData.submission_stage="First Home No";
 document.getElementById("firstHomeBtns").style.display="none";
+document.querySelector("#screenOne .dpa-question-kicker").textContent="YOUR LOCATION";
+document.querySelector("#screenOne .dpa-question").textContent="Where are you buying in Georgia?";
 document.getElementById("locationBox").classList.add("show");
 updateHiddenPayload();
 };
