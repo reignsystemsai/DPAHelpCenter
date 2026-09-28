@@ -569,7 +569,7 @@ border-radius:16px;
 .ga-programs{padding:0 18px 24px}.ga-programs h2{margin:0 0 14px;font-size:34px;line-height:1;font-weight:950;letter-spacing:-1.5px;color:#081F5C}
 .ga-program{margin:0 0 10px;border:1px solid rgba(8,31,92,.08);border-radius:18px;background:#fff;box-shadow:0 10px 26px rgba(8,31,92,.07);overflow:hidden}
 .ga-program.active{border-color:rgba(0,87,184,.25);box-shadow:0 12px 28px rgba(8,31,92,.1)}
-.ga-program-toggle{display:grid;grid-template-columns:46px 1fr 24px;align-items:center;gap:12px;width:100%;min-height:76px;padding:12px 16px;border:0;background:#fff;text-align:left;color:#081F5C;cursor:pointer}
+.ga-program-toggle{display:grid;grid-template-columns:1fr 24px;align-items:center;gap:12px;width:100%;min-height:76px;padding:12px 16px;border:0;background:#fff;text-align:left;color:#081F5C;cursor:pointer}
 .ga-program.active .ga-program-toggle{background:linear-gradient(135deg,#fff,#f1f7ff)}
 .ga-icon{display:grid;place-items:center;width:42px;height:42px;color:#081F5C}.ga-icon svg{width:38px;height:38px;stroke:currentColor;fill:none;stroke-width:2}
 .ga-icon.peach{font-size:34px;color:#D22630}.ga-icon.star{font-size:39px;color:#081F5C}
@@ -601,9 +601,8 @@ border-radius:16px;
   .ga-header{padding:18px 18px 8px}.ga-header .dpa-brand{font-size:24px}.ga-header .dpa-brand:after{width:105px;height:5px;margin-left:42px}.ga-header .dpa-left-kicker{font-size:8px;letter-spacing:3.4px}
   .ga-hero-copy{padding:10px 18px 14px}.ga-title{font-size:38px;letter-spacing:-2px}.ga-hero-line{font-size:25px}.ga-hero-small{font-size:13px}
   .ga-photo{margin:0;min-height:315px;border-radius:0}.ga-photo img{min-height:315px}.ga-glass{left:16px;right:16px;bottom:14px;gap:13px;padding:14px 16px;border-radius:18px}.ga-glass-amount{font-size:49px}.ga-glass-copy{font-size:14px;padding-left:13px}
-  .ga-primary{width:calc(100% - 28px);margin:10px auto 22px;min-height:58px}.ga-programs{padding:0 14px 22px}.ga-programs h2{font-size:29px}.ga-program-toggle{grid-template-columns:42px 1fr 20px;padding:10px 12px;min-height:68px}.ga-program-name{font-size:16px}.ga-program-amount{font-size:14px}.ga-program-detail{padding:0 14px 14px}.ga-program .dpa-btns{grid-template-columns:1fr 1fr}.ga-funnel-stage{margin:0 14px 24px;padding:16px 14px}
+  .ga-primary{width:calc(100% - 28px);margin:10px auto 22px;min-height:58px}.ga-programs{padding:0 14px 22px}.ga-programs h2{font-size:29px}.ga-program-toggle{grid-template-columns:1fr 20px;padding:10px 12px;min-height:68px}.ga-program-name{font-size:16px}.ga-program-amount{font-size:14px}.ga-program-detail{padding:0 14px 14px}.ga-program .dpa-btns{grid-template-columns:1fr 1fr}.ga-funnel-stage{margin:0 14px 24px;padding:16px 14px}
 }
-  
   </style>
 
 <div id="dpaApp"></div>
@@ -749,7 +748,6 @@ app.innerHTML=`
 
 <article class="ga-program active" id="gaStandard">
 <button type="button" class="ga-program-toggle" aria-expanded="true" onclick="dpaToggleGeorgiaProgram('gaStandard')">
-<span class="ga-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M7 22 24 8l17 14v19H7Z"/><path d="M18 41V27h12v14"/><path d="m4 24 20-17 20 17"/></svg></span>
 <span><span class="ga-program-name">Georgia Dream Standard</span><span class="ga-program-amount">Up to $10,000</span></span><span class="ga-chevron">›</span>
 </button>
 <div class="ga-program-detail">
@@ -775,7 +773,6 @@ app.innerHTML=`
 
 <article class="ga-program" id="gaPen">
 <button type="button" class="ga-program-toggle" aria-expanded="false" onclick="dpaToggleGeorgiaProgram('gaPen')">
-<span class="ga-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M7 22 24 8l17 14v19H7Z"/><path d="M18 41V27h12v14"/><path d="m4 24 20-17 20 17"/></svg></span>
 <span><span class="ga-program-name">Georgia Dream PEN</span><span class="ga-program-amount">Up to $12,500</span></span><span class="ga-chevron">›</span>
 </button>
 <div class="ga-program-detail"><p>Designed for eligible protectors, educators, healthcare workers, active military members, and qualifying industry employees.</p><button type="button" class="ga-detail-cta" onclick="dpaOpenGeorgiaMatch('Georgia Dream PEN')">CHECK MY ELIGIBILITY</button></div>
@@ -783,7 +780,6 @@ app.innerHTML=`
 
 <article class="ga-program" id="gaChoice">
 <button type="button" class="ga-program-toggle" aria-expanded="false" onclick="dpaToggleGeorgiaProgram('gaChoice')">
-<span class="ga-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M7 22 24 8l17 14v19H7Z"/><path d="M18 41V27h12v14"/><path d="m4 24 20-17 20 17"/></svg></span>
 <span><span class="ga-program-name">Georgia Dream CHOICE</span><span class="ga-program-amount">Up to $12,500</span></span><span class="ga-chevron">›</span>
 </button>
 <div class="ga-program-detail"><p>May provide additional assistance when an eligible household includes a family member living with a disability.</p><button type="button" class="ga-detail-cta" onclick="dpaOpenGeorgiaMatch('Georgia Dream CHOICE')">CHECK MY ELIGIBILITY</button></div>
@@ -791,7 +787,6 @@ app.innerHTML=`
 
 <article class="ga-program" id="gaPeachPlus">
 <button type="button" class="ga-program-toggle" aria-expanded="false" onclick="dpaToggleGeorgiaProgram('gaPeachPlus')">
-<span class="ga-icon peach" aria-hidden="true">◯</span>
 <span><span class="ga-program-name">Peach Plus</span><span class="ga-program-amount">Up to $12,500</span></span><span class="ga-chevron">›</span>
 </button>
 <div class="ga-program-detail"><p>Offers broader income and home-price limits for eligible FHA and VA buyers who may not fit traditional Georgia Dream requirements.</p><button type="button" class="ga-detail-cta" onclick="dpaOpenGeorgiaMatch('Peach Plus')">CHECK MY ELIGIBILITY</button></div>
@@ -799,7 +794,6 @@ app.innerHTML=`
 
 <article class="ga-program" id="gaPeachAdvantage">
 <button type="button" class="ga-program-toggle" aria-expanded="false" onclick="dpaToggleGeorgiaProgram('gaPeachAdvantage')">
-<span class="ga-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 43V18"/><path d="M24 20C18 13 13 12 7 14c8 1 12 5 17 12M24 20c6-7 11-8 17-6-8 1-12 5-17 12M24 17c-1-6-5-9-10-11 2 7 5 11 10 14M24 17c1-6 5-9 10-11-2 7-5 11-10 14"/></svg></span>
 <span><span class="ga-program-name">Peach Advantage</span><span class="ga-program-amount">Up to 5%</span></span><span class="ga-chevron">›</span>
 </button>
 <div class="ga-program-detail"><p>Conventional financing with assistance options from 2% to 5% of the first loan amount for eligible Georgia buyers.</p><button type="button" class="ga-detail-cta" onclick="dpaOpenGeorgiaMatch('Peach Advantage')">CHECK MY ELIGIBILITY</button></div>
@@ -807,7 +801,6 @@ app.innerHTML=`
 
 <article class="ga-program" id="gaPeachSelect">
 <button type="button" class="ga-program-toggle" aria-expanded="false" onclick="dpaToggleGeorgiaProgram('gaPeachSelect')">
-<span class="ga-icon star" aria-hidden="true">☆</span>
 <span><span class="ga-program-name">Peach Select VA</span><span class="ga-program-amount">Lower-rate option</span></span><span class="ga-chevron">›</span>
 </button>
 <div class="ga-program-detail"><p>A lower-rate mortgage option for eligible active-duty military members and veterans. This option does not include down payment assistance.</p><button type="button" class="ga-detail-cta" onclick="dpaOpenGeorgiaMatch('Peach Select VA')">CHECK MY ELIGIBILITY</button></div>
