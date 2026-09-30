@@ -221,3 +221,5 @@ html body #homebuyer-credit-staging .area.needs-attention .prep-area-state:befor
 
 html body #homebuyer-credit-staging [hidden]{display:none!important}
 html body #homebuyer-credit-staging #prep-autosave-status{display:block;font-size:10px;line-height:1.4;max-width:170px;color:var(--dpa-text);margin-top:5px;letter-spacing:0;text-align:right}
+
+html body #homebuyer-credit-staging [data-panel="credit"]>.eyebrow{color:var(--dpa-text)}
