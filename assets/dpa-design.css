@@ -120,3 +120,17 @@ html body #homebuyer-credit-staging .account{font-size:12px}
 #dpa-desktop-funnel #gaPage .ga-entry-close span{font-size:25px;line-height:1}
 #dpa-desktop-funnel #gaPage .ga-entry-close:hover{background:#f3f5f8}
 #dpa-desktop-funnel #gaPage .ga-entry-close:focus-visible{outline:2px solid var(--dpa-navy);outline-offset:2px}
+
+/* Refined mobile CTA placement and offer hierarchy. */
+#dpa-desktop-funnel #gaPage .ga-glass-offer{flex-direction:column;align-items:flex-start;gap:4px}
+#dpa-desktop-funnel #gaPage .ga-glass-label{max-width:none;white-space:nowrap;font-size:14px;line-height:1.2}
+@media(max-width:899px){
+#dpa-desktop-funnel #gaPage .ga-primary{align-self:flex-end;margin:14px 24px 0}
+#dpa-desktop-funnel #gaPage .ga-glass{padding:14px 18px}
+#dpa-desktop-funnel #gaPage .ga-glass-label{font-size:12px}
+#dpa-desktop-funnel #gaPage .ga-glass-amount{font-size:46px;line-height:1}
+}
+@media(max-width:360px){
+#dpa-desktop-funnel #gaPage .ga-glass{padding:12px 14px}
+#dpa-desktop-funnel #gaPage .ga-glass-amount{font-size:40px}
+}
