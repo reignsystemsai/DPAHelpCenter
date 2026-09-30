@@ -94,4 +94,32 @@ accountClient.auth.onAuthStateChange((event,next)=>{session=next;syncSessionCont
 accountReady=(async()=>{const current=await accountClient.auth.getSession();session=current.data?.session||null;syncSessionControls();if(session){const lead=new URLSearchParams(location.search).get('lead')||localStorage.getItem('dpa_prephub_lead_id');if(lead){const claimed=await accountClient.rpc('claim_prephub_lead',{p_lead_id:lead});if(claimed.error)throw claimed.error;}}if(!session){let legacy=null;try{legacy=JSON.parse(localStorage.getItem(sessionKey)||'null');}catch{}if(legacy?.access_token&&legacy?.refresh_token){const restored=await accountClient.auth.setSession({access_token:legacy.access_token,refresh_token:legacy.refresh_token});session=restored.data?.session||null;if(session)localStorage.removeItem(sessionKey);}}})();
 window.PrepHubAccountReady=accountReady;
 accountReady.then(()=>{authSettled=true;syncSessionControls();if(session)load().catch(err=>{q('#wb-account-status').textContent=err.message;});}).catch(async()=>{const current=await accountClient.auth.getSession();session=current.data?.session||null;if(!current.error){authSettled=true;syncSessionControls();}setSaveStatus('Account could not finish loading · Refresh to retry');});
+
+// Keep the shared credit-request interface consistent on older department-page copies.
+(function setupPlanRequestUI(){
+ const legacy=!q('[data-plan-note]');
+ q('#cp-profile-request')?.remove();
+ if(!legacy)return;
+ const style=document.createElement('style');
+ style.textContent="\n#homebuyer-credit-staging .cp-plan{position:relative}\n#homebuyer-credit-staging .cp-request-note{position:absolute;z-index:5;left:18px;right:18px;bottom:72px;padding:14px 36px 14px 14px;border:1px solid rgba(8,31,92,.14);border-radius:12px;background:rgba(255,255,255,.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 8px 28px rgba(8,31,92,.12);color:#081f5c;font-size:12px;line-height:1.45}\n#homebuyer-credit-staging .cp-request-note p{font-size:12px;min-height:0;margin:5px 0 0}\n#homebuyer-credit-staging .cp-request-note button{position:absolute;right:9px;top:7px;border:0;background:transparent;color:#081f5c;font-size:22px;line-height:1;cursor:pointer;padding:4px}\n#homebuyer-credit-staging [data-plan][data-requested=\"true\"]{opacity:1;background:#edf3f8;color:#081f5c;border-color:#cbd7e6;cursor:default}\n";
+ root.append(style);
+ q('.prep-brand .brand')?.remove();
+ const logo=q('.prep-brand .logo');if(logo){logo.style.fontSize='32px';logo.style.lineHeight='1.1';logo.style.letterSpacing='-1px';}
+ const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let textNode;while((textNode=walker.nextNode())){if(textNode.textContent.includes('PrepHub AI'))textNode.textContent=textNode.textContent.replaceAll('PrepHub AI','PREPHUB');if(textNode.textContent==='HOMEBUYER PATHWAY PREMIUM')textNode.textContent='HOMEBUYER PATHWAY PLUS';}
+ all('[data-plan]').forEach(button=>{
+  const note=document.createElement('div');note.className='cp-request-note';note.dataset.planNote=button.dataset.plan;note.hidden=true;
+  note.innerHTML='<button type="button" aria-label="Close request message">×</button><strong>Request received</strong><p>Your plan request is saved. We’ll call you to discuss the next steps.</p>';
+  note.querySelector('button').addEventListener('click',()=>{note.hidden=true;});button.after(note);
+ });
+ root.addEventListener('click',async event=>{
+  const button=event.target.closest('[data-plan]');if(!button)return;
+  event.preventDefault();event.stopImmediatePropagation();
+  if(button.disabled||button.dataset.requested==='true')return;
+  const note=q('[data-plan-note="'+button.dataset.plan+'"]');
+  button.disabled=true;button.textContent='Requesting…';note.hidden=true;
+  try{await window.PrepHubWorkbook.requestPlan(button.dataset.plan);note.querySelector('strong').textContent='Request received';note.querySelector('p').textContent='Your plan request is saved. We’ll call you to discuss the next steps.';}
+  catch(error){note.querySelector('strong').textContent='Request not saved';note.querySelector('p').textContent=error.message||'Please try again.';}
+  finally{if(button.dataset.requested!=='true'){button.disabled=false;button.textContent='I Want to Start This Plan';}note.hidden=false;}
+ },true);
+})();
 })();
