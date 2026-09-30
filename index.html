@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DPA Help Center | Down Payment Assistance</title>
-<meta name="description" content="Check your homebuyer readiness and explore down payment assistance options.">
+<meta name="description" content="Check your homebuyer preparation and explore down payment assistance options.">
 <style>html,body{margin:0;min-height:100%;background:#fff}</style>
-<link rel="stylesheet" href="/assets/dpa-design.css?v=20260930-slash">
+<link rel="stylesheet" href="/assets/dpa-design.css?v=20260930-preparation">
 </head>
 <body>
 <div id="dpa-desktop-funnel">
@@ -716,9 +716,9 @@ el.classList.remove("fade");
 
 if(path.includes("/results"))renderResults();
 else if(path.includes("/dti"))renderDTI();
-else if(path.includes("/taxes"))renderSimplePage("Tax Document Readiness","Lenders may need tax returns to verify income. If you recently switched from W2 to 1099, you’ll need 2 years as a 1099 employee.","RETURN TO DPA HELP CENTER");
-else if(path.includes("/credit"))renderSimplePage("Credit Readiness","Review your credit readiness first, then return to DPA Help Center.","RETURN TO DPA HELP CENTER");
-else if(path.includes("/job"))renderSimplePage("Employment Readiness","Most lenders want a stable 2-year work, school, military, or income history. Job changes can be okay when documented.","RETURN TO DPA HELP CENTER");
+else if(path.includes("/taxes"))renderSimplePage("Tax Document Preparation","Lenders may need tax returns to verify income. If you recently switched from W2 to 1099, you’ll need 2 years as a 1099 employee.","RETURN TO DPA HELP CENTER");
+else if(path.includes("/credit"))renderSimplePage("Credit Preparation","Review your credit preparation first, then return to DPA Help Center.","RETURN TO DPA HELP CENTER");
+else if(path.includes("/job"))renderSimplePage("Employment Preparation","Most lenders want a stable 2-year work, school, military, or income history. Job changes can be okay when documented.","RETURN TO DPA HELP CENTER");
 else renderMain();
 
 function renderMain(){
@@ -848,10 +848,10 @@ app.innerHTML=`
 </div>
 
 <div id="screenThree" class="dpa-step-screen">
-<div class="dpa-question-kicker">Program Readiness Check</div>
+<div class="dpa-question-kicker">Program Preparation Check</div>
 <div class="dpa-question">GET UP TO $35K</div>
 <div class="dpa-score-top">
-<div class="dpa-score-label">DPA READINESS SCORE</div>
+<div class="dpa-score-label">DPA PREPARATION SCORE</div>
 <div id="readinessScore" class="dpa-score-num">0%</div>
 <div id="readinessStatus" class="dpa-score-status">Start with credit</div>
 <div class="dpa-score-bar"><div id="readinessFill" class="dpa-score-fill"></div></div>
@@ -863,7 +863,7 @@ app.innerHTML=`
 <div class="dpa-question-kicker">Your results</div>
 <div id="finalTitle" class="dpa-route-title">Getting your results ready...</div>
 <div class="dpa-score-top">
-<div class="dpa-score-label">FINAL READINESS SCORE</div>
+<div class="dpa-score-label">FINAL PREPARATION SCORE</div>
 <div id="finalScoreNum" class="dpa-score-num">0%</div>
 <div id="finalScoreStatus" class="dpa-score-status">Routing</div>
 <div class="dpa-score-bar"><div id="finalScoreFill" class="dpa-score-fill"></div></div>
@@ -900,7 +900,7 @@ app.innerHTML=`
 <div class="page-wrap">
 <a class="dpa-back-btn" href="${APPLICATION_URL}" target="_top">BACK TO DPA HELP CENTER</a>
 <div class="page-brand">DPA HELP CENTER</div>
-<div class="dpa-kicker" style="text-align:center">Homebuyer Readiness Results</div>
+<div class="dpa-kicker" style="text-align:center">Homebuyer Preparation Results</div>
 <h1 class="page-title">You’re not denied.<br>You’re just a little <span>unprepared.</span></h1>
 <div class="page-sub">The glowing cards are the exact steps you need to complete before moving forward.</div>
 
@@ -913,10 +913,10 @@ app.innerHTML=`
 </div>
 
 <div class="results-grid">
-${resultCard("credit",credit,any,"Credit Deficiency","Credit Readiness","If your score is below 640, review your credit path first.","REVIEW CREDIT READINESS",CREDIT_URL)}
+${resultCard("credit",credit,any,"Credit Deficiency","Credit Preparation","If your score is below 640, review your credit path first.","REVIEW CREDIT PREPARATION",CREDIT_URL)}
 ${resultCard("dti",dti,any,"Income Deficiency","Income / DTI Review","If household income is below the target range, use the DTI tool to estimate your buying power.","CALCULATE MY DTI",DTI_URL)}
-${resultCard("job",job,any,"Employment Deficiency","Employment Readiness","A stable 2-year work, school, military, or income history can help your file.","REVIEW WORK HISTORY",JOB_URL)}
-${resultCard("taxes",taxes,any,"Tax Deficiency","Tax Document Readiness","Tax returns may be needed to verify income, especially for self-employed or 1099 income borrowers.","REVIEW TAX DOCUMENTS",TAXES_URL)}
+${resultCard("job",job,any,"Employment Deficiency","Employment Preparation","A stable 2-year work, school, military, or income history can help your file.","REVIEW WORK HISTORY",JOB_URL)}
+${resultCard("taxes",taxes,any,"Tax Deficiency","Tax Document Preparation","Tax returns may be needed to verify income, especially for self-employed or 1099 income borrowers.","REVIEW TAX DOCUMENTS",TAXES_URL)}
 </div>
 
 <div class="results-note"><span class="red"><strong>Important:</strong></span> Complete the glowing steps first. After you are prepared, return to DPA Help Center and continue your eligibility review.</div>
@@ -1011,7 +1011,7 @@ app.innerHTML=`
 <div class="page-wrap">
 <a class="dpa-back-btn" href="${RESULTS_URL}" target="_top">BACK TO RESULTS</a>
 <div class="page-brand">DPA HELP CENTER</div>
-<div class="dpa-kicker" style="text-align:center">Readiness Review</div>
+<div class="dpa-kicker" style="text-align:center">Preparation Review</div>
 <h1 class="page-title">${title.split(" ")[0]}<br><span>${title.split(" ").slice(1).join(" ")}</span></h1>
 <div class="page-sub">${sub}</div>
 
@@ -1359,7 +1359,7 @@ leadData.tax_return_history="";
 leadData.readiness_score=0;
 leadData.route="";
 leadData.results_url="";
-leadData.submission_stage="Premium Readiness Started";
+leadData.submission_stage="Premium Preparation Started";
 dpaRenderQuestion();
 dpaUpdateScore();
 updateHiddenPayload();
@@ -1613,7 +1613,7 @@ const s=calculateScore();
 
 document.getElementById("readinessScore").textContent=s+"%";
 document.getElementById("readinessFill").style.width=s+"%";
-document.getElementById("readinessStatus").textContent=s===100?"Strong Match":s===75?"Almost Ready":s===50?"Needs Review":s>0?"Needs Help First":"Start with credit";
+document.getElementById("readinessStatus").textContent=s===100?"Strong Match":s===75?"Almost Prepared":s===50?"Needs Review":s>0?"Needs Help First":"Start with credit";
 
 updateHiddenPayload();
 }
