@@ -6,6 +6,7 @@
 <title>DPA Help Center | Down Payment Assistance</title>
 <meta name="description" content="Check your homebuyer readiness and explore down payment assistance options.">
 <style>html,body{margin:0;min-height:100%;background:#fff}</style>
+<link rel="stylesheet" href="/assets/dpa-design.css?v=20260930-clean">
 </head>
 <body>
 <div id="dpa-desktop-funnel">
@@ -724,10 +725,7 @@ function renderMain(){
 document.getElementById("dpa-desktop-funnel").classList.add("ga-mode");
 app.innerHTML=`
 <main class="ga-page" id="gaPage">
-<header class="ga-header">
-<div class="dpa-brand">DPA HELP CENTER</div>
-<div class="dpa-left-kicker">Down Payment Assistance</div>
-</header>
+<header class="ga-header"><div class="ga-brand-group"><div class="dpa-brand">DPA HELP CENTER</div><div class="dpa-left-kicker">Down Payment Assistance</div></div><span class="ga-header-rule" aria-hidden="true"></span><span class="ga-header-region">GEORGIA HOMEBUYERS</span></header>
 
 <section class="ga-hero">
 <div class="ga-hero-copy">
@@ -739,10 +737,10 @@ app.innerHTML=`
 <img src="/assets/georgia-homebuyers-hero.webp" alt="First-time Georgia homebuyers holding the keys to their new home" width="1536" height="1024" fetchpriority="high">
 <div class="ga-glass" aria-label="Potential homebuyer assistance up to 35 thousand dollars">
 <div class="ga-glass-offer"><span class="ga-glass-label">Get Up to</span><div id="desktopProgramNumber" class="ga-glass-amount">$35<span class="dpa-red">K</span></div></div>
-<button type="button" class="ga-glass-explore" onclick="dpaOpenGeorgiaMatch()">Explore Now</button>
+<div class="ga-glass-action"><button type="button" class="ga-glass-explore" onclick="dpaOpenGeorgiaMatch()">Explore Now</button></div>
 </div>
 </div>
-<button type="button" class="ga-primary" onclick="dpaOpenGeorgiaMatch()">CHECK MY READINESS</button>
+<button type="button" class="ga-primary" onclick="dpaOpenGeorgiaMatch()">Check My Readiness</button>
 </section>
 
 <section class="ga-entry-stage" id="gaEntryStage"><div class="ga-entry-program" id="gaEntryProgram"></div></section>
@@ -1036,12 +1034,14 @@ const programList=document.querySelector('.ga-program-list');
 const programCards=Array.from(programList.children);
 const desktopPrograms=window.matchMedia('(min-width:900px)');
 function arrangeProgramColumns(){
+const hero=document.querySelector('.ga-hero'),copy=document.querySelector('.ga-hero-copy'),button=document.querySelector('.ga-primary'),photo=document.querySelector('.ga-photo');
 if(desktopPrograms.matches){
+copy.appendChild(button);
 const columns=[document.createElement('div'),document.createElement('div')];
 columns.forEach(column=>column.className='ga-program-column');
 programCards.forEach((card,index)=>columns[index%2].appendChild(card));
 programList.replaceChildren(...columns);
-}else programList.replaceChildren(...programCards);
+}else{programList.replaceChildren(...programCards);hero.insertBefore(button,photo);}
 }
 arrangeProgramColumns();
 desktopPrograms.addEventListener('change',arrangeProgramColumns);
