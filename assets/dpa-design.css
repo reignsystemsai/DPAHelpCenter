@@ -120,3 +120,32 @@ html body #homebuyer-credit-staging .account{font-size:12px}
 #dpa-desktop-funnel #gaPage .ga-entry-close span{font-size:25px;line-height:1}
 #dpa-desktop-funnel #gaPage .ga-entry-close:hover{background:#f3f5f8}
 #dpa-desktop-funnel #gaPage .ga-entry-close:focus-visible{outline:2px solid var(--dpa-navy);outline-offset:2px}
+
+/* Refined mobile CTA placement and offer hierarchy. */
+#dpa-desktop-funnel #gaPage .ga-glass-offer{flex-direction:column;align-items:flex-start;gap:4px}
+#dpa-desktop-funnel #gaPage .ga-glass-label{max-width:none;white-space:nowrap;font-size:14px;line-height:1.2}
+@media(max-width:899px){
+#dpa-desktop-funnel #gaPage .ga-primary{align-self:flex-end;margin:14px 24px 0}
+#dpa-desktop-funnel #gaPage .ga-glass{padding:14px 18px}
+#dpa-desktop-funnel #gaPage .ga-glass-label{font-size:12px}
+#dpa-desktop-funnel #gaPage .ga-glass-amount{font-size:46px;line-height:1}
+}
+@media(max-width:360px){
+#dpa-desktop-funnel #gaPage .ga-glass{padding:12px 14px}
+#dpa-desktop-funnel #gaPage .ga-glass-amount{font-size:40px}
+}
+
+#dpa-desktop-funnel #gaPage .ga-glass{background:rgba(255,255,255,.78);box-shadow:0 8px 28px rgba(8,31,92,.06)}
+#dpa-desktop-funnel #gaPage :is(.ga-primary,.ga-glass-explore,.ga-detail-cta){transition:background-color .18s ease,box-shadow .18s ease}
+#dpa-desktop-funnel #gaPage :is(.ga-primary,.ga-glass-explore,.ga-detail-cta,.ga-program-toggle):focus-visible{outline:2px solid var(--dpa-navy);outline-offset:4px}
+@media(max-width:899px){
+#dpa-desktop-funnel #gaPage .ga-header{padding-bottom:12px}
+#dpa-desktop-funnel #gaPage .ga-hero-copy{padding-top:14px}
+#dpa-desktop-funnel #gaPage .ga-primary{font-size:15px;padding:12px 22px}
+#dpa-desktop-funnel #gaPage .ga-glass-label{letter-spacing:.3px}
+#dpa-desktop-funnel #gaPage .ga-glass-action{padding-left:18px}
+#dpa-desktop-funnel #gaPage .ga-programs h2{margin-bottom:14px}
+}
+@media(prefers-reduced-motion:reduce){#dpa-desktop-funnel #gaPage *{transition:none!important}}
+
+#dpa-desktop-funnel #gaPage .ga-glass-purpose{font-size:12px;line-height:1.35;font-weight:400;letter-spacing:0;color:var(--dpa-navy);margin-top:3px}
