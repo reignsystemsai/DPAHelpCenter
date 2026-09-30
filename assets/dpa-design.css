@@ -147,3 +147,5 @@ html body #homebuyer-credit-staging .account{font-size:12px}
 #dpa-desktop-funnel #gaPage .ga-programs h2{margin-bottom:14px}
 }
 @media(prefers-reduced-motion:reduce){#dpa-desktop-funnel #gaPage *{transition:none!important}}
+
+#dpa-desktop-funnel #gaPage .ga-glass-purpose{font-size:12px;line-height:1.35;font-weight:400;letter-spacing:0;color:var(--dpa-navy);margin-top:3px}
