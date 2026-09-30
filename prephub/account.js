@@ -25,14 +25,17 @@ async function refresh(){
  const {data,error}=await client.auth.getSession();if(error)throw error;connected=!!data.session;
  q('#prep-account-login').hidden=connected;q('#prep-account-logout').hidden=!connected;
  if(!connected){q('#prep-account-status').textContent='Connect your profile to save your preparation.';const value=params.get('score')||localStorage.getItem('dpa_prephub_score');if(value!==null)score(value);window.PrepHubView.show('overview');return;}
- const result=await client.from('prephub_leads').select('id,first_name,current_readiness_score').eq('user_id',data.session.user.id).order('created_at',{ascending:false}).limit(1).maybeSingle();
+ const result=await client.from('prephub_leads').select('id,first_name,current_readiness_score,assessment').eq('user_id',data.session.user.id).order('created_at',{ascending:false}).limit(1).maybeSingle();
  if(result.error)throw result.error;if(!result.data)throw new Error('Your account is connected, but no saved preparation profile was found. Call 1-833-302-8953 for help.');
  const profile=result.data;q('#prep-account-name').textContent=profile.first_name?profile.first_name+'’s PrepHub':'My PrepHub';q('#prep-account-status').textContent='Account connected · Save your work as you prepare.';score(profile.current_readiness_score);
  const tasks=await client.from('preparation_tasks').select('id,task_key,completed').eq('lead_id',profile.id).order('position',{ascending:true});if(tasks.error)throw tasks.error;
- const host=q('#prep-task-list');host.replaceChildren();q('#prep-readiness-tasks').hidden=false;
- if(!tasks.data.length)host.append(make('p','Your assessment has no remaining preparation tasks. Your workbooks are available below.'));
- for(const task of tasks.data){const row=make('div','','wb-step-nav'),open=make('button',labels[task.task_key]||'Preparation area','textbtn'),done=make('button',task.completed?'Completed · Undo':'Mark Done','action secondary');open.type=done.type='button';open.addEventListener('click',()=>window.PrepHubView.show(mapping[task.task_key]||'overview'));
- done.addEventListener('click',async()=>{done.disabled=true;try{const r=await client.rpc('set_preparation_task_status',{p_task_id:task.id,p_completed:!task.completed});if(r.error)throw r.error;await refresh();}catch(err){q('#prep-task-status').textContent=err.message;done.disabled=false;}});row.append(open,done);host.append(row);}
+ const remaining=tasks.data.filter(task=>!task.completed);
+ q('#prep-task-summary').textContent=remaining.length?remaining.length+' '+(remaining.length===1?'area needs':'areas need')+' follow-up based on your assessment. Start with the highlighted areas.':'Keep your homebuyer preparation organized in one place.';
+ const answers=profile.assessment||{};
+ const isNo=value=>value===false||value==='No';
+ const reasons={credit:isNo(answers.credit_640_plus)?'You reported a credit score below 640. Review your reports and preparation priorities.':'Your assessment flagged credit preparation for follow-up.',dti:isNo(answers.income_70k_plus)?'You reported annual household income below $70,000. Review your buying power and monthly payments.':'Your assessment flagged income and buying power for review.',job:isNo(answers.job_history_2yrs)?'Your assessment indicated your two-year work or qualifying income history needs review.':'Your assessment flagged employment history for follow-up.',taxes:isNo(answers.tax_returns_2yrs)?'You reported that two years of tax returns are not available. Review which income documents you may need.':'Your assessment flagged tax documentation for follow-up.'};
+ for(const card of all('[data-prep-key]')){const key=card.dataset.prepKey,task=tasks.data.find(item=>item.task_key===key),flag=!!task&&!task.completed,label=card.querySelector('.prep-area-state'),reason=card.querySelector('.prep-area-reason');card.classList.toggle('needs-attention',flag);card.classList.toggle('preparation-complete',!!task&&task.completed);label.hidden=!task;reason.hidden=!task;if(task){label.textContent=flag?'Your next focus':'Preparation completed';reason.textContent=flag?reasons[key]:'You completed this preparation area. Keep your information up to date.';}}
+
 }
 async function init(){
  await window.PrepHubAccountReady;
