@@ -596,7 +596,7 @@ border-radius:16px;
   .ga-hero{display:grid;grid-template-columns:1fr 1fr;grid-template-areas:"copy photo" "cta photo";column-gap:30px;padding:0 44px 22px;align-items:end}
   .ga-hero-copy{grid-area:copy;padding:26px 0 10px}.ga-photo{grid-area:photo;margin:0;min-height:520px}.ga-photo img{min-height:520px}
   .ga-primary{grid-area:cta;width:auto;justify-self:start;min-height:52px;padding:14px 24px;margin:0 0 2px;border-radius:12px}.ga-title{font-size:62px}.ga-hero-line{font-size:32px}
-  .ga-programs{padding:12px 44px 30px}.ga-programs h2{font-size:40px}.ga-program-list{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}.ga-program{margin:0}.ga-program-toggle{min-height:68px}.ga-program-name{font-size:18px;line-height:1.3}.ga-detail-cta{width:auto;padding:12px 20px}
+  .ga-programs{padding:12px 44px 30px}.ga-programs h2{font-size:40px}.ga-program-list{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}.ga-program{margin:0}.ga-program-column{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;align-content:start;min-width:0}.ga-program-toggle{min-height:68px}.ga-program-name{font-size:18px;line-height:1.3}.ga-detail-cta{width:auto;padding:12px 20px}
   .ga-bottom{max-width:520px;display:block;margin:14px auto 0}.ga-funnel-stage{max-width:640px;margin:0 auto 32px}
 }
 
@@ -1031,6 +1031,20 @@ let qualificationSubmitted=false;
 let currentStep=1;
 const programEl=document.getElementById("desktopProgramNumber");
 
+
+const programList=document.querySelector('.ga-program-list');
+const programCards=Array.from(programList.children);
+const desktopPrograms=window.matchMedia('(min-width:900px)');
+function arrangeProgramColumns(){
+if(desktopPrograms.matches){
+const columns=[document.createElement('div'),document.createElement('div')];
+columns.forEach(column=>column.className='ga-program-column');
+programCards.forEach((card,index)=>columns[index%2].appendChild(card));
+programList.replaceChildren(...columns);
+}else programList.replaceChildren(...programCards);
+}
+arrangeProgramColumns();
+desktopPrograms.addEventListener('change',arrangeProgramColumns);
 
 window.dpaToggleGeorgiaProgram=function(id){
 const card=document.getElementById(id);
