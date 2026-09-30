@@ -1,0 +1,116 @@
+/* Shared customer-facing visual system. Existing workflows own behavior. */
+:root{--dpa-navy:#081f5c;--dpa-red:#d22630;--dpa-rule:#d9dee7;--dpa-text:#566078;--dpa-font:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif}
+#dpa-desktop-funnel #gaPage{max-width:1440px;font-family:var(--dpa-font);padding-bottom:0}
+#dpa-desktop-funnel #gaPage .ga-header{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:24px 48px;background:#fff}
+#dpa-desktop-funnel #gaPage .ga-brand-group{flex-shrink:0}
+#dpa-desktop-funnel #gaPage .ga-header .dpa-brand{font-size:25px;letter-spacing:-.8px;font-weight:800}
+#dpa-desktop-funnel #gaPage .ga-header .dpa-brand:after{height:4px;width:110px;margin-left:36px}
+#dpa-desktop-funnel #gaPage .ga-header .dpa-left-kicker{font-size:9px;letter-spacing:3px;margin-top:10px}
+#dpa-desktop-funnel #gaPage .ga-header-rule{flex:1;height:1px;background:#aeb9cf}
+#dpa-desktop-funnel #gaPage .ga-header-region{font-size:11px;font-weight:500;letter-spacing:2.5px;white-space:nowrap}
+#dpa-desktop-funnel #gaPage .ga-hero{position:relative;display:grid;grid-template-columns:43% 57%;grid-template-areas:"copy photo";gap:0;min-height:520px;padding:0 48px;align-items:center;isolation:isolate}
+#dpa-desktop-funnel #gaPage .ga-hero-copy{grid-area:copy;position:relative;z-index:2;padding:32px 0 36px;align-self:center;background:none}
+#dpa-desktop-funnel #gaPage .ga-title{font-size:clamp(40px,4.1vw,57px);line-height:1.06;letter-spacing:-2px;font-weight:500;max-width:540px}
+#dpa-desktop-funnel #gaPage .ga-hero-line{font-size:clamp(22px,2.2vw,29px);line-height:1.15;letter-spacing:-.7px;font-weight:600;max-width:430px;margin:20px 0 0}
+#dpa-desktop-funnel #gaPage .ga-primary{display:inline-flex;align-items:center;justify-content:center;grid-area:auto;width:auto;min-height:48px;padding:13px 24px;margin:24px 0 0;background:var(--dpa-navy);border-radius:3px;box-shadow:none;font-size:16px;line-height:1.4;letter-spacing:0;font-weight:500}
+#dpa-desktop-funnel #gaPage .ga-primary:hover{background:#163671}
+#dpa-desktop-funnel #gaPage .ga-photo{position:absolute;left:30%;right:0;top:0;bottom:0;z-index:0;grid-area:auto;margin:0;height:auto;min-height:0;border-radius:0;background:#fff}
+#dpa-desktop-funnel #gaPage .ga-photo img{height:100%;width:100%;min-height:0;object-fit:cover;object-position:63% 42%}
+#dpa-desktop-funnel #gaPage .ga-photo:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#fff 0%,rgba(255,255,255,.94) 7%,rgba(255,255,255,.45) 21%,transparent 37%)}
+#dpa-desktop-funnel #gaPage .ga-glass{z-index:1;left:auto;right:36px;bottom:24px;width:fit-content;max-width:calc(100% - 64px);display:flex;align-items:center;justify-content:space-between;gap:24px;padding:18px 24px;border-radius:10px;background:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.85);box-shadow:none;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+#dpa-desktop-funnel #gaPage .ga-glass-offer{display:flex;flex-direction:row;align-items:center;gap:14px}
+#dpa-desktop-funnel #gaPage .ga-glass-label{font-size:15px;line-height:1.3;font-weight:500;letter-spacing:0;max-width:70px}
+#dpa-desktop-funnel #gaPage .ga-glass-amount{font-size:62px;line-height:1;letter-spacing:-3px;font-weight:800}
+#dpa-desktop-funnel #gaPage .ga-glass-explore{border-radius:3px;min-height:46px;padding:12px 22px;font-size:15px;font-weight:500;line-height:1.4;margin:0}
+#dpa-desktop-funnel #gaPage .ga-glass-action{border-left:1px solid rgba(8,31,92,.25);padding-left:24px}
+#dpa-desktop-funnel #gaPage .ga-programs{display:grid;grid-template-columns:260px minmax(0,1fr);column-gap:32px;padding:36px 48px 24px}
+#dpa-desktop-funnel #gaPage .ga-programs h2{font-size:36px;line-height:1.05;letter-spacing:-1.2px;font-weight:500;margin:0;border-right:1px solid var(--dpa-rule);padding-right:24px}
+#dpa-desktop-funnel #gaPage .ga-program-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:32px;align-items:start}
+#dpa-desktop-funnel #gaPage .ga-program-column{gap:0}
+#dpa-desktop-funnel #gaPage .ga-program{background:#fff;margin:0;border:0;border-bottom:1px solid var(--dpa-rule);border-radius:0;box-shadow:none;overflow:visible}
+#dpa-desktop-funnel #gaPage .ga-program.active{box-shadow:none}
+#dpa-desktop-funnel #gaPage .ga-program-toggle{background:#fff;min-height:58px;padding:16px 8px;gap:12px}
+#dpa-desktop-funnel #gaPage .ga-program-name{font-size:16px;line-height:1.5;font-weight:500;color:var(--dpa-text)}
+#dpa-desktop-funnel #gaPage .ga-chevron{font-size:23px;font-weight:400}
+#dpa-desktop-funnel #gaPage .ga-program.active .ga-program-name{color:var(--dpa-navy)}
+#dpa-desktop-funnel #gaPage .ga-program-detail{border-top:0;padding:0 8px 18px}
+#dpa-desktop-funnel #gaPage .ga-facts{font-size:14px;font-weight:400;line-height:1.65;margin-top:4px}
+#dpa-desktop-funnel #gaPage .ga-detail-cta{width:auto;min-height:44px;padding:12px 18px;border-radius:3px;font-weight:500;letter-spacing:0}
+#dpa-desktop-funnel #gaPage .ga-disclaimer{grid-column:1/-1;border-top:1px solid var(--dpa-rule);padding:18px 0 0;margin:30px 0 0;font-size:12px;line-height:1.5;font-weight:400}
+#dpa-desktop-funnel #gaPage .ga-entry-stage,#dpa-desktop-funnel #gaPage .ga-funnel-stage{border-radius:6px;box-shadow:none;border-color:var(--dpa-rule);padding:28px;max-width:680px}
+#dpa-desktop-funnel #gaPage .dpa-question{font-weight:500;line-height:1.15;letter-spacing:-.7px}
+#dpa-desktop-funnel #gaPage .dpa-choice,#dpa-desktop-funnel #gaPage .dpa-submit,#dpa-desktop-funnel #gaPage .dpa-field,#dpa-desktop-funnel #gaPage .dpa-contact-field{border-radius:4px;letter-spacing:0;font-weight:500;box-shadow:none}
+#dpa-desktop-funnel #gaPage .dpa-score-top,#dpa-desktop-funnel #gaPage .dpa-estimate-card,#dpa-desktop-funnel #gaPage .dpa-premium-panel{border-radius:6px;box-shadow:none}
+/* PrepHub and customer preparation tools use the same typography and surfaces. */
+html body #homebuyer-credit-staging{font-family:var(--dpa-font);font-size:16px;border-radius:0;box-shadow:none;color:var(--dpa-navy)}
+html body #homebuyer-credit-staging .top{border-bottom:1px solid var(--dpa-rule);padding:24px 28px}
+html body #homebuyer-credit-staging h1{font-size:36px;line-height:1.1;letter-spacing:-1.2px;font-weight:500}
+html body #homebuyer-credit-staging h2{font-weight:500;line-height:1.2;letter-spacing:-.6px}
+html body #homebuyer-credit-staging h3,html body #homebuyer-credit-staging .wb-expand{font-weight:500}
+html body #homebuyer-credit-staging .panel,html body #homebuyer-credit-staging .sheet,html body #homebuyer-credit-staging .area,html body #homebuyer-credit-staging .score,html body #homebuyer-credit-staging .hero,html body #homebuyer-credit-staging .cp-plan,html body #homebuyer-credit-staging .cp-rent,html body #homebuyer-credit-staging .wb-bureau,html body #homebuyer-credit-staging .status{border-radius:6px;box-shadow:none}
+html body #homebuyer-credit-staging .action,html body #homebuyer-credit-staging .navbtn{border-radius:3px;font-weight:500;letter-spacing:0}
+html body #homebuyer-credit-staging .action{font-size:15px;min-height:48px;padding:12px 22px}
+html body #homebuyer-credit-staging .navbtn{min-height:48px}
+html body #homebuyer-credit-staging .sidebar{background:#fff;border-right:1px solid var(--dpa-rule)}
+html body #homebuyer-credit-staging .eyebrow{font-weight:500;font-size:12px;letter-spacing:2px}
+html body #homebuyer-credit-staging .intro{font-size:16px;line-height:1.6}
+html body #homebuyer-credit-staging .checkrow{border-radius:3px;font-weight:400}
+html body #homebuyer-credit-staging .cp-plan h3{font-weight:500;letter-spacing:-.6px}
+html body #homebuyer-credit-staging .cp-plan p,html body #homebuyer-credit-staging .cp-plan ul{font-size:14px;line-height:1.6}
+html body #homebuyer-credit-staging .wb-check-item{border-bottom-color:var(--dpa-rule)}
+html body .wb-dialog{font-family:var(--dpa-font);border-radius:6px;box-shadow:0 12px 48px rgba(8,31,92,.14)}
+html body :is(#dpa-dti-page,#dpa-job-desktop-page,#dpa-taxes-page){font-family:var(--dpa-font)}
+html body :is(#dpa-dti-page,#dpa-job-desktop-page,#dpa-taxes-page) :is(h1,h2,h3){font-weight:500;letter-spacing:-.5px}
+html body :is(#dpa-dti-page,#dpa-job-desktop-page,#dpa-taxes-page) :is(button,input,select){font-family:var(--dpa-font);border-radius:4px}
+html body :is(#dpa-dti-page,#dpa-job-desktop-page,#dpa-taxes-page) :is(.dti-card,.dpa-credit-card,.dpa-job-card,.dpa-tax-card){border-radius:6px;box-shadow:none}
+body[data-dpa-design] .wrap{font-family:var(--dpa-font)}
+body[data-dpa-design] .card,body[data-dpa-design] .form input,body[data-dpa-design] .form button{border-radius:6px;box-shadow:none}
+body[data-dpa-design] :is(h1,h2,h3){font-weight:500;letter-spacing:-.6px}
+@media(max-width:1100px) and (min-width:900px){
+#dpa-desktop-funnel #gaPage .ga-header,#dpa-desktop-funnel #gaPage .ga-hero{padding-left:32px;padding-right:32px}
+#dpa-desktop-funnel #gaPage .ga-title{font-size:45px}
+#dpa-desktop-funnel #gaPage .ga-hero{min-height:490px}
+#dpa-desktop-funnel #gaPage .ga-glass{right:24px;gap:16px;padding:16px 18px}
+#dpa-desktop-funnel #gaPage .ga-glass-amount{font-size:52px}
+#dpa-desktop-funnel #gaPage .ga-glass-action{padding-left:16px}
+#dpa-desktop-funnel #gaPage .ga-programs{grid-template-columns:200px minmax(0,1fr);padding-left:32px;padding-right:32px;column-gap:24px}
+#dpa-desktop-funnel #gaPage .ga-programs h2{font-size:30px}
+#dpa-desktop-funnel #gaPage .ga-program-list{gap:20px}
+}
+@media(max-width:899px){
+#dpa-desktop-funnel #gaPage .ga-header{padding:22px 24px 16px}
+#dpa-desktop-funnel #gaPage .ga-header-rule,#dpa-desktop-funnel #gaPage .ga-header-region{display:none}
+#dpa-desktop-funnel #gaPage .ga-header .dpa-brand{font-size:23px}
+#dpa-desktop-funnel #gaPage .ga-hero{display:flex;flex-direction:column;align-items:stretch;min-height:0;padding:0}
+#dpa-desktop-funnel #gaPage .ga-hero-copy{padding:18px 24px 0;align-self:stretch}
+#dpa-desktop-funnel #gaPage .ga-title{font-size:clamp(34px,7.8vw,48px);line-height:1.09;letter-spacing:-1.4px;max-width:590px}
+#dpa-desktop-funnel #gaPage .ga-hero-line{font-size:clamp(22px,5.2vw,28px);line-height:1.2;margin-top:16px;max-width:480px}
+#dpa-desktop-funnel #gaPage .ga-primary{position:relative;z-index:2;align-self:flex-start;min-height:48px;margin:22px 24px 0;padding:12px 20px;font-size:16px}
+#dpa-desktop-funnel #gaPage .ga-photo{position:relative;inset:auto;height:360px;min-height:0;width:100%;margin:-10px 0 0}
+#dpa-desktop-funnel #gaPage .ga-photo img{object-position:58% 44%}
+#dpa-desktop-funnel #gaPage .ga-photo:after{background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,.45) 10%,transparent 27%)}
+#dpa-desktop-funnel #gaPage .ga-glass{left:16px;right:16px;bottom:18px;max-width:none;width:auto;padding:16px;gap:12px;border-radius:8px}
+#dpa-desktop-funnel #gaPage .ga-glass-offer{gap:8px}
+#dpa-desktop-funnel #gaPage .ga-glass-label{font-size:13px;max-width:54px}
+#dpa-desktop-funnel #gaPage .ga-glass-amount{font-size:clamp(40px,10vw,54px);letter-spacing:-2px}
+#dpa-desktop-funnel #gaPage .ga-glass-action{padding-left:12px}
+#dpa-desktop-funnel #gaPage .ga-glass-explore{padding:11px 15px;font-size:14px;min-height:44px}
+#dpa-desktop-funnel #gaPage .ga-programs{display:block;padding:26px 24px 20px}
+#dpa-desktop-funnel #gaPage .ga-programs h2{font-size:29px;line-height:1.12;border:0;padding:0;max-width:330px;margin-bottom:18px}
+#dpa-desktop-funnel #gaPage .ga-program-list{display:block}
+#dpa-desktop-funnel #gaPage .ga-program-toggle{padding:14px 4px;min-height:56px}
+#dpa-desktop-funnel #gaPage .ga-program-name{font-size:16px}
+#dpa-desktop-funnel #gaPage .ga-disclaimer{margin-top:24px;font-size:12px;line-height:1.5}
+#dpa-desktop-funnel #gaPage .ga-entry-stage,#dpa-desktop-funnel #gaPage .ga-funnel-stage{padding:22px;margin:0 16px 24px}
+html body #homebuyer-credit-staging h1{font-size:30px;line-height:1.15}
+html body #homebuyer-credit-staging main{padding:22px 18px}
+html body #homebuyer-credit-staging .account{font-size:12px}
+}
+@media(max-width:360px){
+#dpa-desktop-funnel #gaPage .ga-glass{left:12px;right:12px;padding:12px;gap:8px}
+#dpa-desktop-funnel #gaPage .ga-glass-offer{gap:6px}
+#dpa-desktop-funnel #gaPage .ga-glass-label{font-size:12px;max-width:48px}
+#dpa-desktop-funnel #gaPage .ga-glass-amount{font-size:38px}
+#dpa-desktop-funnel #gaPage .ga-glass-action{padding-left:8px}
+#dpa-desktop-funnel #gaPage .ga-glass-explore{font-size:13px;padding:10px 12px}
+}
