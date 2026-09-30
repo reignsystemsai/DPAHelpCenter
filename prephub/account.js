@@ -3,7 +3,10 @@
 const root=document.getElementById('homebuyer-credit-staging'),q=s=>root.querySelector(s),client=window.PrepHubAccount;
 const params=new URLSearchParams(location.search),mapping={credit:'credit',dti:'income',job:'employment',taxes:'documents'},paths={credit:'credit',dti:'income',employment:'employment',taxes:'documents'};
 const requested=params.get('view')||paths[location.pathname.split('/').filter(Boolean)[0]]||'overview';
-if(requested==='credit'&&performance.getEntriesByType('navigation')[0]?.type==='reload'){location.replace('/prephub/');return;}
+const showView=window.PrepHubView.show;
+window.PrepHubView.show=function(view){showView(view);if(q('[data-panel="'+view+'"]')?.hidden===false){const url=new URL(location.href);url.searchParams.set('view',view);history.replaceState(null,'',url);}};
+root.addEventListener('click',event=>{const button=event.target.closest('[data-view],[data-go]');if(button)window.PrepHubView.show(button.dataset.view||button.dataset.go);});
+q('#prep-department').addEventListener('change',event=>window.PrepHubView.show(event.target.value));
 let connected=false,desired=['overview','credit','income','employment','documents'].includes(requested)?requested:'overview';
 const labels={credit:'Credit preparation',dti:'Income & DTI',job:'Employment history',taxes:'My documents'};
 function score(value){const n=Math.max(0,Math.min(100,Number(value)||0));q('#prep-readiness-score').textContent=n+'%';q('#prep-readiness-copy').textContent=n===100?'Your assessment is ready for the next step. Continue preparing with your lender.':'Complete your remaining preparation areas and return to review your progress.';}
