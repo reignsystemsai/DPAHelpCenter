@@ -743,7 +743,7 @@ app.innerHTML=`
 <button type="button" class="ga-primary" onclick="dpaOpenGeorgiaMatch()">Learn More</button>
 </section>
 
-<section class="ga-entry-stage" id="gaEntryStage"><div class="ga-entry-program" id="gaEntryProgram"></div></section>
+<section class="ga-entry-stage" id="gaEntryStage"><div class="ga-entry-toolbar"><button type="button" class="ga-entry-close" aria-label="Close question and browse programs" onclick="dpaCloseGeorgiaMatch()">Close <span aria-hidden="true">×</span></button></div><div class="ga-entry-program" id="gaEntryProgram"></div></section>
 
 <section class="ga-programs" id="gaPrograms">
 <h2>Georgia Homebuyer Programs</h2>
@@ -1060,6 +1060,15 @@ if(otherToggle)otherToggle.setAttribute("aria-expanded","false");
 card.classList.toggle("active",willOpen);
 const toggle=card.querySelector(".ga-program-toggle");
 if(toggle)toggle.setAttribute("aria-expanded",String(willOpen));
+};
+
+window.dpaCloseGeorgiaMatch=function(){
+const entry=document.getElementById("gaEntryStage");
+entry.classList.remove("active");
+const programs=document.getElementById("gaPrograms"),heading=programs.querySelector("h2");
+heading.setAttribute("tabindex","-1");
+heading.focus({preventScroll:true});
+programs.scrollIntoView({behavior:"smooth",block:"start"});
 };
 
 window.dpaOpenGeorgiaMatch=function(program){

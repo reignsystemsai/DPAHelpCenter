@@ -114,3 +114,9 @@ html body #homebuyer-credit-staging .account{font-size:12px}
 #dpa-desktop-funnel #gaPage .ga-glass-action{padding-left:8px}
 #dpa-desktop-funnel #gaPage .ga-glass-explore{font-size:13px;padding:10px 12px}
 }
+
+#dpa-desktop-funnel #gaPage .ga-entry-toolbar{display:flex;justify-content:flex-end;margin:-8px -8px 8px}
+#dpa-desktop-funnel #gaPage .ga-entry-close{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:8px 12px;border:0;background:transparent;color:var(--dpa-navy);font:500 14px var(--dpa-font);cursor:pointer;border-radius:3px}
+#dpa-desktop-funnel #gaPage .ga-entry-close span{font-size:25px;line-height:1}
+#dpa-desktop-funnel #gaPage .ga-entry-close:hover{background:#f3f5f8}
+#dpa-desktop-funnel #gaPage .ga-entry-close:focus-visible{outline:2px solid var(--dpa-navy);outline-offset:2px}
