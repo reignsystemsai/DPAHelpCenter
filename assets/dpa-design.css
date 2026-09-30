@@ -223,3 +223,6 @@ html body #homebuyer-credit-staging [hidden]{display:none!important}
 html body #homebuyer-credit-staging #prep-autosave-status{display:block;font-size:10px;line-height:1.4;max-width:170px;color:var(--dpa-text);margin-top:5px;letter-spacing:0;text-align:right}
 
 html body #homebuyer-credit-staging [data-panel="credit"]>.eyebrow{color:var(--dpa-text)}
+
+html body #homebuyer-credit-staging .top .prep-brand{display:inline-flex;flex-direction:column;flex-shrink:0}
+html body #homebuyer-credit-staging .top .prep-brand .brand{display:flex;justify-content:space-between;gap:5px;width:100%;box-sizing:border-box;font-size:9px;line-height:1.2;font-weight:500;letter-spacing:1px;margin-top:7px}
