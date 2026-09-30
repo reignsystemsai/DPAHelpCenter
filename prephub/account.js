@@ -44,5 +44,5 @@ async function init(){
  await refresh();
  if(connected){const pending=localStorage.getItem('dpa_prephub_next_view');if(['overview','credit','income','employment','documents'].includes(pending)){desired=pending;localStorage.removeItem('dpa_prephub_next_view');}window.PrepHubView.show(desired);localStorage.setItem('dpa_prephub_return_url',location.origin+'/prephub/');}
 }
-init().catch(error=>{q('#prep-account-status').textContent=error.message;q('#prep-account-login').hidden=false;});
+init().catch(async error=>{q('#prep-account-status').textContent=error.message;const current=await client.auth.getSession();if(!current.error){const signedIn=!!current.data?.session;q('#prep-account-login').hidden=signedIn;q('#prep-account-logout').hidden=!signedIn;}});
 })();
