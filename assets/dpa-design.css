@@ -179,3 +179,17 @@ html body #homebuyer-credit-staging .hero .action{width:auto;max-width:100%;padd
 html body #homebuyer-credit-staging .area{padding:20px 0;border:0;border-bottom:1px solid var(--dpa-rule);border-radius:0}
 html body #homebuyer-credit-staging .two{gap:4px}
 }
+
+/* Clear readiness state and aligned department actions. */
+html body #homebuyer-credit-staging .score strong{font-size:44px;line-height:1.1;letter-spacing:-1.5px;flex-shrink:0}
+html body #homebuyer-credit-staging .score strong:has(.prep-no-score){font-size:17px;line-height:1.25;letter-spacing:-.3px;max-width:95px;font-weight:500}
+html body #homebuyer-credit-staging .area{background:#fff}
+html body #homebuyer-credit-staging .area button{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-left:auto;min-height:44px;padding:8px 0;color:var(--dpa-navy);font-size:14px;line-height:1.4;font-weight:500;text-align:right}
+html body #homebuyer-credit-staging .area button:after{content:"›";font-size:23px;line-height:1;font-weight:400}
+html body #homebuyer-credit-staging .area p{margin-bottom:4px}
+@media(max-width:780px){
+html body #homebuyer-credit-staging .hero{padding-bottom:20px;margin-bottom:0}
+html body #homebuyer-credit-staging .two{margin-top:0;gap:0}
+html body #homebuyer-credit-staging .area{padding:16px 0}
+html body #homebuyer-credit-staging .score{align-items:center}
+}
