@@ -149,3 +149,33 @@ html body #homebuyer-credit-staging .account{font-size:12px}
 @media(prefers-reduced-motion:reduce){#dpa-desktop-funnel #gaPage *{transition:none!important}}
 
 #dpa-desktop-funnel #gaPage .ga-glass-purpose{font-size:12px;line-height:1.35;font-weight:400;letter-spacing:0;color:var(--dpa-navy);margin-top:3px}
+
+/* PREPHUB: compact navigation and lighter preparation surfaces. */
+html body #homebuyer-credit-staging .prep-mobile-nav{display:none}
+html body #homebuyer-credit-staging .logo{font-size:24px;letter-spacing:-.9px}
+html body #homebuyer-credit-staging .score{background:#fff;color:var(--dpa-navy);border:1px solid var(--dpa-rule);padding:18px 20px}
+html body #homebuyer-credit-staging .score p{color:var(--dpa-text);line-height:1.5}
+html body #homebuyer-credit-staging .score small{color:var(--dpa-text)}
+html body #homebuyer-credit-staging .hero{background:#fff;color:var(--dpa-navy);border-top:1px solid var(--dpa-rule);border-bottom:1px solid var(--dpa-rule);border-radius:0;padding:26px 0;margin-top:24px}
+html body #homebuyer-credit-staging .hero .eyebrow{color:var(--dpa-red)}
+html body #homebuyer-credit-staging .hero p,html body #homebuyer-credit-staging .hero .includes,html body #homebuyer-credit-staging .hero small{color:var(--dpa-text)}
+html body #homebuyer-credit-staging .panel.dark{background:#fff;color:var(--dpa-navy);border:1px solid var(--dpa-rule)}
+html body #homebuyer-credit-staging .panel.dark p{color:var(--dpa-text)}
+html body #homebuyer-credit-staging .panel.dark .action.white{background:var(--dpa-navy);color:white}
+@media(max-width:780px){
+html body #homebuyer-credit-staging .top{padding:20px;gap:12px}
+html body #homebuyer-credit-staging .account{display:block;text-align:right}
+html body #homebuyer-credit-staging .account strong,html body #homebuyer-credit-staging .account>span,html body #homebuyer-credit-staging .account br{display:none}
+html body #homebuyer-credit-staging .account .textbtn{font-size:13px;font-weight:500;min-height:44px;padding:8px 10px;margin:0;text-decoration:none;border:1px solid var(--dpa-rule);border-radius:3px}
+html body #homebuyer-credit-staging .sidebar{display:block;padding:14px 20px;border-right:0;background:#fff}
+html body #homebuyer-credit-staging .sidebar .navbtn{display:none}
+html body #homebuyer-credit-staging .prep-mobile-nav{display:block;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--dpa-text);font-weight:500}
+html body #homebuyer-credit-staging .prep-mobile-nav select{display:block;box-sizing:border-box;width:100%;min-height:48px;margin-top:7px;padding:10px 12px;border:1px solid var(--dpa-rule);border-radius:3px;background:#fff;color:var(--dpa-navy);font:500 16px var(--dpa-font);letter-spacing:0}
+html body #homebuyer-credit-staging main{padding:24px 20px}
+html body #homebuyer-credit-staging main>.eyebrow,html body #homebuyer-credit-staging [data-panel]>.eyebrow{font-size:10px;letter-spacing:1.3px}
+html body #homebuyer-credit-staging .score{padding:16px;gap:14px}
+html body #homebuyer-credit-staging .hero h2{font-size:27px;line-height:1.15}
+html body #homebuyer-credit-staging .hero .action{width:auto;max-width:100%;padding:12px 20px}
+html body #homebuyer-credit-staging .area{padding:20px 0;border:0;border-bottom:1px solid var(--dpa-rule);border-radius:0}
+html body #homebuyer-credit-staging .two{gap:4px}
+}
