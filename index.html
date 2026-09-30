@@ -595,7 +595,7 @@ border-radius:16px;
   .ga-hero{display:grid;grid-template-columns:1fr 1fr;grid-template-areas:"copy photo" "cta photo";column-gap:30px;padding:0 44px 22px;align-items:end}
   .ga-hero-copy{grid-area:copy;padding:26px 0 10px}.ga-photo{grid-area:photo;margin:0;min-height:520px}.ga-photo img{min-height:520px}
   .ga-primary{grid-area:cta;width:100%;margin:0 0 2px}.ga-title{font-size:62px}.ga-hero-line{font-size:32px}
-  .ga-programs{padding:12px 44px 30px}.ga-programs h2{font-size:40px}.ga-program-list{display:grid;grid-template-columns:1fr 1fr;gap:12px}.ga-program{margin:0}.ga-program:first-child{grid-row:span 3}
+  .ga-programs{padding:12px 44px 30px}.ga-programs h2{font-size:40px}.ga-program-list{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}.ga-program{margin:0}
   .ga-bottom{max-width:520px;display:block;margin:14px auto 0}.ga-funnel-stage{max-width:640px;margin:0 auto 32px}
 }
 
@@ -750,8 +750,8 @@ app.innerHTML=`
 <h2>Georgia Homebuyer Programs</h2>
 <div class="ga-program-list">
 
-<article class="ga-program active" id="gaStandard">
-<button type="button" class="ga-program-toggle" aria-expanded="true" onclick="dpaToggleGeorgiaProgram('gaStandard')">
+<article class="ga-program" id="gaStandard">
+<button type="button" class="ga-program-toggle" aria-expanded="false" onclick="dpaToggleGeorgiaProgram('gaStandard')">
 <span><span class="ga-program-name">Georgia Dream Standard</span><span class="ga-program-amount">Up to $10,000</span></span><span class="ga-chevron">›</span>
 </button>
 <div class="ga-program-detail">
