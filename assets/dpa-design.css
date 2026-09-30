@@ -216,3 +216,8 @@ html body #homebuyer-credit-staging .area.needs-attention{border-left:3px solid 
 html body #homebuyer-credit-staging .area.preparation-complete .prep-area-state{color:#23754c}
 html body #homebuyer-credit-staging .area .prep-area-reason{font-size:13px;line-height:1.5;color:var(--dpa-navy);margin-top:12px;padding-top:10px;border-top:1px solid var(--dpa-rule)}
 html body #homebuyer-credit-staging .area.needs-attention>p:not(.prep-area-reason){display:none}
+
+html body #homebuyer-credit-staging .area.needs-attention .prep-area-state:before{content:"→";font-size:17px;margin-right:7px;vertical-align:-1px}
+
+html body #homebuyer-credit-staging [hidden]{display:none!important}
+html body #homebuyer-credit-staging #prep-autosave-status{display:block;font-size:10px;line-height:1.4;max-width:170px;color:var(--dpa-text);margin-top:5px;letter-spacing:0;text-align:right}

@@ -38,7 +38,7 @@ function bool(value: unknown): boolean | null {
 
 const taskCatalog = {
   credit: {
-    title: "Credit Readiness",
+    title: "Credit Preparation",
     description: "Build toward the 640+ credit range used by many DPA programs.",
     action_url: "https://www.dpahelpcenter.com/credit/",
     position: 1,
@@ -50,13 +50,13 @@ const taskCatalog = {
     position: 2,
   },
   job: {
-    title: "Employment Readiness",
+    title: "Employment Preparation",
     description: "Document a stable work, school, military, or qualifying income history.",
     action_url: "https://www.dpahelpcenter.com/employment/",
     position: 3,
   },
   taxes: {
-    title: "Tax Document Readiness",
+    title: "Tax Document Preparation",
     description: "Prepare the tax records needed to verify qualifying income.",
     action_url: "https://www.dpahelpcenter.com/taxes/",
     position: 4,
@@ -110,7 +110,7 @@ function readyEmailHtml(firstName: string, loginUrl: string) {
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Your PrepHub readiness results</title>
+    <title>Your PrepHub preparation results</title>
   </head>
   <body style="margin:0;background:#eef2f8;font-family:Arial,Helvetica,sans-serif;color:#081f5c;">
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#eef2f8;">
@@ -126,10 +126,10 @@ function readyEmailHtml(firstName: string, loginUrl: string) {
             </tr>
             <tr>
               <td style="padding:32px 30px 36px;">
-                <div style="font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:#0057b8;">Your readiness results</div>
+                <div style="font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:#0057b8;">Your preparation results</div>
                 <h1 style="margin:9px 0 12px;font-size:31px;line-height:1.1;font-weight:900;color:#081f5c;">${safeFirstName}, you appear <span style="color:#d22630;">100% ready.</span></h1>
                 <p style="margin:0 0 16px;font-size:16px;line-height:1.55;color:#081f5c;">Now let&rsquo;s make you lender-ready.</p>
-                <p style="margin:0 0 22px;font-size:15px;line-height:1.55;color:#52617c;">Based on your responses, your homebuyer readiness score is <strong style="color:#0057b8;">100%</strong>. That means you may be ready to move forward&mdash;but your information and documents still need to be organized and reviewed.</p>
+                <p style="margin:0 0 22px;font-size:15px;line-height:1.55;color:#52617c;">Based on your responses, your homebuyer preparation score is <strong style="color:#0057b8;">100%</strong>. That means you may be ready to move forward&mdash;but your information and documents still need to be organized and reviewed.</p>
 
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 26px;background:#fff3f4;border-left:5px solid #d22630;border-radius:4px 16px 16px 4px;">
                   <tr>
@@ -137,7 +137,7 @@ function readyEmailHtml(firstName: string, loginUrl: string) {
                       <div style="margin:0 0 9px;font-size:18px;font-weight:900;color:#081f5c;">Expect a call from Daisy</div>
                       <p style="margin:0 0 10px;font-size:14px;line-height:1.55;color:#52617c;">You may have already received a call from Daisy, your first-time homebuyer assistant. If not, please answer when she calls from:</p>
                       <div style="margin:2px 0 11px;font-size:22px;font-weight:900;color:#0057b8;">1-833-302-8953</div>
-                      <p style="margin:0;font-size:14px;line-height:1.55;color:#52617c;">Daisy will confirm your information and learn more about your homebuying goals. A DPA specialist will follow up after your call as we prepare to match you with programs that fit your needs.</p>
+                      <p style="margin:0;font-size:14px;line-height:1.55;color:#52617c;">Daisy will confirm your information and learn more about your homebuying goals. A DPA specialist will follow up after your call as we prepare to match you with programs offering up to $35,000 in down payment assistance that fit your needs.</p>
                     </td>
                   </tr>
                 </table>
@@ -176,12 +176,12 @@ function readyEmailText(firstName: string, loginUrl: string) {
 
 Now let's make you lender-ready.
 
-Based on your responses, your homebuyer readiness score is 100%. That means you may be ready to move forward, but your information and documents still need to be organized and reviewed.
+Based on your responses, your homebuyer preparation score is 100%. That means you may be ready to move forward, but your information and documents still need to be organized and reviewed.
 
 EXPECT A CALL FROM DAISY
 You may have already received a call from Daisy, your first-time homebuyer assistant. If not, please answer when she calls from 1-833-302-8953.
 
-Daisy will confirm your information and learn more about your homebuying goals. A DPA specialist will follow up after your call as we prepare to match you with programs that fit your needs.
+Daisy will confirm your information and learn more about your homebuying goals. A DPA specialist will follow up after your call as we prepare to match you with programs offering up to $35,000 in down payment assistance that fit your needs.
 
 BUILD YOUR LENDER-READY FILE
 Inside PrepHub, upload and organize your credit report, pay stubs and income documents, work and employment history, tax returns, bank statements, and other supporting documents.
@@ -260,14 +260,14 @@ function preparationEmailHtml(
               <td style="padding:32px 30px 36px;">
                 <div style="font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:#0057b8;">Your personal preparation plan</div>
                 <h1 style="margin:9px 0 12px;font-size:30px;line-height:1.1;font-weight:900;color:#081f5c;">${safeFirstName}, you&rsquo;re not denied&mdash;<span style="color:#d22630;">you&rsquo;re just unprepared.</span></h1>
-                <p style="margin:0 0 22px;font-size:15px;line-height:1.55;color:#52617c;">Based on your responses, your homebuyer readiness score is <strong style="color:#0057b8;">${score}%</strong>. That is not a rejection. It is your starting point&mdash;and PrepHub gives you a clear path forward.</p>
+                <p style="margin:0 0 22px;font-size:15px;line-height:1.55;color:#52617c;">Based on your responses, your homebuyer preparation score is <strong style="color:#0057b8;">${score}%</strong>. That is not a rejection. It is your starting point&mdash;and PrepHub gives you a clear path forward.</p>
 
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 26px;background:#eef5ff;border-radius:16px;">
                   <tr>
                     <td style="padding:18px 20px;">
                       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
                         <tr>
-                          <td style="font-size:13px;font-weight:900;color:#081f5c;">YOUR READINESS SCORE</td>
+                          <td style="font-size:13px;font-weight:900;color:#081f5c;">YOUR PREPARATION SCORE</td>
                           <td align="right" style="font-size:24px;font-weight:900;color:#d22630;">${score}%</td>
                         </tr>
                       </table>
@@ -286,7 +286,7 @@ function preparationEmailHtml(
 
                 <h2 style="margin:0 0 9px;font-size:21px;line-height:1.2;font-weight:900;color:#081f5c;">PrepHub keeps you moving</h2>
                 <p style="margin:0 0 17px;font-size:15px;line-height:1.55;color:#52617c;">Organize your documents, prepare your credit, work on your debt-to-income position, and keep every step in one place so you never get lost in the process.</p>
-                <div style="margin:0 0 24px;padding:18px;border-radius:16px;background:#fff3f4;color:#203765;font-size:14px;line-height:1.55;"><strong style="color:#081f5c;">Your goal:</strong> complete your preparation, reach 100% readiness, and get matched with homebuying programs that fit your needs.</div>
+                <div style="margin:0 0 24px;padding:18px;border-radius:16px;background:#fff3f4;color:#203765;font-size:14px;line-height:1.55;"><strong style="color:#081f5c;">Your goal:</strong> complete your preparation, reach 100% preparation, and get matched with homebuying programs offering up to $35,000 in down payment assistance that fit your needs.</div>
 
                 <div style="padding-top:22px;border-top:1px solid #e4e9f1;text-align:center;">
                   <p style="margin:0 0 18px;font-size:15px;line-height:1.55;font-weight:700;color:#081f5c;">Your plan is ready. Log in to PrepHub and begin your first preparation step now.</p>
@@ -295,7 +295,7 @@ function preparationEmailHtml(
               </td>
             </tr>
             <tr>
-              <td align="center" style="padding:19px 24px 22px;background:#f6f8fb;font-size:11px;line-height:1.5;color:#8792a6;">Your readiness score is based on your responses and is not a loan approval. Program availability and qualification requirements vary.</td>
+              <td align="center" style="padding:19px 24px 22px;background:#f6f8fb;font-size:11px;line-height:1.5;color:#8792a6;">Your preparation score is based on your responses and is not a loan approval. Program availability and qualification requirements vary.</td>
             </tr>
           </table>
         </td>
@@ -324,7 +324,7 @@ function preparationEmailText(
 
   return `${firstName}, you're not denied—you're just unprepared.
 
-Based on your responses, your homebuyer readiness score is ${score}%. That is not a rejection. It is your starting point, and PrepHub gives you a clear path forward.
+Based on your responses, your homebuyer preparation score is ${score}%. That is not a rejection. It is your starting point, and PrepHub gives you a clear path forward.
 
 YOUR NEXT FOCUS AREAS
 ${focusList}
@@ -332,12 +332,12 @@ ${focusList}
 PREPHUB KEEPS YOU MOVING
 Organize your documents, prepare your credit, work on your debt-to-income position, and keep every step in one place so you never get lost in the process.
 
-Your goal is to complete your preparation, reach 100% readiness, and get matched with homebuying programs that fit your needs.
+Your goal is to complete your preparation, reach 100% preparation, and get matched with homebuying programs offering up to $35,000 in down payment assistance that fit your needs.
 
 LOG IN NOW
 ${loginUrl}
 
-Your readiness score is based on your responses and is not a loan approval. Program availability and qualification requirements vary.`;
+Your preparation score is based on your responses and is not a loan approval. Program availability and qualification requirements vary.`;
 }
 
 async function sendPrepHubEmail(
@@ -349,7 +349,7 @@ async function sendPrepHubEmail(
 ) {
   const apiKey = clean(Deno.env.get("RESEND_API_KEY"), 500);
   if (!apiKey) {
-    console.error("Readiness email skipped: RESEND_API_KEY is missing.");
+    console.error("Preparation email skipped: RESEND_API_KEY is missing.");
     return { ok: false, status: "not_configured" };
   }
 
@@ -381,12 +381,12 @@ async function sendPrepHubEmail(
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) {
-      console.error("Readiness email failed", response.status, result);
+      console.error("Preparation email failed", response.status, result);
       return { ok: false, status: `http_${response.status}` };
     }
     return { ok: true, status: "sent", id: clean(result.id, 250) || null };
   } catch (error) {
-    console.error("Readiness email failed", error);
+    console.error("Preparation email failed", error);
     return { ok: false, status: "request_failed" };
   }
 }
@@ -639,7 +639,7 @@ Deno.serve(async (req: Request) => {
       provider: "resend",
       template_key: score === 100 ? "prephub_ready_100" : "prephub_below_100",
       subject: score === 100 ? `${firstName}, you appear 100% ready` : `${firstName}, your personal PrepHub plan is ready`,
-      summary: score === 100 ? "100% readiness and lender-file preparation email" : "Personal readiness preparation plan email",
+      summary: score === 100 ? "100% preparation and lender-file preparation email" : "Personal preparation preparation plan email",
       status: emailSent ? "sent" : "failed",
       provider_message_id: emailProviderId,
       metadata: { email_status: emailStatus, readiness_score: score },
