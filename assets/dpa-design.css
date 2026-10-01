@@ -247,3 +247,10 @@ html body #homebuyer-credit-staging .wb-disputes-close{display:block;margin-left
 
 html body #homebuyer-credit-staging :is(.wb-score-entry input,.wb-score-entry select,.wb-progress-event){border-radius:3px}
 html body #homebuyer-credit-staging .wb-analysis-recheck{margin-top:16px}
+
+html body #homebuyer-credit-staging .wb-review-chat-log{max-height:360px;overflow:auto;padding:8px 0;margin:12px 0}
+html body #homebuyer-credit-staging .wb-review-chat-message{padding:12px 14px;margin:10px 0;border:1px solid var(--dpa-rule);border-radius:3px;background:#fff;color:var(--dpa-navy)}
+html body #homebuyer-credit-staging .wb-review-chat-message.user{margin-left:24px;background:#edf1f7}
+html body #homebuyer-credit-staging .wb-review-chat-message.assistant{margin-right:24px;border-left:3px solid var(--dpa-navy)}
+html body #homebuyer-credit-staging .wb-review-chat-message p{white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;font-weight:400}
+html body #homebuyer-credit-staging .wb-review-chat-message strong{font-size:12px;font-weight:500}
