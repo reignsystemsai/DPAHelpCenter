@@ -230,3 +230,20 @@ html body #homebuyer-credit-staging .top .prep-brand .brand{display:flex;justify
 html body #homebuyer-credit-staging .cp-head h1 strong>span[style="color:var(--blue)"]{color:var(--dpa-navy)!important}
 
 html body #homebuyer-credit-staging .prep-mobile-nav select{appearance:none;-webkit-appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='8' viewBox='0 0 14 8'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%23081f5c' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 18px center;background-size:14px 8px}
+
+/* Dispute review uses the same restrained navy/red controls as PrepHub. */
+html body #homebuyer-credit-staging :is(.wb-review-item,.wb-review-solution,.wb-review-counts>div,.wb-dti-snapshot,.wb-mini-plan){border-radius:3px}
+html body #homebuyer-credit-staging .wb-review-item{border-left-color:var(--dpa-navy)}
+html body #homebuyer-credit-staging :is(#wb-dispute-findings,.wb-review-solution) .action{border-radius:3px;font:500 15px/1.4 var(--dpa-font);min-height:48px;padding:12px 22px}
+html body #homebuyer-credit-staging :is(#wb-dispute-findings,.wb-review-solution) .action.secondary{background:#fff;color:var(--dpa-navy);border:1px solid var(--dpa-navy)}
+html body #homebuyer-credit-staging .wb-dispute-note{margin-top:16px;padding:18px;border:1px solid var(--dpa-rule);border-radius:3px;background:rgba(244,247,252,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+html body #homebuyer-credit-staging .wb-dispute-note :is(textarea,input,select){display:block;box-sizing:border-box;width:100%;max-width:100%;min-height:48px;margin:8px 0 16px;padding:10px 12px;border:1px solid var(--dpa-rule);border-radius:3px;background:#fff;color:var(--dpa-navy);font:400 16px/1.5 var(--dpa-font)}
+html body #homebuyer-credit-staging .wb-dispute-note textarea{resize:vertical;background-image:none}
+html body #homebuyer-credit-staging .wb-dispute-note input[readonly]{background:#f4f7fc}
+html body #homebuyer-credit-staging :is(.wb-dispute-note select,#wb-progress-bureau){appearance:none;-webkit-appearance:none;padding-right:40px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='8' viewBox='0 0 14 8'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%23081f5c' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-size:14px 8px}
+html body #homebuyer-credit-staging .wb-dispute-note-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
+html body #homebuyer-credit-staging .wb-dispute-note-actions .action{width:auto;flex:1 1 150px}
+html body #homebuyer-credit-staging .wb-disputes-close{display:block;margin-left:auto;min-height:44px}
+
+html body #homebuyer-credit-staging :is(.wb-score-entry input,.wb-score-entry select,.wb-progress-event){border-radius:3px}
+html body #homebuyer-credit-staging .wb-analysis-recheck{margin-top:16px}
