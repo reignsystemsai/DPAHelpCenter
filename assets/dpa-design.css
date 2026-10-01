@@ -254,3 +254,7 @@ html body #homebuyer-credit-staging .wb-review-chat-message.user{margin-left:24p
 html body #homebuyer-credit-staging .wb-review-chat-message.assistant{margin-right:24px;border-left:3px solid var(--dpa-navy)}
 html body #homebuyer-credit-staging .wb-review-chat-message p{white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;font-weight:400}
 html body #homebuyer-credit-staging .wb-review-chat-message strong{font-size:12px;font-weight:500}
+
+/* Matching, spaced controls for every report finding. */
+html body #homebuyer-credit-staging .wb-review-item>.wb-analysis-recheck{margin:16px 0 12px}
+html body #homebuyer-credit-staging .wb-review-item :is(.wb-analysis-recheck>.action,.wb-dispute-select){display:block;box-sizing:border-box;width:100%;min-height:56px;margin:0;padding:14px 22px;border-radius:3px;font:500 15px/1.4 var(--dpa-font);white-space:normal}
