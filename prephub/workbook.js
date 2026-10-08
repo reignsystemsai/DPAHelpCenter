@@ -4,25 +4,26 @@ const root=document.getElementById('homebuyer-credit-staging'),q=s=>root.querySe
 const url='https://fklchtsxahepzfzgcqdp.supabase.co',key='sb_publishable_TUIi5-8ISzGLtdFKxO-k6g_HCHz7nOk',sessionKey='prephub-workbook-session-v1';
 const accountClient=window.supabase.createClient(url,key);
 window.PrepHubAccount=accountClient;
-let accountReady=Promise.resolve();
+let accountReady=Promise.resolve(),incomeUI=null;
 let saveTimer=null,saveInFlight=null,lastSave=null,editRevision=0,autoReady=false,authSettled=false;
 class DirtyFields extends Set{add(key){super.add(key);editRevision++;scheduleAutoSave();return this;}}
-let session=null,profile=null,pending=null,active='reports',dirty=new DirtyFields(),reports=[],state={debts:[],debt_notes:'',flags:[],flag_notes:'',questions:[],own_questions:'',checklist:[],pathway_tasks:{},action_checks:{},credit_review:null,review_feedback:'',review_chats:{},review_income:'',review_debt:'',analysis:'',report_notes:'',pathway_step:'reports',dispute_bureau:'Experian',dispute_item:'',dispute_reason:'',dispute_evidence:'',dispute_confirm:false,dispute_draft:'',dispute_requests:[],disputes_sent:'',followup_baseline:[],followup_notes:'',progress_scores:[],progress_start:null,progress_anchor:'',progress_excluded:[],progress_history:[],department_checks:{}};
+let session=null,profile=null,pending=null,active='reports',dirty=new DirtyFields(),reports=[],state={debts:[],debt_notes:'',flags:[],flag_notes:'',questions:[],own_questions:'',checklist:[],pathway_tasks:{},action_checks:{},credit_review:null,review_feedback:'',review_chats:{},review_income:'',review_debt:'',analysis:'',report_notes:'',pathway_step:'reports',dispute_bureau:'Experian',dispute_item:'',dispute_reason:'',dispute_evidence:'',dispute_confirm:false,dispute_draft:'',dispute_requests:[],disputes_sent:'',followup_baseline:[],followup_notes:'',progress_scores:[],progress_start:null,progress_anchor:'',progress_excluded:[],progress_history:[],department_checks:{},household_income:null};
 const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:2}).format(n);
 const notice=t=>{q('#prep-global-status').textContent=t;q('#wb-save-status').textContent=t;const status=q('#wb-letter-status');if(status)status.textContent=t;};
 const redact=t=>t.replace(/\b\d{3}[- ]?\d{2}[- ]?\d{4}\b/g,'[identifier removed]').replace(/\b\d{10,19}\b/g,'[account number removed]');
-async function request(action,data={},auth=true){if(auth){await accountReady;const current=await accountClient.auth.getSession();session=current.data?.session||null;if(current.error||!session){signIn();throw new Error('Reconnect your PrepHub account to save. Your edits are still here.');}if(session.expires_at*1000<Date.now()+60000){const renewed=await accountClient.auth.refreshSession();if(renewed.error||!renewed.data?.session)throw new Error('Your PrepHub session has ended. Return to My PrepHub to reconnect before saving; your edits are still here.');session=renewed.data.session;}}
+async function request(action,data={},auth=true,expectedOwner=null){if(auth){await accountReady;const current=await accountClient.auth.getSession();session=current.data?.session||null;if(current.error||!session){signIn();throw new Error('Reconnect your PrepHub account to save. Your edits are still here.');}if(session.expires_at*1000<Date.now()+60000){const renewed=await accountClient.auth.refreshSession();if(renewed.error||!renewed.data?.session)throw new Error('Your PrepHub session has ended. Return to My PrepHub to reconnect before saving; your edits are still here.');session=renewed.data.session;}}
+if(expectedOwner&&session?.user?.id!==expectedOwner)throw new Error('Account changed. Reload your saved preparation before saving.');
 const r=await fetch(url+'/functions/v1/'+(auth?'prephub-credit-workbook':'prephub-workbook-auth'),{method:'POST',headers:{apikey:key,'Content-Type':'application/json',...(auth?{Authorization:'Bearer '+session.access_token}:{})},body:JSON.stringify({action,...data})});const d=await r.json();if(!r.ok||d.error)throw new Error(d.error||d.message||'This could not be completed.');return d;}
-function setSaveStatus(text){const status=q('#prep-autosave-status');if(status)status.textContent=text;}
+function setSaveStatus(text){incomeUI?.status(text);const status=q('#prep-autosave-status');if(status)status.textContent=text;}
 function syncSessionControls(){if(!authSettled){['#wb-login','#wb-signout','#prep-account-login','#prep-account-logout'].forEach(id=>q(id).hidden=true);setSaveStatus('Loading your account…');return;}const connected=!!session;q('#wb-login').hidden=connected;q('#wb-signout').hidden=!connected;q('#prep-account-login').hidden=connected;q('#prep-account-logout').hidden=!connected;if(!connected){autoReady=false;clearTimeout(saveTimer);setSaveStatus('Sign in to save your preparation');}else setSaveStatus('Autosave connected');}
 function scheduleAutoSave(){if(!session||!autoReady||!dirty.size)return;clearTimeout(saveTimer);setSaveStatus('Changes waiting to save…');saveTimer=setTimeout(()=>save().catch(error=>{setSaveStatus('Not saved · Use Save to retry');notice(error.message);}),900);}
 function signIn(){if(window.PrepHubSignIn)window.PrepHubSignIn();}
 async function authenticated(fn){await accountReady;return fn();}
 function workbookId(){if(typeof crypto.randomUUID==='function')return crypto.randomUUID();const b=crypto.getRandomValues(new Uint8Array(16));b[6]=(b[6]&15)|64;b[8]=(b[8]&63)|128;const h=Array.from(b,n=>n.toString(16).padStart(2,'0'));return h.slice(0,4).join('')+'-'+h.slice(4,6).join('')+'-'+h.slice(6,8).join('')+'-'+h.slice(8,10).join('')+'-'+h.slice(10).join('');}
 function renderProfileRequest(r){all('[data-plan]').forEach(b=>{const requested=!!r&&r.plan_key===b.dataset.plan;b.dataset.requested=String(requested);b.disabled=requested;b.textContent=requested?'Requested':'I Want to Start This Plan';});}
-async function load(){const data=await request('load');profile=data.profile;reports=data.reports||[];const server=data.workbook?.content||{};for(const k of Object.keys(state))if(!dirty.has(k)&&server[k]!==undefined)state[k]=server[k];q('#wb-account-label').textContent=(profile.first_name||'Your')+'’s PrepHub credit preparation';q('#wb-account-status').textContent='Signed in · Save preparation changes to your profile. Report files are private.';syncSessionControls();renderProfileRequest(profile.credit_plan_request);if(state.credit_review)captureReportScores(state.credit_review);renderAll();renderPathway();renderSavedReports();autoReady=true;setSaveStatus('All changes saved');scheduleAutoSave();}
+async function load(){const owner=session?.user?.id;const data=await request('load',{},true,owner);if(owner!==session?.user?.id)return;profile=data.profile;reports=data.reports||[];const server=data.workbook?.content||{};for(const k of Object.keys(state))if(!dirty.has(k)&&server[k]!==undefined)state[k]=server[k];q('#wb-account-label').textContent=(profile.first_name||'Your')+'’s PrepHub credit preparation';q('#wb-account-status').textContent='Signed in · Save preparation changes to your profile. Report files are private.';syncSessionControls();renderProfileRequest(profile.credit_plan_request);if(state.credit_review)captureReportScores(state.credit_review);renderAll();renderPathway();renderSavedReports();autoReady=true;setSaveStatus('All changes saved');scheduleAutoSave();}
 q('#wb-login').addEventListener('click',()=>{if(!session)signIn();else q('#wb-account-status').textContent='Your PrepHub profile is connected.';});
-q('#wb-signout').addEventListener('click',async()=>{await accountClient.auth.signOut();session=null;profile=null;reports=[];state={debts:[],debt_notes:'',flags:[],flag_notes:'',questions:[],own_questions:'',checklist:[],pathway_tasks:{},action_checks:{},credit_review:null,review_feedback:'',review_chats:{},review_income:'',review_debt:'',analysis:'',report_notes:'',pathway_step:'reports',dispute_bureau:'Experian',dispute_item:'',dispute_reason:'',dispute_evidence:'',dispute_confirm:false,dispute_draft:'',dispute_requests:[],disputes_sent:'',followup_baseline:[],followup_notes:'',progress_scores:[],progress_start:null,progress_anchor:'',progress_excluded:[],progress_history:[],department_checks:{}};dirty.clear();localStorage.removeItem(sessionKey);q('#wb-account-label').textContent='Sign in to save your work to your PrepHub profile.';q('#wb-account-status').textContent='Signed out. Personal preparation information has been cleared from this page.';q('#wb-login').textContent='Sign In to Save';syncSessionControls();renderProfileRequest(null);renderAll();});
+q('#wb-signout').addEventListener('click',async()=>{await accountClient.auth.signOut();session=null;profile=null;reports=[];state={debts:[],debt_notes:'',flags:[],flag_notes:'',questions:[],own_questions:'',checklist:[],pathway_tasks:{},action_checks:{},credit_review:null,review_feedback:'',review_chats:{},review_income:'',review_debt:'',analysis:'',report_notes:'',pathway_step:'reports',dispute_bureau:'Experian',dispute_item:'',dispute_reason:'',dispute_evidence:'',dispute_confirm:false,dispute_draft:'',dispute_requests:[],disputes_sent:'',followup_baseline:[],followup_notes:'',progress_scores:[],progress_start:null,progress_anchor:'',progress_excluded:[],progress_history:[],department_checks:{},household_income:null};dirty.clear();localStorage.removeItem(sessionKey);q('#wb-account-label').textContent='Sign in to save your work to your PrepHub profile.';q('#wb-account-status').textContent='Signed out. Personal preparation information has been cleared from this page.';q('#wb-login').textContent='Sign In to Save';syncSessionControls();renderProfileRequest(null);renderAll();});
 all('[data-wb-close]').forEach(b=>b.addEventListener('click',()=>b.closest('dialog').close()));
 q('#wb-email-form').addEventListener('submit',async e=>{e.preventDefault();const button=e.submitter;button.disabled=true;q('#wb-login-status').textContent='Sending your code…';try{const d=await request('send_login',{email:q('#wb-email').value},false);q('#wb-login-status').textContent=d.message;q('#wb-code-form').hidden=false;q('#wb-code').focus();}catch(err){q('#wb-login-status').textContent=err.message;}finally{button.disabled=false;}});
 q('#wb-code-form').addEventListener('submit',async e=>{e.preventDefault();const button=e.submitter;button.disabled=true;q('#wb-login-status').textContent='Opening your preparation…';try{const d=await request('verify_login',{email:q('#wb-email').value,code:q('#wb-code').value},false);const connected=await accountClient.auth.setSession({access_token:d.session.access_token,refresh_token:d.session.refresh_token});if(connected.error)throw connected.error;session=connected.data.session;await load();q('#wb-login-dialog').close();const next=pending;pending=null;if(next)await next();}catch(err){q('#wb-login-status').textContent=err.message;}finally{button.disabled=false;}});
@@ -41,12 +42,12 @@ function checks(container,list,keyName){const c=q(container);c.replaceChildren()
 [['#wb-debt-notes','debt_notes'],['#wb-own-questions','own_questions']].forEach(([id,k])=>q(id).addEventListener('input',()=>{state[k]=q(id).value;dirty.add(k);callPrompt();}));
 function callPrompt(){const selected=questions.filter(([id])=>state.questions.includes(id)).map(([,t])=>t);q('#wb-call-prompt').textContent='“I’m preparing to buy my first home. Please review my saved credit preparation. '+(selected.length?selected.join(' '):'What should I work on first?')+(state.own_questions?' My own questions: '+state.own_questions:'')+'”';}
 function renderDepartmentChecks(){const counters={};all('[data-check]').filter(e=>e.dataset.check!=='credit').forEach(e=>{const area=e.dataset.check,key=area+'-'+(counters[area]=(counters[area]||0)+1);e.checked=!!state.department_checks[key];e.dispatchEvent(new Event('change',{bubbles:true}));});}
-function renderAll(){renderDepartmentChecks();renderDebts();checks('#wb-question-list',questions,'questions');q('#wb-debt-notes').value=state.debt_notes;q('#wb-own-questions').value=state.own_questions;callPrompt();renderPathway();renderSavedReports();}
-function snapshot(){const debts=state.debts.map(d=>({id:d.id,type:d.type,name:redact(d.name).slice(0,80),balance:d.balance===''?null:Number(d.balance),payment:d.payment===''?null:Number(d.payment)}));if(debts.some(d=>[d.balance,d.payment].some(v=>v!==null&&(!Number.isFinite(v)||v<0||v>1000000))))throw new Error('Enter valid non-negative balances and monthly payments.');return {...state,review_chats:reviewChatSnapshot(),dispute_requests:(state.dispute_requests||[]).map(r=>({...r,reason:redact(r.reason).slice(0,2000)})),debts,debt_notes:redact(state.debt_notes),flag_notes:redact(state.flag_notes),own_questions:redact(state.own_questions),checklist:[(q('[data-task="reports"]')?.checked??!!state.checklist[0]),(q('[data-support-check="balances"]')?.checked??!!state.checklist[1]),(q('[data-task="flags"]')?.checked??!!state.checklist[2]),(q('[data-support-check="questions"]')?.checked??!!state.checklist[3])],pathway_tasks:{...state.pathway_tasks,...Object.fromEntries(all('[data-task]').map(e=>[e.dataset.task,e.checked]))}};}
+function renderAll(){incomeUI?.restore(state.household_income);renderDepartmentChecks();renderDebts();checks('#wb-question-list',questions,'questions');q('#wb-debt-notes').value=state.debt_notes;q('#wb-own-questions').value=state.own_questions;callPrompt();renderPathway();renderSavedReports();}
+function snapshot(){incomeUI?.validate();const debts=state.debts.map(d=>({id:d.id,type:d.type,name:redact(d.name).slice(0,80),balance:d.balance===''?null:Number(d.balance),payment:d.payment===''?null:Number(d.payment)}));if(debts.some(d=>[d.balance,d.payment].some(v=>v!==null&&(!Number.isFinite(v)||v<0||v>1000000))))throw new Error('Enter valid non-negative balances and monthly payments.');return {...state,review_chats:reviewChatSnapshot(),dispute_requests:(state.dispute_requests||[]).map(r=>({...r,reason:redact(r.reason).slice(0,2000)})),debts,debt_notes:redact(state.debt_notes),flag_notes:redact(state.flag_notes),own_questions:redact(state.own_questions),checklist:[(q('[data-task="reports"]')?.checked??!!state.checklist[0]),(q('[data-support-check="balances"]')?.checked??!!state.checklist[1]),(q('[data-task="flags"]')?.checked??!!state.checklist[2]),(q('[data-support-check="questions"]')?.checked??!!state.checklist[3])],pathway_tasks:{...state.pathway_tasks,...Object.fromEntries(all('[data-task]').map(e=>[e.dataset.task,e.checked]))}};}
 function confirmDisputeNotesSaved(content){
  all('[data-dispute-save-key]').forEach(status=>{const key=status.getAttribute('data-dispute-save-key'),sent=(content.dispute_requests||[]).find(r=>r.key===key),current=(state.dispute_requests||[]).find(r=>r.key===key);if(sent&&current&&sent.reason===redact(current.reason).slice(0,2000)&&sent.bureau===current.bureau&&sent.selected===current.selected){status.textContent='Saved';const button=status.closest('.wb-dispute-note').querySelector('.wb-dispute-save-button');if(button)button.textContent='Saved';}});
 }
-async function save(){clearTimeout(saveTimer);if(saveInFlight){await saveInFlight;if(!dirty.size)return lastSave;}let succeeded=false;saveInFlight=(async()=>{const revision=editRevision,content=snapshot();notice('Saving to your PrepHub profile…');setSaveStatus('Saving…');const data=await request('save',{content});if(editRevision===revision)dirty.clear();lastSave=data;succeeded=true;confirmDisputeNotesSaved(content);const time=new Date(data.updated_at).toLocaleTimeString();notice('Saved to your PrepHub profile · '+time);setSaveStatus(dirty.size?'New changes waiting to save…':'Saved · '+time);return data;})();try{return await saveInFlight;}finally{saveInFlight=null;if(succeeded&&dirty.size)scheduleAutoSave();}}
+async function save(){clearTimeout(saveTimer);if(saveInFlight){await saveInFlight;if(!dirty.size)return lastSave;}let succeeded=false;saveInFlight=(async()=>{const revision=editRevision,owner=session?.user?.id,content=snapshot();notice('Saving to your PrepHub profile…');setSaveStatus('Saving…');const data=await request('save',{content},true,owner);if(owner!==session?.user?.id)throw new Error('Account changed. Reload your saved preparation.');if(editRevision===revision)dirty.clear();lastSave=data;succeeded=true;confirmDisputeNotesSaved(content);const time=new Date(data.updated_at).toLocaleTimeString();notice('Saved to your PrepHub profile · '+time);setSaveStatus(dirty.size?'New changes waiting to save…':'Saved · '+time);return data;})();try{return await saveInFlight;}finally{saveInFlight=null;if(succeeded&&dirty.size)scheduleAutoSave();}}
 const departmentCounters={};all('[data-check]').filter(e=>e.dataset.check!=='credit').forEach(e=>{const area=e.dataset.check,k=area+'-'+(departmentCounters[area]=(departmentCounters[area]||0)+1);e.addEventListener('change',()=>{if(!!state.department_checks[k]!==e.checked){state.department_checks[k]=e.checked;dirty.add('department_checks');}});});
 all('[data-wb-save]').forEach(b=>b.addEventListener('click',async()=>{b.disabled=true;try{await authenticated(save);}catch(err){notice(err.message);}finally{b.disabled=false;}}));
 q('#wb-request-call').addEventListener('click',async()=>{if(!q('#wb-call-consent').checked){notice('Please confirm you want a callback about your saved preparation work.');return;}try{await authenticated(async()=>{await save();await request('call',{consent:true,questions:q('#wb-call-prompt').textContent});notice('Your callback request and saved preparation context have been recorded for specialist follow-up.');});}catch(err){notice(err.message);}});
@@ -206,8 +207,140 @@ q('#wb-ai-analysis').addEventListener('click',()=>pathwayAi('analysis'));q('#wb-
 let aiConfigured=false;
 function setAiStatus(text){all('[data-pathway-ai-status]').forEach(e=>e.textContent=text);}
 request('capabilities',{},false).then(d=>{aiConfigured=d.ai_configured===true;['#wb-ai-analysis','#wb-ai-dispute','#wb-ai-dispute-review'].forEach(id=>q(id).disabled=!aiConfigured);const status=aiConfigured?'PREPHUB connected · Scans your uploaded reports when you choose Analyze, then reviews the available text and workbook notes.':'PREPHUB is prepared, but its server API key is not configured yet. You can organize and save your workbook now.';setAiStatus(status);}).catch(()=>{['#wb-ai-analysis','#wb-ai-dispute','#wb-ai-dispute-review'].forEach(id=>q(id).disabled=true);setAiStatus('PREPHUB could not connect right now. Please try again.');});
+const incomeStore={edit(data){state.household_income=data;dirty.add('household_income');},save,owner(){return session?.user?.id||null;},extract};
+
+function parsePayStub(text){
+ const fields={},source=String(text).slice(0,120000).replace(/\r/g,'');
+ const amount='([0-9]+(?:,[0-9]{3})*(?:\\.[0-9]{1,2})?)';
+ function labelled(label){const rx=new RegExp('(?:^|[\\n\\s])(?:'+label+')\\s*[:=$]?\\s*\\$?'+amount+'(?=\\s|$)','gi');const matches=[...source.matchAll(rx)].map(m=>Number(m[1].replace(/,/g,'')));const values=[...new Set(matches)];return values.length===1&&values[0]>=0&&values[0]<=1000000?String(values[0]):'';}
+ const rate=labelled('hourly (?:pay )?rate|rate per hour');if(rate)fields.rate=rate;
+ const gross=labelled('(?:base|regular|salary) pay (?:this period|current period)|current (?:base|regular|salary) pay');if(gross)fields.gross=gross;
+ const hours=labelled('(?:regular|average) (?:weekly hours|hours per week)|hours per week');if(hours&&Number(hours)<=168)fields.hours=hours;
+ const frequencies=[['semimonthly',/\b(?:semi[ -]?monthly|twice (?:a|per) month)\b/i],['biweekly',/\b(?:bi[ -]?weekly|every (?:two|2) weeks)\b/i],['weekly',/(?<!bi[ -])\bpay frequency\s*[:=]?\s*weekly\b/i],['monthly',/\bpay frequency\s*[:=]?\s*monthly\b/i]];
+ const choices=frequencies.filter(([,rx])=>rx.test(source));if(choices.length===1)fields.frequency=choices[0][0];
+ const employer=source.match(/(?:^|\n)\s*employer(?: name)?\s*:\s*([^\n]{2,80})/i);if(employer)fields.employer=employer[1].trim();
+ const count=Object.keys(fields).length;
+ return {fields,message:count?'Pay details found. Confirm the pay frequency, base pay, and regular weekly hours below. Blank or unclear fields need your input; overtime and net pay are excluded.':'This pay stub could not be matched confidently. Enter the details below from your document. No income estimate was inferred.'};
+}
+
+incomeUI=(()=>{
+  const root=document.getElementById('household-workstation');if(!root)return null;
+  const q=s=>root.querySelector(s),all=s=>[...root.querySelectorAll(s)];
+  const personIds=['name','employer','start','frequency','rate','hours','gross','consistent','extra','business','business-start','taxyear','profit','taxready','plready','other-source','other'];
+  const debtIds=['auto','cards','student','loans','support','debts'];
+  const field=id=>q('#iw-'+id);
+  const readFields=()=>Object.fromEntries(personIds.map(id=>[id,field(id).type==='checkbox'?field(id).checked:field(id).value]));
+  const defaults=readFields();
+  const blankPerson=()=>({type:'w2',pay:'hourly',fields:{...defaults},sampleStub:false,uploadOpen:false,recalculated:false});
+  let people=[blankPerson()],active=0,uploadGeneration=0;
+  const money=v=>v.toLocaleString('en-US',{style:'currency',currency:'USD',maximumFractionDigits:2});
+  const number=v=>{const n=Number(v);return Number.isFinite(n)&&n>=0&&n<=1000000?n:0;};
+  const value=id=>number(field(id).value);
+  const capture=()=>{people[active].fields=readFields();};
+  function personIncome(person){
+    const f=person.fields,n=id=>number(f[id]);
+    if(person.type==='self')return n('profit')/12;
+    if(person.type==='other')return n('other');
+    if(person.pay==='hourly')return n('rate')*Math.min(168,n('hours'))*52/12;
+    return n('gross')*({weekly:52/12,biweekly:26/12,semimonthly:2,monthly:1}[f.frequency]||0);
+  }
+  const name=(person,index)=>person.fields.name.trim()||(index===0?'Your Income':'Person 2');
+  function renderPerson(){
+    const p=people[active];
+    personIds.forEach(id=>{const el=field(id);if(el.type==='checkbox')el.checked=!!p.fields[id];else el.value=p.fields[id];});
+    all('[data-iw-type]').forEach(e=>e.setAttribute('aria-pressed',String(e.dataset.iwType===p.type)));
+    all('[data-iw-path]').forEach(e=>e.hidden=e.dataset.iwPath!==p.type);
+    all('[data-iw-pay]').forEach(e=>e.setAttribute('aria-pressed',String(e.dataset.iwPay===p.pay)));
+    all('[data-iw-hourly]').forEach(e=>e.hidden=p.pay!=='hourly');
+    all('[data-iw-salary]').forEach(e=>e.hidden=p.pay!=='salary');
+    q('#iw-remove-person').hidden=active!==1;
+    update();
+  }
+  function update(){
+    const p=people[active],individual=personIncome(p),income=people.reduce((sum,p)=>sum+personIncome(p),0);
+    const debt=debtIds.reduce((sum,id)=>sum+value(id),0),housing=value('housing');
+    const f=p.fields;
+    q('#iw-upload-preview').hidden=!p.uploadOpen;
+    q('#iw-upload-stub').setAttribute('aria-expanded',String(p.uploadOpen));
+    q('#iw-upload-stub').textContent=p.sampleStub?'Replace Pay Stub':'Upload My Pay Stub';
+    q('#iw-stub-review').hidden=!p.sampleStub;
+    q('#iw-stub-review').textContent=p.stubMessage||'Review the pay details and confirm your regular weekly hours. Every field can be edited.';
+    q('#iw-recalculate-status').textContent=p.recalculated?'Recalculated · Household total and DTI updated.':'Edit your details anytime. Estimates update as you type.';
+    let formula='Enter your pay and hours to see the calculation.';
+    if(p.type==='w2'&&individual){formula=p.pay==='hourly'?money(number(f.rate))+' × '+number(f.hours)+' hours × 52 weeks ÷ 12 months':money(number(f.gross))+' × '+({weekly:'52 checks ÷ 12 months',biweekly:'26 checks ÷ 12 months',semimonthly:'2 checks per month',monthly:'1 check per month'}[f.frequency]);}
+    if(p.type==='self')formula=individual?money(number(f.profit))+' net annual profit ÷ 12 months. Planning reference; lender review needed.':'Enter net business profit to see a planning reference.';
+    if(p.type==='other')formula=individual?'Monthly amount entered. Eligibility and adjustments need lender review.':'Enter a monthly income amount.';
+    q('#iw-variable').hidden=p.type!=='w2'||p.pay!=='hourly'||f.consistent==='fixed';
+    q('#iw-income-label').textContent=name(p,active)+' · '+(p.type==='self'?'monthly profit reference':'estimated monthly income');
+    q('#iw-income-result').textContent=individual?money(individual):'—';
+    q('#iw-formula').textContent=formula;
+    for(const id of ['side-income','review-income','household-total'])field(id).textContent=income?money(income):'—';
+    q('#iw-side-label').textContent='Combined monthly income';
+    q('#iw-household-caption').textContent=people.length===1?'1 person in this estimate':'2 people · Both income estimates combined';
+    for(const id of ['debt-result','side-debt','review-debts'])field(id).textContent=money(debt);
+    q('#iw-side-dti').textContent=income?(debt/income*100).toFixed(1)+'%':'—';
+    q('#iw-review-housing').textContent=money(housing);q('#iw-review-total').textContent=money(debt+housing);
+    q('#iw-dti-label').textContent=housing?'Estimated household DTI with housing':'Estimated household DTI before housing';
+    q('#iw-dti-result').textContent=income?((debt+housing)/income*100).toFixed(1)+'%':'—';
+    q('#iw-dti-formula').textContent=income?'('+money(debt)+' debts + '+money(housing)+' housing) ÷ '+money(income)+' combined income × 100':'Add income to calculate your ratio.';
+    const extras=people.reduce((sum,p)=>sum+(p.type==='w2'?number(p.fields.extra):0),0);
+    q('#iw-side-extra').hidden=!extras;
+    q('#iw-side-extra').textContent='Additional earnings entered: '+money(extras)+' / month. Not included in the base estimate.';
+    all('[data-person]').forEach(e=>{const i=Number(e.dataset.person);e.hidden=i>=people.length;if(people[i])e.textContent=name(people[i],i);e.setAttribute('aria-pressed',String(i===active));});
+    q('#iw-add-person').hidden=people.length===2;
+    const breakdown=q('#iw-person-breakdown');breakdown.replaceChildren();
+    people.forEach((p,i)=>{const row=document.createElement('div');row.className='iw-person-line';const label=document.createElement('span');label.textContent=name(p,i);const amount=document.createElement('strong');amount.textContent=personIncome(p)?money(personIncome(p)):'—';row.append(label,amount);breakdown.append(row);});
+  }
+  function dirty(){incomeStore.edit(payload());all('[data-iw-save]').forEach(el=>el.textContent=el.closest('[data-iw-screen="3"]')?'Save My Numbers':'Save My Progress');q('#iw-save-status').textContent='Changes waiting to save';}
+  function screen(step){capture();all('[data-iw-screen]').forEach(e=>e.hidden=e.dataset.iwScreen!==String(step));all('[data-iw-step]').forEach(e=>e.dataset.iwStep===String(step)?e.setAttribute('aria-current','step'):e.removeAttribute('aria-current'));update();}
+  root.addEventListener('click',async e=>{
+    const b=e.target.closest('button');if(!b)return;
+    if(b.id==='iw-upload-stub'){q('#iw-stub-file').value='';q('#iw-stub-file').click();}
+    else if(b.id==='iw-recalculate'){capture();people[active].recalculated=true;update();}
+    else if(b.id==='iw-add-person'&&people.length===1){capture();people.push(blankPerson());active=1;renderPerson();dirty();field('name').focus();}
+    else if(b.hasAttribute('data-person')){capture();active=Number(b.dataset.person);renderPerson();}
+    else if(b.id==='iw-remove-person'){people.pop();active=0;renderPerson();dirty();}
+    else if(b.dataset.iwType){capture();people[active].type=b.dataset.iwType;renderPerson();dirty();}
+    else if(b.dataset.iwPay){capture();people[active].pay=b.dataset.iwPay;renderPerson();dirty();}
+    else if(b.dataset.iwStep||b.dataset.iwNext)screen(b.dataset.iwStep||b.dataset.iwNext);
+    else if(b.hasAttribute('data-iw-save')){capture();dirty();all('[data-iw-save]').forEach(el=>el.disabled=true);try{await incomeStore.save();}catch(error){q('#iw-save-status').textContent='Not saved · '+error.message;}finally{all('[data-iw-save]').forEach(el=>el.disabled=false);}}
+
+  });
+  root.addEventListener('input',e=>{if(e.target.id==='iw-stub-file')return;capture();people[active].recalculated=false;update();dirty();});
+  root.addEventListener('change',e=>{if(e.target.id==='iw-stub-file')return;capture();people[active].recalculated=false;update();dirty();});
+  function payload(){return {version:1,people:people.map(p=>({type:p.type,pay:p.pay,fields:Object.fromEntries(Object.entries(p.fields).map(([k,v])=>[k,typeof v==='string'?redact(v).slice(0,300):v])),sampleStub:p.sampleStub,stubMessage:p.stubMessage||''})),debts:Object.fromEntries(debtIds.map(id=>[id,field(id).value])),housing:field('housing').value,notes:redact(field('notes').value).slice(0,3000)};}
+  function restore(data){uploadGeneration++;q('#iw-upload-stub').disabled=false;const source=data&&Array.isArray(data.people)?data:null;people=(source?source.people.slice(0,2):[blankPerson()]).map(p=>({...blankPerson(),type:['w2','self','other'].includes(p.type)?p.type:'w2',pay:p.pay==='salary'?'salary':'hourly',fields:{...defaults,...p.fields},sampleStub:p.sampleStub===true,stubMessage:typeof p.stubMessage==='string'?p.stubMessage:''}));if(!people.length)people=[blankPerson()];active=Math.min(active,people.length-1);debtIds.forEach(id=>field(id).value=source?.debts?.[id]??'');field('housing').value=source?.housing??'';field('notes').value=source?.notes??'';renderPerson();}
+  q('#iw-stub-file').addEventListener('change',async()=>{
+    const file=q('#iw-stub-file').files?.[0];if(!file)return;
+    capture();const target=people[active],generation=++uploadGeneration,original=JSON.stringify(target.fields),owner=incomeStore.owner();
+    const valid=['application/pdf','image/png','image/jpeg'].includes(file.type);
+    target.uploadOpen=true;update();const status=q('#iw-upload-status');
+    if(!valid||file.size>10*1024*1024){status.textContent='Choose a PDF, PNG, or JPG up to 10 MB.';return;}
+    q('#iw-upload-stub').disabled=true;status.textContent='Reading your pay stub…';
+    try{
+      const text=await incomeStore.extract(file,t=>{if(generation===uploadGeneration)status.textContent=t.replace(/report/g,'pay stub');});
+      if(generation!==uploadGeneration||owner!==incomeStore.owner()||!people.includes(target))return;
+      if(JSON.stringify(target.fields)!==original)throw new Error('Your details changed while reading. Choose the file again to review it.');
+      const found=parsePayStub(text);target.type='w2';target.sampleStub=true;target.uploadOpen=false;target.recalculated=false;
+      // Replace old payroll amounts instead of silently mixing two different stubs.
+      Object.assign(target.fields,{rate:'',gross:'',hours:'',frequency:'',consistent:'unsure',extra:''},found.fields);
+      if(found.fields.rate)target.pay='hourly';else if(found.fields.gross)target.pay='salary';
+      target.stubMessage=found.message;
+      if(people[active]===target)renderPerson();else update();dirty();
+    }catch(error){if(generation===uploadGeneration){target.uploadOpen=true;update();status.textContent=error.message||'Could not read this file. Try a clearer copy or enter your details below.';}}
+    finally{q('#iw-upload-stub').disabled=false;}
+  });
+  renderPerson();
+  return {restore,validate(){
+ const numeric=['rate','hours','gross','extra','profit','other'];
+ for(const p of people)for(const id of numeric){const v=p.fields[id];if(v===''||v===null||v===undefined)continue;const n=Number(v);if(!Number.isFinite(n)||n>1000000||(id!=='profit'&&n<0)||(id==='hours'&&n>168)||n< -1000000)throw new Error('Check your income amounts and weekly hours before saving.');}
+ for(const id of [...debtIds,'housing']){const v=field(id).value;if(v!==''&&(!Number.isFinite(Number(v))||Number(v)<0||Number(v)>1000000))throw new Error('Enter valid non-negative monthly payments before saving.');}
+ },status(text){q('#iw-save-status').textContent=text;if(/^Saved|All changes saved/.test(text))all('[data-iw-save]').forEach(el=>el.textContent='Saved');}};
+})();
+
+
 renderAll();
-accountClient.auth.onAuthStateChange((event,next)=>{session=next;syncSessionControls();if(next&&event==='SIGNED_IN')setTimeout(()=>load().catch(error=>{q('#wb-account-status').textContent=error.message;setSaveStatus('Could not load saved preparation');}),0);});
+accountClient.auth.onAuthStateChange((event,next)=>{if(session?.user?.id!==next?.user?.id){state.household_income=null;dirty.delete('household_income');incomeUI?.restore(null);autoReady=false;clearTimeout(saveTimer);}session=next;syncSessionControls();if(next&&event==='SIGNED_IN')setTimeout(()=>load().catch(error=>{q('#wb-account-status').textContent=error.message;setSaveStatus('Could not load saved preparation');}),0);});
 accountReady=(async()=>{const current=await accountClient.auth.getSession();session=current.data?.session||null;syncSessionControls();if(session){const lead=new URLSearchParams(location.search).get('lead')||localStorage.getItem('dpa_prephub_lead_id');if(lead){const claimed=await accountClient.rpc('claim_prephub_lead',{p_lead_id:lead});if(claimed.error)throw claimed.error;}}if(!session){let legacy=null;try{legacy=JSON.parse(localStorage.getItem(sessionKey)||'null');}catch{}if(legacy?.access_token&&legacy?.refresh_token){const restored=await accountClient.auth.setSession({access_token:legacy.access_token,refresh_token:legacy.refresh_token});session=restored.data?.session||null;if(session)localStorage.removeItem(sessionKey);}}})();
 window.PrepHubAccountReady=accountReady;
 accountReady.then(()=>{authSettled=true;syncSessionControls();if(session)load().catch(err=>{q('#wb-account-status').textContent=err.message;});}).catch(async()=>{const current=await accountClient.auth.getSession();session=current.data?.session||null;if(!current.error){authSettled=true;syncSessionControls();}setSaveStatus('Account could not finish loading · Refresh to retry');});

@@ -43,7 +43,8 @@ Deno.serve(async req=>{
   const book=await db.from('prephub_credit_workbooks').select('content').eq('lead_id',lead.id).maybeSingle();if(book.error)throw book.error;
   const reportContext=await db.from('prephub_credit_reports').select('id,bureau,extracted_text,reviewed_by_customer').eq('lead_id',lead.id).order('created_at',{ascending:false}).limit(30);if(reportContext.error)throw reportContext.error;
   const latestByBureau=new Map();for(const report of reportContext.data||[])if(!latestByBureau.has(report.bureau))latestByBureau.set(report.bureau,report);
-  const context={report_notes:Array.from(latestByBureau.values()).map(r=>({bureau:r.bureau,text:r.extracted_text.slice(0,60000),text_reviewed_by_customer:r.reviewed_by_customer,text_may_be_truncated:r.extracted_text.length>=60000})),first_name:lead.first_name,credit_score:lead.credit_score,readiness:lead.current_readiness_score,city:lead.city,selected_plan:lead.credit_plan_request,workbook:book.data?.content||{}};
+  const creditContext={...(book.data?.content||{})};delete creditContext.household_income;
+  const context={report_notes:Array.from(latestByBureau.values()).map(r=>({bureau:r.bureau,text:r.extracted_text.slice(0,60000),text_reviewed_by_customer:r.reviewed_by_customer,text_may_be_truncated:r.extracted_text.length>=60000})),first_name:lead.first_name,credit_score:lead.credit_score,readiness:lead.current_readiness_score,city:lead.city,selected_plan:lead.credit_plan_request,workbook:creditContext};
   if(action==='call'){
    if(body.consent!==true)return reply({error:'Confirm you want a callback about your saved preparation work'},400);
    if(!lead.phone)return reply({error:'Your PrepHub profile needs a phone number before requesting a callback'},400);
