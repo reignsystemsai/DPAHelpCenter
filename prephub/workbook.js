@@ -226,7 +226,7 @@ function parsePayStub(text){
 incomeUI=(()=>{
   const root=document.getElementById('household-workstation');if(!root)return null;
   const q=s=>root.querySelector(s),all=s=>[...root.querySelectorAll(s)];
-  const personIds=['name','employer','start','frequency','rate','hours','gross','consistent','extra','business','business-start','taxyear','profit','taxready','plready','other-source','other'];
+  const personIds=['name','last-name','employer','start','frequency','rate','hours','gross','consistent','extra','business','business-start','taxyear','profit','taxready','plready','other-source','other'];
   const debtIds=['auto','cards','student','loans','support','debts'];
   const field=id=>q('#iw-'+id);
   const readFields=()=>Object.fromEntries(personIds.map(id=>[id,field(id).type==='checkbox'?field(id).checked:field(id).value]));
@@ -244,7 +244,7 @@ incomeUI=(()=>{
     if(person.pay==='hourly')return n('rate')*Math.min(168,n('hours'))*52/12;
     return n('gross')*({weekly:52/12,biweekly:26/12,semimonthly:2,monthly:1}[f.frequency]||0);
   }
-  const name=(person,index)=>person.fields.name.trim()||(index===0?'Your Income':'Person 2');
+  const name=(person,index)=>[person.fields.name,person.fields['last-name']].filter(Boolean).join(' ').trim()||(index===0?'Your Income':'Person 2');
   function renderPerson(){
     const p=people[active];
     personIds.forEach(id=>{const el=field(id);if(el.type==='checkbox')el.checked=!!p.fields[id];else el.value=p.fields[id];});
@@ -303,7 +303,7 @@ incomeUI=(()=>{
     else if(b.dataset.iwType){capture();people[active].type=b.dataset.iwType;renderPerson();dirty();}
     else if(b.dataset.iwPay){capture();people[active].pay=b.dataset.iwPay;renderPerson();dirty();}
     else if(b.dataset.iwStep||b.dataset.iwNext)screen(b.dataset.iwStep||b.dataset.iwNext);
-    else if(b.hasAttribute('data-iw-save')){capture();dirty();all('[data-iw-save]').forEach(el=>el.disabled=true);try{await incomeStore.save();}catch(error){q('#iw-save-status').textContent='Not saved · '+error.message;}finally{all('[data-iw-save]').forEach(el=>el.disabled=false);}}
+    else if(b.hasAttribute('data-iw-save')){capture();if(people.some(p=>!p.fields.name.trim()||!p.fields['last-name'].trim())){q('#iw-save-status').textContent='Enter first and last names for each person before saving.';return;}dirty();all('[data-iw-save]').forEach(el=>el.disabled=true);try{await incomeStore.save();}catch(error){q('#iw-save-status').textContent='Not saved · '+error.message;}finally{all('[data-iw-save]').forEach(el=>el.disabled=false);}}
 
   });
   root.addEventListener('input',e=>{if(e.target.id==='iw-stub-file')return;capture();people[active].recalculated=false;update();dirty();});
