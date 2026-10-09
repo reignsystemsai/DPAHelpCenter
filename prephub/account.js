@@ -7,7 +7,7 @@ const showView=window.PrepHubView.show;
 window.PrepHubView.show=function(view){showView(view);if(q('[data-panel="'+view+'"]')?.hidden===false){const url=new URL(location.href);url.searchParams.set('view',view);history.replaceState(null,'',url);}};
 root.addEventListener('click',event=>{const button=event.target.closest('[data-view],[data-go]');if(button)window.PrepHubView.show(button.dataset.view||button.dataset.go);});
 q('#prep-department').addEventListener('change',event=>window.PrepHubView.show(event.target.value));
-let connected=false,desired=['overview','credit','income','employment','documents'].includes(requested)?requested:'overview';
+let connected=false,desired=['overview','credit','income','employment','documents','savings'].includes(requested)?requested:'overview';
 const labels={credit:'Credit preparation',dti:'Income & DTI',job:'Employment history',taxes:'My documents'};
 function score(value){const n=Math.max(0,Math.min(100,Number(value)||0));q('#prep-readiness-score').textContent=n+'%';q('#prep-readiness-copy').textContent=n===100?'Your assessment is ready for the next step. Continue preparing with your lender.':'Complete your remaining preparation areas and return to review your progress.';}
 function login(view){if(view)desired=view;q('#prep-login-dialog').showModal();q('#prep-login-email').focus();}
@@ -28,17 +28,13 @@ function make(tag,text,className){const el=document.createElement(tag);el.textCo
 async function refresh(){
  const {data,error}=await client.auth.getSession();if(error)throw error;connected=!!data.session;
  q('#prep-account-login').hidden=connected;q('#prep-account-logout').hidden=!connected;
- if(!connected){q('#prep-account-status').textContent='Connect your profile to save your preparation.';const value=params.get('score')||localStorage.getItem('dpa_prephub_score');if(value!==null)score(value);window.PrepHubView.show('overview');return;}
+ if(!connected){window.PrepHubReadinessBaseline={};window.dispatchEvent(new Event('prephub-assessment-loaded'));q('#prep-account-status').textContent='Connect your profile to save your preparation.';const value=params.get('score')||localStorage.getItem('dpa_prephub_score');if(value!==null)score(value);window.PrepHubView.show('overview');return;}
  const result=await client.from('prephub_leads').select('id,first_name,current_readiness_score,assessment').eq('user_id',data.session.user.id).order('created_at',{ascending:false}).limit(1).maybeSingle();
  if(result.error)throw result.error;if(!result.data)throw new Error('Your account is connected, but no saved preparation profile was found. Call 1-833-302-8953 for help.');
- const profile=result.data;q('#prep-account-name').textContent=profile.first_name?profile.first_name+'’s PrepHub':'My PrepHub';q('#prep-account-status').textContent='Account connected · Save your work as you prepare.';score(profile.current_readiness_score);
- const tasks=await client.from('preparation_tasks').select('id,task_key,completed').eq('lead_id',profile.id).order('position',{ascending:true});if(tasks.error)throw tasks.error;
- const remaining=tasks.data.filter(task=>!task.completed);
- q('#prep-task-summary').textContent=remaining.length?'Focus on: '+remaining.map(task=>labels[task.task_key]||'Preparation area').join(' · ')+'. Your assessment flagged '+(remaining.length===1?'this area':'these areas')+' for follow-up.':'Keep your homebuyer preparation organized in one place.';
- const answers=profile.assessment||{};
- const isNo=value=>value===false||value==='No';
- const reasons={credit:isNo(answers.credit_640_plus)?'You reported a credit score below 640. Review your reports and preparation priorities.':'Your assessment flagged credit preparation for follow-up.',dti:isNo(answers.income_70k_plus)?'You reported annual household income below $70,000. Review your buying power and monthly payments.':'Your assessment flagged income and buying power for review.',job:isNo(answers.job_history_2yrs)?'Your assessment indicated your two-year work or qualifying income history needs review.':'Your assessment flagged employment history for follow-up.',taxes:isNo(answers.tax_returns_2yrs)?'You reported that two years of tax returns are not available. Review which income documents you may need.':'Your assessment flagged tax documentation for follow-up.'};
- for(const card of all('[data-prep-key]')){const key=card.dataset.prepKey,task=tasks.data.find(item=>item.task_key===key),flag=!!task&&!task.completed,label=card.querySelector('.prep-area-state'),reason=card.querySelector('.prep-area-reason');card.classList.toggle('needs-attention',flag);card.classList.toggle('preparation-complete',!!task&&task.completed);label.hidden=!task;reason.hidden=!task;if(task){label.textContent=flag?'Your next focus':'Preparation completed';reason.textContent=flag?reasons[key]:'You completed this preparation area. Keep your information up to date.';}}
+ const profile=result.data;q('#prep-account-name').textContent=profile.first_name?profile.first_name+'’s PrepHub':'My PrepHub';q('#prep-account-status').textContent='Account connected · Save your work as you prepare.';
+ const answers=profile.assessment||{};const yes=v=>v===true||v==='Yes';
+ window.PrepHubReadinessBaseline={credit:yes(answers.credit_640_plus),income:yes(answers.income_70k_plus),employment:yes(answers.job_history_2yrs),documents:yes(answers.tax_returns_2yrs)};
+ window.dispatchEvent(new Event('prephub-assessment-loaded'));
 
 }
 async function init(){
@@ -46,7 +42,7 @@ async function init(){
  const visitor=localStorage.getItem('dpa_visitor_id')||crypto.randomUUID();localStorage.setItem('dpa_visitor_id',visitor);
  const heartbeat=()=>client.functions.invoke('track-site-visit',{body:{scope:'prephub',visitor_id:visitor,path:location.pathname}}).catch(()=>{});heartbeat();setInterval(heartbeat,30000);
  await refresh();
- if(connected){const pending=localStorage.getItem('dpa_prephub_next_view');if(['overview','credit','income','employment','documents'].includes(pending)){desired=pending;localStorage.removeItem('dpa_prephub_next_view');}window.PrepHubView.show(desired);localStorage.setItem('dpa_prephub_return_url',location.origin+'/prephub/');}
+ if(connected){const pending=localStorage.getItem('dpa_prephub_next_view');if(['overview','credit','income','employment','documents','savings'].includes(pending)){desired=pending;localStorage.removeItem('dpa_prephub_next_view');}window.PrepHubView.show(desired);localStorage.setItem('dpa_prephub_return_url',location.origin+'/prephub/');}
 }
 init().catch(async error=>{q('#prep-account-status').textContent=error.message;const current=await client.auth.getSession();if(!current.error){const signedIn=!!current.data?.session;q('#prep-account-login').hidden=signedIn;q('#prep-account-logout').hidden=!signedIn;}});
 })();
