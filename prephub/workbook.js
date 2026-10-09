@@ -342,7 +342,7 @@ incomeUI=(()=>{
  const validPeople=people.length>0&&people.every(p=>p.fields.name?.trim()&&p.fields['last-name']?.trim()&&personIncome(p)>0&&numeric.every(id=>{const raw=currencyRaw(p.fields[id]);if(raw==='')return true;const n=Number(raw);return Number.isFinite(n)&&n>=0&&n<=1000000&&(id!=='hours'||n<=168);}));
  const income=people.reduce((n,p)=>n+personIncome(p),0),housing=Number(currencyRaw(field('housing').value)),debt=debtIds.reduce((n,id)=>n+value(id),0);
  const validDebts=debtIds.every(id=>debtItems[id].every(row=>{const raw=currencyRaw(row.payment),n=Number(raw);return raw!==''&&Number.isFinite(n)&&n>=0&&n<=1000000;}));
- return !!(validPeople&&validDebts&&q('#iw-debts-confirmed').checked&&Number.isFinite(housing)&&housing>0&&housing<=1000000&&(debt+housing)/income*100<57);
+ return !!(validPeople&&validDebts&&q('#iw-debts-confirmed').checked&&Number.isFinite(housing)&&housing>0&&housing<=1000000&&debt+housing<income*57/100);
  }
   function update(){
     window.PrepHubPublishReadiness("income",incomeComplete(),people.some(p=>p.fields.name?.trim()||p.fields["last-name"]?.trim()||personIncome(p)>0)||currencyRaw(field("housing").value)!==""||q("#iw-debts-confirmed").checked);
