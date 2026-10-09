@@ -260,6 +260,52 @@ incomeUI=(()=>{
   const money=v=>v.toLocaleString('en-US',{style:'currency',currency:'USD',maximumFractionDigits:2});
   const number=v=>{const n=Number(v);return Number.isFinite(n)&&n>=0&&n<=1000000?n:0;};
   const value=id=>number(field(id).value);
+  const debtConfig={"auto":{"title":"Cars / Leases","singular":"Car / Lease","count":"car payment"},"cards":{"title":"Credit Cards","singular":"Credit Card","count":"card"},"student":{"title":"Student Loans","singular":"Student Loan","count":"student loan"},"loans":{"title":"Installment Loans","singular":"Installment Loan","count":"installment loan"},"support":{"title":"Required Support","singular":"Support Payment","count":"support payment"},"debts":{"title":"Other Debts","singular":"Other Debt","count":"other debt"}};
+  let debtItems=Object.fromEntries(debtIds.map(id=>[id,[]]));
+  function syncDebtTotals(){
+    for(const id of debtIds){
+      const rows=debtItems[id],total=rows.reduce((sum,row)=>sum+number(row.payment),0);
+      field(id).value=total.toFixed(2);
+      const label=q('[data-iw-debt-caption="'+id+'"]');
+      if(label)label.textContent=rows.length+' '+debtConfig[id].count+(rows.length===1?'':'s')+' · '+money(total)+'/mo';
+    }
+  }
+  function renderDebtCategory(id){
+    const host=q('[data-iw-debt-rows="'+id+'"]');host.replaceChildren();
+    debtItems[id].forEach((row,index)=>{
+      const group=document.createElement('div');group.className='iw-debt-row';
+      const nameLabel=document.createElement('label');nameLabel.textContent=debtConfig[id].singular+' '+(index+1);
+      const nameInput=document.createElement('input');nameInput.type='text';nameInput.maxLength=80;nameInput.value=row.name;nameInput.placeholder='Name (optional)';nameInput.dataset.iwDebtCategory=id;nameInput.dataset.iwDebtIndex=String(index);nameInput.dataset.iwDebtField='name';nameInput.setAttribute('aria-label',debtConfig[id].singular+' '+(index+1)+' name');nameLabel.append(nameInput);
+      const payLabel=document.createElement('label');payLabel.textContent=id==='cards'?'Monthly minimum ($)':'Monthly payment ($)';
+      const payInput=document.createElement('input');payInput.type='number';payInput.min='0';payInput.max='1000000';payInput.step='0.01';payInput.inputMode='decimal';payInput.value=row.payment;payInput.placeholder='0.00';payInput.dataset.iwDebtCategory=id;payInput.dataset.iwDebtIndex=String(index);payInput.dataset.iwDebtField='payment';payInput.setAttribute('aria-label',debtConfig[id].singular+' '+(index+1)+' monthly payment');payLabel.append(payInput);
+      const remove=document.createElement('button');remove.type='button';remove.textContent='×';remove.dataset.iwDebtRemove=id;remove.dataset.iwDebtIndex=String(index);remove.setAttribute('aria-label','Remove '+debtConfig[id].singular+' '+(index+1));
+      group.append(nameLabel,payLabel,remove);host.append(group);
+    });
+    syncDebtTotals();
+  }
+  function restoreDebtItems(source){
+    for(const id of debtIds){
+      const saved=source?.debt_items?.[id];
+      debtItems[id]=Array.isArray(saved)?saved.slice(0,50).map(row=>({name:typeof row?.name==='string'?row.name.slice(0,80):'',payment:typeof row?.payment==='string'||typeof row?.payment==='number'?String(row.payment):''})):number(source?.debts?.[id])>0?[{name:'Previously saved total',payment:String(source.debts[id])}]:[];
+      renderDebtCategory(id);
+    }
+  }
+  function debtEdit(e){
+    const el=e.target,id=el.dataset.iwDebtCategory,key=el.dataset.iwDebtField;
+    if(!id||!['name','payment'].includes(key))return false;
+    const row=debtItems[id]?.[Number(el.dataset.iwDebtIndex)];if(!row)return true;
+    row[key]=el.value;syncDebtTotals();capture();update();dirty();return true;
+  }
+  function debtClick(b){
+    const id=b.dataset.iwDebtAdd||b.dataset.iwDebtRemove||b.dataset.iwDebtDone;
+    if(!id)return false;
+    const group=q('[data-iw-debt-group="'+id+'"]');
+    if(b.dataset.iwDebtDone){group.open=false;group.querySelector('summary').focus();return true;}
+    if(b.dataset.iwDebtAdd){if(debtItems[id].length>=50){q('#iw-save-status').textContent='You can add up to 50 payments per category.';return true;}debtItems[id].push({name:'',payment:''});renderDebtCategory(id);group.open=true;group.querySelectorAll('[data-iw-debt-field="name"]')[debtItems[id].length-1].focus();}
+    else {debtItems[id].splice(Number(b.dataset.iwDebtIndex),1);renderDebtCategory(id);}
+    capture();update();dirty();return true;
+  }
+
   const capture=()=>{people[active].fields=readFields();};
   function personIncome(person){
     const f=person.fields,n=id=>number(f[id]);
@@ -318,7 +364,7 @@ incomeUI=(()=>{
   function dirty(){incomeStore.edit(payload());all('[data-iw-save]').forEach(el=>el.textContent='Save My Numbers');q('#iw-save-status').textContent='Changes waiting to save';}
   function screen(step){capture();all('[data-iw-screen]').forEach(e=>e.hidden=e.dataset.iwScreen!==String(step));all('[data-iw-step]').forEach(e=>e.dataset.iwStep===String(step)?e.setAttribute('aria-current','step'):e.removeAttribute('aria-current'));update();}
   root.addEventListener('click',async e=>{
-    const b=e.target.closest('button');if(!b)return;
+    const b=e.target.closest('button');if(!b)return;if(debtClick(b))return;
     if(b.id==='iw-upload-stub'){q('#iw-stub-file').value='';q('#iw-stub-file').click();}
     else if(b.id==='iw-recalculate'){capture();people[active].recalculated=true;update();}
     else if(b.id==='iw-add-person'&&people.length===1){capture();people.push(blankPerson());active=1;renderPerson();dirty();field('name').focus();}
@@ -330,10 +376,10 @@ incomeUI=(()=>{
     else if(b.hasAttribute('data-iw-save')){capture();if(people.some(p=>!p.fields.name.trim()||!p.fields['last-name'].trim())){q('#iw-save-status').textContent='Enter first and last names for each person before saving.';return;}dirty();all('[data-iw-save]').forEach(el=>el.disabled=true);try{await incomeStore.save();}catch(error){q('#iw-save-status').textContent='Not saved · '+error.message;}finally{all('[data-iw-save]').forEach(el=>el.disabled=false);}}
 
   });
-  root.addEventListener('input',e=>{if(e.target.id==='iw-stub-file')return;capture();people[active].recalculated=false;update();dirty();});
-  root.addEventListener('change',e=>{if(e.target.id==='iw-stub-file')return;capture();people[active].recalculated=false;update();dirty();});
-  function payload(){return {version:1,people:people.map(p=>({type:p.type,pay:p.pay,fields:Object.fromEntries(Object.entries(p.fields).map(([k,v])=>[k,typeof v==='string'?redact(v).slice(0,300):v])),sampleStub:p.sampleStub,stubMessage:p.stubMessage||''})),debts:Object.fromEntries(debtIds.map(id=>[id,field(id).value])),housing:field('housing').value,notes:redact(field('notes').value).slice(0,3000)};}
-  function restore(data){uploadGeneration++;q('#iw-upload-stub').disabled=false;const source=data&&Array.isArray(data.people)?data:null;people=(source?source.people.slice(0,2):[blankPerson()]).map(p=>({...blankPerson(),type:['w2','self','other'].includes(p.type)?p.type:'w2',pay:p.pay==='salary'?'salary':'hourly',fields:{...defaults,...p.fields},sampleStub:p.sampleStub===true,stubMessage:typeof p.stubMessage==='string'?p.stubMessage:''}));if(!people.length)people=[blankPerson()];active=Math.min(active,people.length-1);debtIds.forEach(id=>field(id).value=source?.debts?.[id]??'');field('housing').value=source?.housing??'';field('notes').value=source?.notes??'';renderPerson();}
+  root.addEventListener('input',e=>{if(e.target.id==='iw-stub-file')return;if(debtEdit(e))return;capture();people[active].recalculated=false;update();dirty();});
+  root.addEventListener('change',e=>{if(e.target.id==='iw-stub-file')return;if(debtEdit(e))return;capture();people[active].recalculated=false;update();dirty();});
+  function payload(){return {version:2,debt_items:Object.fromEntries(debtIds.map(id=>[id,debtItems[id].map(row=>({name:redact(row.name).slice(0,80),payment:row.payment}))])),people:people.map(p=>({type:p.type,pay:p.pay,fields:Object.fromEntries(Object.entries(p.fields).map(([k,v])=>[k,typeof v==='string'?redact(v).slice(0,300):v])),sampleStub:p.sampleStub,stubMessage:p.stubMessage||''})),debts:Object.fromEntries(debtIds.map(id=>[id,field(id).value])),housing:field('housing').value,notes:redact(field('notes').value).slice(0,3000)};}
+  function restore(data){uploadGeneration++;q('#iw-upload-stub').disabled=false;const source=data&&Array.isArray(data.people)?data:null;people=(source?source.people.slice(0,2):[blankPerson()]).map(p=>({...blankPerson(),type:['w2','self','other'].includes(p.type)?p.type:'w2',pay:p.pay==='salary'?'salary':'hourly',fields:{...defaults,...p.fields},sampleStub:p.sampleStub===true,stubMessage:typeof p.stubMessage==='string'?p.stubMessage:''}));if(!people.length)people=[blankPerson()];active=Math.min(active,people.length-1);restoreDebtItems(source);field('housing').value=source?.housing??'';field('notes').value=source?.notes??'';renderPerson();}
   q('#iw-stub-file').addEventListener('change',async()=>{
     const file=q('#iw-stub-file').files?.[0];if(!file)return;
     capture();const target=people[active],generation=++uploadGeneration,original=JSON.stringify(target.fields),owner=incomeStore.owner();
@@ -358,6 +404,7 @@ incomeUI=(()=>{
   return {restore,validate(){
  const numeric=['rate','hours','gross','extra','profit','other'];
  for(const p of people)for(const id of numeric){const v=p.fields[id];if(v===''||v===null||v===undefined)continue;const n=Number(v);if(!Number.isFinite(n)||n>1000000||(id!=='profit'&&n<0)||(id==='hours'&&n>168)||n< -1000000)throw new Error('Check your income amounts and weekly hours before saving.');}
+ for(const id of debtIds)for(const row of debtItems[id]){if(row.payment!==''&&(!Number.isFinite(Number(row.payment))||Number(row.payment)<0||Number(row.payment)>1000000))throw new Error('Enter valid non-negative monthly payments before saving.');}
  for(const id of [...debtIds,'housing']){const v=field(id).value;if(v!==''&&(!Number.isFinite(Number(v))||Number(v)<0||Number(v)>1000000))throw new Error('Enter valid non-negative monthly payments before saving.');}
  },status(text){q('#iw-save-status').textContent=text;if(/^Saved|All changes saved/.test(text))all('[data-iw-save]').forEach(el=>el.textContent='Save My Numbers');}};
 })();
