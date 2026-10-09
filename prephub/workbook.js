@@ -309,7 +309,7 @@ incomeUI=(()=>{
     const extras=people.reduce((sum,p)=>sum+(p.type==='w2'?number(p.fields.extra):0),0);
     q('#iw-side-extra').hidden=!extras;
     q('#iw-side-extra').textContent='Additional earnings entered: '+money(extras)+' / month. Not included in the base estimate.';
-    all('[data-person]').forEach(e=>{const i=Number(e.dataset.person);e.hidden=i>=people.length;if(people[i])e.textContent=name(people[i],i);e.setAttribute('aria-pressed',String(i===active));});
+    all('[data-person]').forEach(e=>{const i=Number(e.dataset.person);e.hidden=i>=people.length;if(people[i])e.textContent=i===0?'Your Income':'+ Add Additional Person';e.setAttribute('aria-pressed',String(i===active));});
     q('#iw-add-person').hidden=people.length===2;
     const breakdown=q('#iw-person-breakdown');breakdown.replaceChildren();
     people.forEach((p,i)=>{const row=document.createElement('div');row.className='iw-person-line';const label=document.createElement('span');label.textContent=name(p,i);const amount=document.createElement('strong');amount.textContent=personIncome(p)?money(personIncome(p)):'—';row.append(label,amount);breakdown.append(row);});
