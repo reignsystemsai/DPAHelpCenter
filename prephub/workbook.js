@@ -302,7 +302,7 @@ incomeUI=(()=>{
     q('#iw-side-label').textContent='Combined monthly income';
     q('#iw-household-caption').textContent=people.length===1?'1 person in this estimate':'2 people · Both income estimates combined';
     for(const id of ['debt-result','side-debt','review-debts'])field(id).textContent=money(debt);
-    q('#iw-side-dti').textContent=income?(debt/income*100).toFixed(1)+'%':'—';
+    q('#iw-side-housing').textContent=money(housing);q('#iw-side-total').textContent=money(debt+housing);q('#iw-side-dti').textContent=income?((debt+housing)/income*100).toFixed(1)+'%':'—';
     q('#iw-review-housing').textContent=money(housing);q('#iw-review-total').textContent=money(debt+housing);
     q('#iw-dti-label').textContent=housing?'Estimated household DTI with housing':'Estimated household DTI before housing';
     q('#iw-dti-result').textContent=income?((debt+housing)/income*100).toFixed(1)+'%':'—';
