@@ -10,7 +10,7 @@ function slotLabel(p,k,i){return ['tax','w2','contract'].includes(k)?String(p.ta
 function ensureSlots(p){for(const k of Object.keys(kinds)){p.slots[k]=Array.isArray(p.slots[k])?p.slots[k].slice(0,24):[];while(p.slots[k].length<target(p,k))p.slots[k].push({id:k+':'+(p.slots[k].length+1),label:slotLabel(p,k,p.slots[k].length),period:''});if(['tax','w2','contract'].includes(k))p.slots[k].forEach((slot,i)=>slot.label=slotLabel(p,k,i));}}
 function scoped(p,k,slot){return files.filter(f=>f.personId===p.id&&f.category===k&&f.slotId===slot.id);}
 
-function name(p,i=people.indexOf(p)){return [p.name,p.lastName].filter(Boolean).join(' ').trim()||(i===0?'Your Documents':'Person 2');}
+function name(p,i=people.indexOf(p)){return [p.name,p.lastName].filter(Boolean).join(' ').trim()||(i===0?'Your Documents':'Additional Person');}
 function node(tag,text,cls){const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;}
 function size(bytes){return bytes<1024*1024?(Math.max(1,Math.ceil(bytes/1024))+' KB'):((bytes/1024/1024).toFixed(1)+' MB');}
 function categories(p){const core=p.mode==='self'?['identity','tax','bank']:['identity','pay','w2','bank'];const extra=p.mode==='self'?['contract','business','benefit','other']:['tax','benefit','other'];files.filter(f=>f.personId===p.id&&!core.includes(f.category)&&!extra.includes(f.category)).forEach(f=>{if(!extra.includes(f.category))extra.push(f.category);});return {core,extra};}
@@ -18,7 +18,7 @@ function metadata(){return {version:2,people:people.map(p=>({...p})),lenderEmail
 function capture(){people[active].name=q('#dw-first-name').value.slice(0,60);people[active].lastName=q('#dw-last-name').value.slice(0,60);people[active].notes=q('#dw-notes').value.slice(0,2000);lenderEmail=q('#dw-lender-email').value.trim().slice(0,254);}
 function edit(){capture();store.edit(metadata());renderPeople();renderSummary();}
 function status(t){q('#dw-status').textContent=t;}
-function renderPeople(){q('#dw-people').replaceChildren();people.forEach((p,i)=>{const b=node('button',i===0?'Your Documents':'Person 2');b.type='button';b.dataset.dwPerson=String(i);b.setAttribute('aria-pressed',String(i===active));q('#dw-people').append(b);});q('#dw-add-person').hidden=people.length>=2;}
+function renderPeople(){q('#dw-people').replaceChildren();people.forEach((p,i)=>{const b=node('button',i===0?'Your Documents':'Additional Person');b.type='button';b.dataset.dwPerson=String(i);b.setAttribute('aria-pressed',String(i===active));q('#dw-people').append(b);});q('#dw-add-person').hidden=people.length>=2;}
 function activate(i){active=i;const p=people[i];ensureSlots(p);q('#dw-first-name').value=p.name;q('#dw-last-name').value=p.lastName;q('#dw-notes').value=p.notes;q('#dw-lender-email').value=lenderEmail;all('[data-dw-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.dwMode===p.mode)));renderPeople();renderCards();renderSummary();}
 function renderCards(){const p=people[active],{core,extra}=categories(p);ensureSlots(p);q('#dw-records-title').textContent=name(p)+', organized.';q('#dw-cards').replaceChildren();[...core,...extra].forEach(k=>{
  const info=kinds[k],card=node(extra.includes(k)?'details':'section',undefined,'dw-card');card.dataset.dwCategory=k;
