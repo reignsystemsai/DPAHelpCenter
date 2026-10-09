@@ -1799,7 +1799,7 @@ incomeUI=(()=>{
     if(raw!==''&&Number.isFinite(amount))el.value=money(amount);
   }
   currencyIds.forEach(id=>{const el=field(id);el.type='text';el.inputMode='decimal';el.dataset.iwCurrency='true';el.removeAttribute('min');el.removeAttribute('max');el.removeAttribute('step');});
-  root.addEventListener('focusin',e=>{if(e.target.dataset.iwCurrency)e.target.value=currencyRaw(e.target.value);});
+  root.addEventListener('focusin',e=>{if(e.target.dataset.iwCurrency)e.target.select();});
   root.addEventListener('focusout',e=>{if(e.target.dataset.iwCurrency)formatCurrencyInput(e.target);});
   function formatCurrencyFields(){all('[data-iw-currency]').forEach(el=>{if(el!==document.activeElement)formatCurrencyInput(el);});}
   const debtConfig={"auto":{"title":"Cars / Leases","singular":"Car / Lease","count":"car payment"},"cards":{"title":"Credit Cards","singular":"Credit Card","count":"card"},"student":{"title":"Student Loans","singular":"Student Loan","count":"student loan"},"loans":{"title":"Installment Loans","singular":"Installment Loan","count":"installment loan"},"support":{"title":"Required Support","singular":"Support Payment","count":"support payment"},"debts":{"title":"Other Debts","singular":"Other Debt","count":"other debt"}};
