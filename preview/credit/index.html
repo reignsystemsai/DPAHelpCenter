@@ -2151,7 +2151,7 @@ document.getElementById('documents-workstation').scrollIntoView({block:'start'})
  const mainScore=root.querySelector('#prep-readiness-score');mainScore.textContent=scores.overview+'%';mainScore.classList.toggle('prep-ready',scores.overview===100);
  root.querySelector('#prep-readiness-copy').textContent=completed+' of 4 sections complete. Preparation progress; your lender confirms qualification.';
  root.querySelector('#prep-task-summary').textContent=completed===4?'All four preparation areas are complete.':'Complete each area to earn 25%. Your score updates as you make changes.';
- const areaMap={credit:'credit',dti:'income',employment:'employment',documents:'documents'};
+ const areaMap={credit:'credit',dti:'income',job:'employment',taxes:'documents'};
  for(const area of root.querySelectorAll('[data-prep-key]')){const key=areaMap[area.dataset.prepKey];if(!key)continue;const label=area.querySelector('.prep-area-state');label.hidden=false;label.textContent=scores[key]+'%';label.classList.add('prep-score-badge');label.classList.toggle('is-complete',scores[key]===25);}
  const next=['credit','income','employment','documents'].find(key=>scores[key]===0);
  const hero=root.querySelector('[data-panel="overview"] .hero');
