@@ -70,7 +70,9 @@ html body #homebuyer-credit-staging #documents-workstation .dw-summary{backgroun
 @media(max-width:1100px){#documents-workstation .dw-layout{grid-template-columns:minmax(0,1fr) 260px;gap:18px}#documents-workstation .panel{padding:20px}}
 @media(max-width:950px){#documents-workstation .dw-layout{grid-template-columns:1fr}#documents-workstation .dw-aside{grid-template-columns:1fr 1fr}#documents-workstation .dw-help{grid-column:1/-1}}
 @media(max-width:600px){#documents-workstation .dw-name-row{grid-template-columns:1fr;gap:12px}#documents-workstation .dw-aside{grid-template-columns:1fr}#documents-workstation .dw-file{align-items:start}#documents-workstation .dw-progress-head{align-items:start}#documents-workstation .dw-fraction{font-size:18px}#documents-workstation .dw-review-actions>*{width:100%}}
-#documents-workstation .dw-slot{border-top:1px solid #e8ecf2;padding:14px 0 10px}
+#documents-workstation .dw-slot{border-top:1px solid #e8ecf2;padding:14px 0 10px;display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:12px}
+#documents-workstation .dw-slot-heading,#documents-workstation .dw-slot .dw-upload-status,#documents-workstation .dw-slot .dw-file{grid-column:1/-1}
+#documents-workstation .dw-slot>.dw-upload-row{align-self:start}
 #documents-workstation .dw-slot-heading{display:flex;align-items:center;gap:9px;margin-bottom:9px;font-size:13px}
 #documents-workstation .dw-slot-number{display:grid;place-items:center;width:24px;height:24px;background:#eef2f9;color:var(--dw-navy);font-size:12px;flex-shrink:0;border-radius:3px}
 #documents-workstation .dw-slot-state{margin-left:auto;font-size:11px;color:var(--dw-muted)}
@@ -86,3 +88,4 @@ html body #homebuyer-credit-staging #documents-workstation .dw-summary{backgroun
 #documents-workstation details.dw-card>summary::-webkit-details-marker{display:none}
 #documents-workstation details.dw-card>summary h3:after{content:' +';font-size:16px;color:var(--dw-blue)}
 #documents-workstation details.dw-card[open]>summary h3:after{content:' −'}
+@media(max-width:650px){#documents-workstation .dw-slot{grid-template-columns:1fr}#documents-workstation .dw-slot>.dw-upload-row{grid-column:1/-1}}
