@@ -353,6 +353,11 @@ incomeUI=(()=>{
     q('#iw-dti-label').textContent=housing?'Estimated household DTI with housing':'Estimated household DTI before housing';
     q('#iw-dti-result').textContent=income?((debt+housing)/income*100).toFixed(1)+'%':'—';
     q('#iw-dti-formula').textContent=income?'('+money(debt)+' debts + '+money(housing)+' housing) ÷ '+money(income)+' combined income × 100':'Add income to calculate your ratio.';
+    const dti=income?(debt+housing)/income*100:null;
+    const highDti=dti!==null&&dti>57;
+    for(const id of ['iw-side-dti','iw-dti-result'])q('#'+id).classList.toggle('iw-dti-high',highDti);
+    q('#iw-dti-warning').hidden=!highDti;
+    q('#iw-dti-inline-warning').hidden=!highDti;
     const extras=people.reduce((sum,p)=>sum+(p.type==='w2'?number(p.fields.extra):0),0);
     q('#iw-side-extra').hidden=!extras;
     q('#iw-side-extra').textContent='Additional earnings entered: '+money(extras)+' / month. Not included in the base estimate.';
