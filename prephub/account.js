@@ -15,7 +15,7 @@ window.PrepHubSignIn=()=>login();
 window.PrepHubRequireAccount=view=>{if(view==='overview'||connected)return true;login(view);return false;};
 q('#prep-account-login').addEventListener('click',()=>login());
 q('#prep-login-close').addEventListener('click',()=>q('#prep-login-dialog').close());
-q('#prep-account-logout').addEventListener('click',async()=>{await window.PrepHubWorkbook?.flush();await client.auth.signOut();location.assign('/prephub/');});
+q('#prep-account-logout').addEventListener('click',async()=>{await window.PrepHubWorkbook?.flush();await window.PrepHubDocuments?.flush();await client.auth.signOut();location.assign('/prephub/');});
 q('#prep-login-form').addEventListener('submit',async event=>{
  event.preventDefault();const button=event.submitter,status=q('#prep-login-status');button.disabled=true;status.textContent='Sending your secure login link…';
  try{const email=q('#prep-login-email').value.trim().toLowerCase();const lead=params.get('lead')||localStorage.getItem('dpa_prephub_lead_id')||'';
