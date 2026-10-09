@@ -18,7 +18,7 @@ function metadata(){return {version:2,people:people.map(p=>({...p})),lenderEmail
 function capture(){people[active].name=q('#dw-first-name').value.slice(0,60);people[active].lastName=q('#dw-last-name').value.slice(0,60);people[active].notes=q('#dw-notes').value.slice(0,2000);lenderEmail=q('#dw-lender-email').value.trim().slice(0,254);}
 function edit(){capture();store.edit(metadata());renderPeople();renderSummary();}
 function status(t){q('#dw-status').textContent=t;}
-function renderPeople(){q('#dw-people').replaceChildren();people.forEach((p,i)=>{const b=node('button',name(p,i));b.type='button';b.dataset.dwPerson=String(i);b.setAttribute('aria-pressed',String(i===active));q('#dw-people').append(b);});q('#dw-add-person').hidden=people.length>=2;}
+function renderPeople(){q('#dw-people').replaceChildren();people.forEach((p,i)=>{const b=node('button',i===0?'Your Documents':'Person 2');b.type='button';b.dataset.dwPerson=String(i);b.setAttribute('aria-pressed',String(i===active));q('#dw-people').append(b);});q('#dw-add-person').hidden=people.length>=2;}
 function activate(i){active=i;const p=people[i];ensureSlots(p);q('#dw-first-name').value=p.name;q('#dw-last-name').value=p.lastName;q('#dw-notes').value=p.notes;q('#dw-lender-email').value=lenderEmail;all('[data-dw-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.dwMode===p.mode)));renderPeople();renderCards();renderSummary();}
 function renderCards(){const p=people[active],{core,extra}=categories(p);ensureSlots(p);q('#dw-records-title').textContent=name(p)+', organized.';q('#dw-cards').replaceChildren();[...core,...extra].forEach(k=>{
  const info=kinds[k],card=node(extra.includes(k)?'details':'section',undefined,'dw-card');card.dataset.dwCategory=k;
