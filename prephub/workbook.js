@@ -253,13 +253,23 @@ incomeUI=(()=>{
   const personIds=['name','last-name','employer','start','frequency','rate','hours','gross','consistent','extra','business','business-start','taxyear','profit','taxready','plready','other-source','other'];
   const debtIds=['auto','cards','student','loans','support','debts'];
   const field=id=>q('#iw-'+id);
-  const readFields=()=>Object.fromEntries(personIds.map(id=>[id,field(id).type==='checkbox'?field(id).checked:field(id).value]));
+  const currencyIds=['rate','gross','extra','profit','other','housing'];
+  const currencyRaw=v=>String(v??'').replace(/[$,\s]/g,'');
+  const readFields=()=>Object.fromEntries(personIds.map(id=>[id,field(id).type==='checkbox'?field(id).checked:currencyIds.includes(id)?currencyRaw(field(id).value):field(id).value]));
   const defaults=readFields();
   const blankPerson=()=>({type:'w2',pay:'hourly',fields:{...defaults},sampleStub:false,uploadOpen:false,recalculated:false});
   let people=[blankPerson()],active=0,uploadGeneration=0;
   const money=v=>v.toLocaleString('en-US',{style:'currency',currency:'USD',maximumFractionDigits:2});
-  const number=v=>{const n=Number(v);return Number.isFinite(n)&&n>=0&&n<=1000000?n:0;};
+  const number=v=>{const n=Number(currencyRaw(v));return Number.isFinite(n)&&n>=0&&n<=1000000?n:0;};
   const value=id=>number(field(id).value);
+  function formatCurrencyInput(el){
+    const raw=currencyRaw(el.value),amount=Number(raw);
+    if(raw!==''&&Number.isFinite(amount))el.value=money(amount);
+  }
+  currencyIds.forEach(id=>{const el=field(id);el.type='text';el.inputMode='decimal';el.dataset.iwCurrency='true';el.removeAttribute('min');el.removeAttribute('max');el.removeAttribute('step');});
+  root.addEventListener('focusin',e=>{if(e.target.dataset.iwCurrency)e.target.select();});
+  root.addEventListener('focusout',e=>{if(e.target.dataset.iwCurrency)formatCurrencyInput(e.target);});
+  function formatCurrencyFields(){all('[data-iw-currency]').forEach(el=>{if(el!==document.activeElement)formatCurrencyInput(el);});}
   const debtConfig={"auto":{"title":"Cars / Leases","singular":"Car / Lease","count":"car payment"},"cards":{"title":"Credit Cards","singular":"Credit Card","count":"card"},"student":{"title":"Student Loans","singular":"Student Loan","count":"student loan"},"loans":{"title":"Installment Loans","singular":"Installment Loan","count":"installment loan"},"support":{"title":"Required Support","singular":"Support Payment","count":"support payment"},"debts":{"title":"Other Debts","singular":"Other Debt","count":"other debt"}};
   let debtItems=Object.fromEntries(debtIds.map(id=>[id,[]]));
   function syncDebtTotals(){
@@ -277,9 +287,9 @@ incomeUI=(()=>{
       const nameLabel=document.createElement('label');nameLabel.textContent=debtConfig[id].singular+' '+(index+1);
       const nameInput=document.createElement('input');nameInput.type='text';nameInput.maxLength=80;nameInput.value=row.name;nameInput.placeholder='Name (optional)';nameInput.dataset.iwDebtCategory=id;nameInput.dataset.iwDebtIndex=String(index);nameInput.dataset.iwDebtField='name';nameInput.setAttribute('aria-label',debtConfig[id].singular+' '+(index+1)+' name');nameLabel.append(nameInput);
       const payLabel=document.createElement('label');payLabel.textContent=id==='cards'?'Monthly minimum ($)':'Monthly payment ($)';
-      const payInput=document.createElement('input');payInput.type='number';payInput.min='0';payInput.max='1000000';payInput.step='0.01';payInput.inputMode='decimal';payInput.value=row.payment;payInput.placeholder='0.00';payInput.dataset.iwDebtCategory=id;payInput.dataset.iwDebtIndex=String(index);payInput.dataset.iwDebtField='payment';payInput.setAttribute('aria-label',debtConfig[id].singular+' '+(index+1)+' monthly payment');payLabel.append(payInput);
+      const payInput=document.createElement('input');payInput.type='text';payInput.dataset.iwCurrency='true';payInput.min='0';payInput.max='1000000';payInput.step='0.01';payInput.inputMode='decimal';payInput.value=row.payment;payInput.placeholder='0.00';payInput.dataset.iwDebtCategory=id;payInput.dataset.iwDebtIndex=String(index);payInput.dataset.iwDebtField='payment';payInput.setAttribute('aria-label',debtConfig[id].singular+' '+(index+1)+' monthly payment');payLabel.append(payInput);
       const remove=document.createElement('button');remove.type='button';remove.textContent='×';remove.dataset.iwDebtRemove=id;remove.dataset.iwDebtIndex=String(index);remove.setAttribute('aria-label','Remove '+debtConfig[id].singular+' '+(index+1));
-      group.append(nameLabel,payLabel,remove);host.append(group);
+      formatCurrencyInput(payInput);group.append(nameLabel,payLabel,remove);host.append(group);
     });
     syncDebtTotals();
   }
@@ -294,7 +304,7 @@ incomeUI=(()=>{
     const el=e.target,id=el.dataset.iwDebtCategory,key=el.dataset.iwDebtField;
     if(!id||!['name','payment'].includes(key))return false;
     const row=debtItems[id]?.[Number(el.dataset.iwDebtIndex)];if(!row)return true;
-    row[key]=el.value;syncDebtTotals();capture();update();dirty();return true;
+    row[key]=key==='payment'?currencyRaw(el.value):el.value;syncDebtTotals();capture();update();dirty();return true;
   }
   function debtClick(b){
     const id=b.dataset.iwDebtAdd||b.dataset.iwDebtRemove||b.dataset.iwDebtDone;
@@ -324,7 +334,7 @@ incomeUI=(()=>{
     all('[data-iw-hourly]').forEach(e=>e.hidden=p.pay!=='hourly');
     all('[data-iw-salary]').forEach(e=>e.hidden=p.pay!=='salary');
     q('#iw-remove-person').hidden=active!==1;
-    update();
+    formatCurrencyFields();update();
   }
   function update(){
     const p=people[active],individual=personIncome(p),income=people.reduce((sum,p)=>sum+personIncome(p),0);
@@ -383,7 +393,7 @@ incomeUI=(()=>{
   });
   root.addEventListener('input',e=>{if(e.target.id==='iw-stub-file')return;if(debtEdit(e))return;capture();people[active].recalculated=false;update();dirty();});
   root.addEventListener('change',e=>{if(e.target.id==='iw-stub-file')return;if(debtEdit(e))return;capture();people[active].recalculated=false;update();dirty();});
-  function payload(){return {version:2,debt_items:Object.fromEntries(debtIds.map(id=>[id,debtItems[id].map(row=>({name:redact(row.name).slice(0,80),payment:row.payment}))])),people:people.map(p=>({type:p.type,pay:p.pay,fields:Object.fromEntries(Object.entries(p.fields).map(([k,v])=>[k,typeof v==='string'?redact(v).slice(0,300):v])),sampleStub:p.sampleStub,stubMessage:p.stubMessage||''})),debts:Object.fromEntries(debtIds.map(id=>[id,field(id).value])),housing:field('housing').value,notes:redact(field('notes').value).slice(0,3000)};}
+  function payload(){return {version:2,debt_items:Object.fromEntries(debtIds.map(id=>[id,debtItems[id].map(row=>({name:redact(row.name).slice(0,80),payment:row.payment}))])),people:people.map(p=>({type:p.type,pay:p.pay,fields:Object.fromEntries(Object.entries(p.fields).map(([k,v])=>[k,typeof v==='string'?redact(v).slice(0,300):v])),sampleStub:p.sampleStub,stubMessage:p.stubMessage||''})),debts:Object.fromEntries(debtIds.map(id=>[id,field(id).value])),housing:currencyRaw(field('housing').value),notes:redact(field('notes').value).slice(0,3000)};}
   function restore(data){uploadGeneration++;q('#iw-upload-stub').disabled=false;const source=data&&Array.isArray(data.people)?data:null;people=(source?source.people.slice(0,2):[blankPerson()]).map(p=>({...blankPerson(),type:['w2','self','other'].includes(p.type)?p.type:'w2',pay:p.pay==='salary'?'salary':'hourly',fields:{...defaults,...p.fields},sampleStub:p.sampleStub===true,stubMessage:typeof p.stubMessage==='string'?p.stubMessage:''}));if(!people.length)people=[blankPerson()];active=Math.min(active,people.length-1);restoreDebtItems(source);field('housing').value=source?.housing??'';field('notes').value=source?.notes??'';renderPerson();}
   q('#iw-stub-file').addEventListener('change',async()=>{
     const file=q('#iw-stub-file').files?.[0];if(!file)return;
@@ -408,9 +418,9 @@ incomeUI=(()=>{
   renderPerson();
   return {restore,validate(){
  const numeric=['rate','hours','gross','extra','profit','other'];
- for(const p of people)for(const id of numeric){const v=p.fields[id];if(v===''||v===null||v===undefined)continue;const n=Number(v);if(!Number.isFinite(n)||n>1000000||(id!=='profit'&&n<0)||(id==='hours'&&n>168)||n< -1000000)throw new Error('Check your income amounts and weekly hours before saving.');}
- for(const id of debtIds)for(const row of debtItems[id]){if(row.payment!==''&&(!Number.isFinite(Number(row.payment))||Number(row.payment)<0||Number(row.payment)>1000000))throw new Error('Enter valid non-negative monthly payments before saving.');}
- for(const id of [...debtIds,'housing']){const v=field(id).value;if(v!==''&&(!Number.isFinite(Number(v))||Number(v)<0||Number(v)>1000000))throw new Error('Enter valid non-negative monthly payments before saving.');}
+ for(const p of people)for(const id of numeric){const v=p.fields[id];if(v===''||v===null||v===undefined)continue;const n=Number(currencyRaw(v));if(!Number.isFinite(n)||n>1000000||(id!=='profit'&&n<0)||(id==='hours'&&n>168)||n< -1000000)throw new Error('Check your income amounts and weekly hours before saving.');}
+ for(const id of debtIds)for(const row of debtItems[id]){if(row.payment!==''&&(!Number.isFinite(Number(currencyRaw(row.payment)))||Number(currencyRaw(row.payment))<0||Number(currencyRaw(row.payment))>1000000))throw new Error('Enter valid non-negative monthly payments before saving.');}
+ for(const id of [...debtIds,'housing']){const v=field(id).value;if(v!==''&&(!Number.isFinite(Number(currencyRaw(v)))||Number(currencyRaw(v))<0||Number(currencyRaw(v))>1000000))throw new Error('Enter valid non-negative monthly payments before saving.');}
  },status(text){q('#iw-save-status').textContent=text;if(/^Saved|All changes saved/.test(text))all('[data-iw-save]').forEach(el=>el.textContent='Save My Numbers');}};
 })();
 
