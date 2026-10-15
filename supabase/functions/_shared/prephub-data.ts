@@ -10,7 +10,7 @@ export async function manager(client:any,req:Request){
  const m=await client.from('manager_members').select('user_id,role,active').eq('user_id',data.user.id).eq('active',true).maybeSingle();if(m.error)throw m.error;if(!m.data)throw Error('Manager access required');return m.data;
 }
 export async function snapshot(client:any){
- const [leads,ops,calls,comms,prefs]=await Promise.all([rows(client,'prephub_leads','id,lead_id,first_name,last_name,email,phone,credit_score,focus_areas,assessment,claimed_at,created_at'),rows(client,'lead_operations'),rows(client,'helux_cases'),rows(client,'lead_communications'),rows(client,'prephub_contact_preferences')]);
+ const [leads,ops,calls,comms,prefs]=await Promise.all([rows(client,'prephub_leads','id,lead_id,first_name,last_name,email,phone,credit_score,initial_readiness_score,current_readiness_score,focus_areas,assessment,claimed_at,created_at,updated_at'),rows(client,'lead_operations'),rows(client,'helux_cases'),rows(client,'lead_communications'),rows(client,'prephub_contact_preferences')]);
  return {leads,ops,calls,comms,prefs,...countFacts(leads,ops,calls,comms,prefs)};
 }
 export async function seed(client:any){
