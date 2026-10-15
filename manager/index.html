@@ -1082,6 +1082,6 @@
     supabaseClient.channel("network-manager-live").on("postgres_changes",{event:"*",schema:"public",table:"prephub_leads"},()=>managerSession&&loadManagerData()).on("postgres_changes",{event:"*",schema:"public",table:"lead_operations"},()=>managerSession&&loadManagerData()).on("postgres_changes",{event:"*",schema:"public",table:"lead_communications"},()=>managerSession&&loadManagerData()).on("postgres_changes",{event:"*",schema:"public",table:"helux_cases"},()=>managerSession&&loadManagerData()).on("postgres_changes",{event:"*",schema:"public",table:"webinars"},()=>managerSession&&loadManagerData()).on("postgres_changes",{event:"*",schema:"public",table:"site_daily_visitors"},()=>managerSession&&loadManagerData()).subscribe();
     renderKanban();updateMetrics();renderMonths();renderPrep();renderCredit();renderTax();renderReview();renderHelux();syncWebinarForm();renderWebinarLibrary();bindToasts();bootstrapManager();window.setInterval(()=>managerSession&&loadManagerData(),10000);
   </script>
-<script src="/manager/daisy.js?v=20261015-manual-stop-3"></script>
+<script src="/manager/daisy.js?v=20261015-voice-turns-2"></script>
 </body>
 </html>
