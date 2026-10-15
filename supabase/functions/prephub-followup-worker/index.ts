@@ -30,6 +30,14 @@ Deno.serve(async req=>{
   }
   if(req.method!=='POST')return json({error:'POST required'},405);
   const raw=await req.text(),body=JSON.parse(raw);
+  if(['interest','unsubscribe'].includes(body.action)){
+   const r=await client.from('prephub_followup_jobs').select('id,lead_id,interest_token,result').eq('id',String(body.job_id||'')).maybeSingle();if(r.error)throw r.error;if(!r.data||!equal(String(body.token||''),r.data.interest_token))return json({error:'Invalid confirmation link'},404);
+   const unsub=body.action==='unsubscribe',job=r.data;
+   const pref=await client.from('prephub_contact_preferences').upsert({lead_id:job.lead_id,...(unsub?{email_paused:true}:{interested_at:iso(Date.now())}),updated_at:iso(Date.now())},{onConflict:'lead_id'});if(pref.error)throw pref.error;
+   let hold=client.from('prephub_followup_jobs').update({status:unsub?'paused':'needs_review',reason:unsub?'Email unsubscribed':'Client confirmed interest; owner follow-up needed',updated_at:iso(Date.now())}).eq('lead_id',job.lead_id).in('status',['pending','needs_review']);if(unsub)hold=hold.eq('channel','email');const held=await hold;if(held.error)throw held.error;
+   if(!unsub){const mark=await client.from('prephub_followup_jobs').update({result:{...job.result,interest_confirmed_at:iso(Date.now())}}).eq('id',job.id).is('result->>interest_confirmed_at',null).select('id');if(mark.error)throw mark.error;if(mark.data.length){const event=await client.from('lead_communications').insert({lead_id:job.lead_id,channel:'email',direction:'inbound',provider:'prephub',template_key:'prephub_interest',subject:'Client requested preparation help',summary:'Client confirmed interest on the preparation follow-up page. Owner follow-up needed.',status:'received',metadata:{workflow_job_id:job.id},occurred_at:iso(Date.now())});if(event.error)throw event.error;}}
+   return json({ok:true,unsubscribed:unsub});
+  }
   if(body.action==='call_result'){
    const time=req.headers.get('x-helux-timestamp')||'',provided=req.headers.get('x-helux-signature')||'',key=Deno.env.get('HELUX_API_KEY')||'';
    if(!key||!/^\d{13}$/.test(time)||Math.abs(Date.now()-Number(time))>300000||!equal(provided,await signature(key,`${time}.${raw}`)))return json({error:'Unauthorized'},401);
@@ -75,7 +83,7 @@ Deno.serve(async req=>{
    try{
     if(job.channel==='email'){
      const apiKey=Deno.env.get('RESEND_API_KEY');if(!apiKey)throw Error('Resend is not configured');
-     const link=`${base}?job_id=${job.id}&token=${job.interest_token}`,unsub=link+'&action=unsubscribe',subject=fill(script.content.subject,lead),text=fill(script.content.body,lead);
+     const link=`https://www.dpahelpcenter.com/prephub/interest/?job_id=${job.id}&token=${job.interest_token}`,unsub=link+'&action=unsubscribe',subject=fill(script.content.subject,lead),text=fill(script.content.body,lead);
      const r=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${apiKey}`,'Content-Type':'application/json','Idempotency-Key':job.id},body:JSON.stringify({from:'DPA Help Center <ready@mail.dpahelpcenter.com>',reply_to:'help@dpahelpcenter.com',to:[lead.email],subject,text:`${text}\n\nConfirm interest: ${link}\nOpen PrepHub: https://www.dpahelpcenter.com/prephub/\nStop preparation follow-ups: ${unsub}`,html:`<div style="font-family:Arial;color:#081f5c;max-width:600px;margin:auto;padding:24px"><h2>DPA HELP CENTER</h2><div style="white-space:pre-line;line-height:1.7">${escapeHtml(text)}</div><p><a style="display:inline-block;padding:13px 20px;background:#c8102e;color:white;border-radius:8px;text-decoration:none" href="${escapeHtml(link)}">${escapeHtml(script.content.cta)}</a></p><p><a href="https://www.dpahelpcenter.com/prephub/">Open PrepHub</a></p><p style="font-size:12px"><a href="${escapeHtml(unsub)}">Stop preparation follow-ups</a></p></div>`}),signal:AbortSignal.timeout(15000)});
      const result=await r.json();if(!r.ok)throw Error(result.message||'Email request failed');
      const e=await client.from('lead_communications').insert({lead_id:lead.id,channel:'email',direction:'outbound',provider:'resend',template_key:'prephub_'+job.step_key,subject,summary:'Approved preparation follow-up email accepted by provider',status:'sent',provider_message_id:result.id,metadata:{workflow_job_id:job.id,script_id:script.id,script_version:script.version},occurred_at:iso(Date.now())});if(e.error)throw e.error;
