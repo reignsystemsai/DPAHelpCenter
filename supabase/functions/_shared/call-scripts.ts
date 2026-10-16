@@ -9,7 +9,7 @@ export function templateContent(content:any,recipient:any):Record<string,any>{
 }
 export function personalizeScript(content:any,lead:any):Record<string,any>{const values:any={first_name:lead.first_name,client_name:`${lead.first_name} ${lead.last_name}`,lead_id:lead.lead_id,phone:lead.phone,email:lead.email};const replace=(v:string)=>v.replace(/\{(first_name|client_name|lead_id|phone|email)\}/g,(_,key)=>String(values[key]||''));return Object.fromEntries(Object.entries(content).map(([key,v])=>[key,typeof v==='string'?replace(v):Array.isArray(v)?v.map(x=>typeof x==='string'?replace(x):x):v]));}
 export async function archiveCallDraft(client:any,member:any,action:any,category='General'){
- owner(member);if(action.kind!=='call')return null;
+ owner(member);if(action.kind!=='call')return null;const existing=check(await client.from('daisy_call_scripts').select('*').eq('source_action_id',action.id).maybeSingle());if(existing)return existing;
  const script=check(await client.from('daisy_call_scripts').upsert({created_by:member.user_id,source_action_id:action.id,title:text(action.reason||action.payload.content.objective,200),category:text(category,80)||'General',direction:'outbound',content:templateContent(action.payload.content,action.payload.recipient)},{onConflict:'source_action_id',ignoreDuplicates:true}).select('*').maybeSingle());
  return script;
 }
