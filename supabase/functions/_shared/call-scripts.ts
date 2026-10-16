@@ -4,7 +4,7 @@ const owner=(member:any)=>{if(member.role!=='owner')throw Error('Owner access re
 const at=()=>new Date().toISOString();
 export function templateContent(content:any,recipient:any):Record<string,any>{
  const pairs=[['client_name',recipient.name],['first_name',recipient.first_name||String(recipient.name||'').split(' ')[0]],['lead_id',recipient.public_id],['phone',recipient.phone],['email',recipient.email]].filter(([,value])=>String(value||'').length>=2).sort((a,b)=>String(b[1]).length-String(a[1]).length);
- const replace=(value:string)=>{let out=value;for(const [key,raw] of pairs){const escaped=String(raw).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');out=out.replace(new RegExp('(?<![\\w])'+escaped+'(?![\\w])','gi'),()=>'{'+key+'}');}return out;};
+ const replace=(value:string)=>{let out=value;for(const [key,raw] of pairs){const escaped=String(raw).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');out=out.replace(new RegExp('(?<![\\w])'+escaped+'(?![\\w-])',key==='first_name'?'g':'gi'),()=>'{'+key+'}');}return out;};
  return Object.fromEntries(Object.entries(content).map(([key,value])=>[key,typeof value==='string'?replace(value):Array.isArray(value)?value.map(v=>typeof v==='string'?replace(v):v):value]));
 }
 export function personalizeScript(content:any,lead:any):Record<string,any>{const values:any={first_name:lead.first_name,client_name:`${lead.first_name} ${lead.last_name}`,lead_id:lead.lead_id,phone:lead.phone,email:lead.email};const replace=(v:string)=>v.replace(/\{(first_name|client_name|lead_id|phone|email)\}/g,(_,key)=>String(values[key]||''));return Object.fromEntries(Object.entries(content).map(([key,v])=>[key,typeof v==='string'?replace(v):Array.isArray(v)?v.map(x=>typeof x==='string'?replace(x):x):v]));}
