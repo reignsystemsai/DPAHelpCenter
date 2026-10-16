@@ -6,7 +6,7 @@ export async function rows(client:any,table:string,columns='*'){
 }
 export async function manager(client:any,req:Request){
  const token=(req.headers.get('authorization')||'').replace(/^Bearer\s+/i,'');if(!token)throw Error('Authentication required');
- const {data,error}=await client.auth.getUser(token);if(error||!data.user)throw Error('Authentication required');
+ const {data,error}=await client.auth.getUser(token);if(error||!data.user){console.error('Manager session rejected',JSON.stringify({code:error?.code,message:error?.message}));throw Error('Authentication required');}
  const m=await client.from('manager_members').select('user_id,role,active').eq('user_id',data.user.id).eq('active',true).maybeSingle();if(m.error)throw m.error;if(!m.data)throw Error('Manager access required');return m.data;
 }
 export async function snapshot(client:any){
