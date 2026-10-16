@@ -30,7 +30,7 @@ window.PrepHubSignOut=async()=>{
  const result=await client.auth.signOut({scope:'local'});
  if(result.error){q('#prep-auth-copy').textContent='Your information is hidden. Sign-out could not finish; please retry.';q('#prep-auth-retry').hidden=false;return;}
  ['dpa_prephub_score','dpa_prephub_first_name','dpa_prephub_email','dpa_prephub_lead_id','dpa_prephub_next_view','dpa_prephub_require_email','prephub-workbook-session-v1','dpa-prephub-work-draft-v2:'+owner,'dpa_prephub_documents_draft:'+owner].forEach(key=>localStorage.removeItem(key));
- location.replace('/prephub/?signed_out=1');
+ location.replace('/prephub/?signed_out=1&v=20261016-personal-plan');
 };
 q('#prep-account-logout').addEventListener('click',window.PrepHubSignOut);
 q('#prep-auth-retry').addEventListener('click',window.PrepHubSignOut);
