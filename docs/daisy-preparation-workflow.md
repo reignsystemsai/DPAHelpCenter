@@ -51,3 +51,9 @@ Extend follow-up settings with `workflow_mode` and `workflow_paused`. Add servic
 ## Next release
 
 Test complete real journeys under individual administrator approval, refine scripts from recordings, then implement an explicitly approved automatic dispatch policy with per-channel permissions, fresh recipient checks, contact timezone/hours, shared spacing/frequency caps, bounded unanswered attempts, per-client mutual exclusion and reconciliation of unconfirmed provider requests. Add webinar resources once published and texting once connected. Revenue reporting needs a defined recorded revenue event. No automatic rollout is implied by this release.
+
+## Daily command activation
+
+Command-controlled mode (`owner_approved`) is active when selected. Daisy begins every Eastern calendar day waiting for administrator instructions. Daily instructions can be spoken to Daisy or saved in the queue. A specific approved call/email command is also recorded as that day's instruction. Each action still uses the existing reviewed recipient/content and contact controls; a daily plan alone does not launch unrestricted outreach. Authorization is checked again immediately before dispatch and cannot carry past midnight Eastern. End today's work clears the session, and the global pause also clears daily authorization. The legacy unattended worker remains disabled.
+
+Daily instruction writes and their audit events are atomic, service-only and restricted to active CRM owners. Local Node TypeScript execution ran all 34 outcome, action, script and CRM query checks without external CLI network activity. Database tests confirmed start/end-day storage and no dispatch.
