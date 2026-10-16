@@ -828,7 +828,7 @@
       const dates=outbound.map(item=>stamp(item.occurred_at||item.created_at));calls.forEach(item=>{if(item.last_call_at)dates.push(stamp(item.last_call_at))});
       const lastContact=Math.max(0,...dates),anchor=lastContact||stamp(customer.intakeCreatedAt),quiet=anchor>0&&now-anchor>=48*3600000;
       const needs=[];if(customer.creditStatus!=="Complete")needs.push("Credit");if(customer.incomeStatus!=="Complete"||customer.dtiStatus!=="Complete")needs.push("Income / DTI");if(customer.employmentStatus!=="Complete")needs.push("Employment");if(customer.taxStatus!=="Complete")needs.push("Tax history");
-      const owner=managerMembers.find(item=>item.user_id===customer.workflowOwner)?.display_name||"Unassigned";
+      let owner=managerMembers.find(item=>item.user_id===customer.workflowOwner)?.display_name||"Daisy";
       let stage=customer.claimedAt?"PrepHub account claimed":"Awaiting PrepHub sign-in",next="Review preparation needs; assign one next task",attention=false;
       if(!lastContact){stage="Contact not confirmed";next="Verify welcome delivery and Daisy call queue";attention=true}
       if(quiet){stage="Follow-up review needed";next="Review recent activity; arrange one follow-up";attention=true}
@@ -837,7 +837,7 @@
       if(sequence==="humanaction"){stage="Human follow-up needed";next="Review Daisy summary and assign an owner";attention=true}
       if(reply){stage="Reply recorded · review needed";next="Check reply and newer activity before contact";attention=true}
       if(paused){stage="Call outreach paused";next="Respect do-not-call; review other channel preferences";attention=false}
-      return {communications,calls,call,email,text,reply,paused,callLabel,callback,lastContact,needs,owner,stage,next,attention,quiet};
+      const task=window.DaisyPreparationQueue?.byLead(customer.dbId);if(task){owner=task.task_owner==="Daisy"?"Daisy":"Administrator";stage=task.preparation_stage;next=task.task_title;attention=task.status==="needs_review";}return {communications,calls,call,email,text,reply,paused,callLabel,callback,lastContact,needs,owner,stage,next,attention,quiet};
     }
     function prepWorkflowHistory(customer,data){
       const entries=data.communications.map(item=>({at:item.occurred_at||item.created_at,text:`${displayStatus(item.channel)} · ${displayStatus(item.direction)} · ${displayStatus(item.status)}${item.subject?" · "+item.subject:""}${item.summary?" · "+item.summary:""}`}));
@@ -1105,8 +1105,8 @@
     supabaseClient.channel("network-manager-live").on("postgres_changes",{event:"*",schema:"public",table:"prephub_leads"},()=>managerSession&&loadManagerData()).on("postgres_changes",{event:"*",schema:"public",table:"lead_operations"},()=>managerSession&&loadManagerData()).on("postgres_changes",{event:"*",schema:"public",table:"lead_communications"},()=>managerSession&&loadManagerData()).on("postgres_changes",{event:"*",schema:"public",table:"helux_cases"},()=>managerSession&&loadManagerData()).on("postgres_changes",{event:"*",schema:"public",table:"webinars"},()=>managerSession&&loadManagerData()).on("postgres_changes",{event:"*",schema:"public",table:"site_daily_visitors"},()=>managerSession&&loadManagerData()).subscribe();
     renderKanban();updateMetrics();renderMonths();renderPrep();renderCredit();renderTax();renderReview();renderHelux();syncWebinarForm();renderWebinarLibrary();bindToasts();bootstrapManager();window.setInterval(()=>managerSession&&loadManagerData(),10000);
   </script>
-<script src="/manager/daisy.js?v=20261016-managed-settings"></script>
-<script src="/manager/call-history.js?v=20261016-recording-notice"></script>
-<script src="/manager/script-library.js?v=20261016-spacious-library-3"></script><script src="/manager/caller-settings.js?v=20261016-managed-settings"></script></body>
+<script src="/manager/daisy.js?v=20261016-preparation-queue"></script>
+<script src="/manager/call-history.js?v=20261016-preparation-queue"></script>
+<script src="/manager/script-library.js?v=20261016-spacious-library-3"></script><script src="/manager/caller-settings.js?v=20261016-managed-settings"></script><script src="/manager/preparation-queue.js?v=20261016-preparation-queue"></script></body>
 </html>
 

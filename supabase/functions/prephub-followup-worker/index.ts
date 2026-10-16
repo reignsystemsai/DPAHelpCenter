@@ -51,12 +51,13 @@ Deno.serve(async req=>{
   }
   const setting=await client.from('prephub_followup_settings').select('*').eq('id',true).single();if(setting.error)throw setting.error;
   if(!body.runner_token||!equal(String(body.runner_token),setting.data.runner_token)){const m=await manager(client,req);if(m.role!=='owner')return json({error:'Owner access required'},403);}
+  if(setting.data.workflow_mode)return json({ok:true,paused:true,reason:'Preparation queue requires reviewed actions. Legacy automatic dispatch is disabled.'});
   if(!setting.data.enabled)return json({ok:true,paused:true});
   const s=await snapshot(client);await enroll(client,s.active.filter(l=>timestamp(l.created_at)>=timestamp(setting.data.started_at)),s.ops);
   // A lost response must never trigger a duplicate call. Reconcile manually instead.
   const stale=await client.from('prephub_followup_jobs').update({status:'needs_review',reason:'Dispatch outcome unconfirmed; verify provider before retrying',updated_at:iso(Date.now())}).eq('status','working').lt('updated_at',iso(Date.now()-15*60000));if(stale.error)throw stale.error;
-  const due=await client.from('prephub_followup_jobs').select('*,prephub_outreach_scripts(*)').eq('status','pending').lte('due_at',iso(Date.now())).order('due_at').limit(5);if(due.error)throw due.error;
-  const results=[];
+  const due=await client.from('prephub_followup_jobs').select('*,prephub_outreach_scripts(*)').eq('status','pending').is('task_kind',null).lte('due_at',iso(Date.now())).order('due_at').limit(5);if(due.error)throw due.error;
+  const results:any[]=[];
   for(const job of due.data){
    const claim=await client.from('prephub_followup_jobs').update({status:'working',attempts:job.attempts+1,updated_at:iso(Date.now())}).eq('id',job.id).eq('status','pending').select('id');if(claim.error)throw claim.error;if(!claim.data.length)continue;
    const lead=s.active.find(l=>l.id===job.lead_id),op=s.ops.find(o=>o.lead_id===job.lead_id),pref=s.prefs.find(p=>p.lead_id===job.lead_id),calls=s.calls.filter(c=>c.lead_id===job.lead_id&&!c.metadata?.deleted_at&&!c.metadata?.archived_at),comms=s.comms.filter(c=>c.lead_id===job.lead_id);
