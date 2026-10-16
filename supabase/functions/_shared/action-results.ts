@@ -2,7 +2,7 @@ import {iso} from './prephub-flow.ts';
 const terminal=(status:string)=>['completed','no-answer','busy','failed','canceled'].includes(status);
 async function checked(r:any){if(r.error)throw new Error([r.error.code,r.error.message,r.error.details].filter(Boolean).join(' · '));return r.data;}
 export function communicationStatus(status:string){return ({'in-progress':'answered',answered:'answered',completed:'completed',canceled:'canceled',failed:'failed','no-answer':'failed',busy:'failed'} as Record<string,string>)[status]||'queued';}
-export function summaryBullets(result:any){if(Array.isArray(result.summary_bullets)&&result.summary_bullets.length)return result.summary_bullets.slice(0,8).map(String);return String(result.summary||'Outcome not yet recorded.').split(/(?<=[.!?])\s+/).filter(Boolean).slice(0,8);}
+export function summaryBullets(result:any){if(result.ai_review?.summary_bullets?.length)return result.ai_review.summary_bullets.slice(0,8).map(String);if(Array.isArray(result.summary_bullets)&&result.summary_bullets.length)return result.summary_bullets.slice(0,8).map(String);return String(result.summary||'Outcome not yet recorded.').split(/(?<=[.!?])\s+/).filter(Boolean).slice(0,8);}
 export async function applyCallResult(client:any,body:any){
  if(!/^[0-9a-f-]{36}$/i.test(body.action_id||'')||!/^CA[a-f0-9]{32}$/i.test(body.call_sid||''))throw Error('Invalid call identity');
  const action=await checked(await client.from('daisy_crm_actions').select('*').eq('id',body.action_id).eq('kind','call').single());if(action.provider_id&&action.provider_id!==body.call_sid)throw Error('Call identity mismatch');if(!['executing','submitted','completed','needs_review'].includes(action.status))throw Error('Action has not been dispatched');
