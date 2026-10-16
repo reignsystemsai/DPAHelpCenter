@@ -33,11 +33,12 @@ export function contactDecision(job:any,lead:any,op:any,pref:any,calls:any[],com
  if(job.step_key==='credit_followup'&&!creditNeed(lead,op))return {status:'skipped',reason:'Credit preparation need no longer indicated'};
  if(job.channel==='call'&&!job.owner_directed&&!pref?.voice_permission_verified_at)return {status:'needs_review',reason:'AI voice permission has not been verified'};
  const touches=communications.filter(c=>c.direction==='outbound'&&timestamp(c.occurred_at)>now-7*86400000&&!['failed','queued','canceled'].includes(norm(c.status)));
- if(touches.length>=3||(job.channel==='call'&&touches.filter(c=>c.channel==='call').length>=2))return {status:'pending',reason:'Weekly contact limit; deferred',due_at:iso(now+86400000)};
+ const override=job.owner_directed===true&&job.override_cadence===true;
+ if(!override&&(touches.length>=3||(job.channel==='call'&&touches.filter(c=>c.channel==='call').length>=2)))return {status:'pending',reason:'Weekly contact limit; deferred',due_at:iso(now+86400000)};
  const last=Math.max(0,...touches.map(c=>timestamp(c.occurred_at)));
- if(last>now-24*3600000)return {status:'pending',reason:'Spacing contacts by at least 24 hours',due_at:iso(last+24*3600000)};
+ if(!override&&last>now-24*3600000)return {status:'pending',reason:'Spacing contacts by at least 24 hours',due_at:iso(last+24*3600000)};
  const hour=Number(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour:'numeric',hourCycle:'h23'}).format(now));
- if(hour<9||hour>=18)return {status:'pending',reason:'Contact window is 9 AM–6 PM Eastern',due_at:iso(now+3600000)};
+ if(!override&&(hour<9||hour>=18))return {status:'pending',reason:'Contact window is 9 AM–6 PM Eastern',due_at:iso(now+3600000)};
  return {status:'ready',reason:'Ready'};
 }
 export const seedScripts=[
