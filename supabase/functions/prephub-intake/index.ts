@@ -448,7 +448,8 @@ Deno.serve(async (req: Request) => {
         .from("prephub_leads")
         .select("id,lead_id,first_name,current_readiness_score,focus_areas")
         .eq("email", loginEmail)
-        .order("created_at", { ascending: false })
+        .match(payload.lead_id ? { lead_id: clean(payload.lead_id, 100) } : {})
+        .order("updated_at", { ascending: false })
         .limit(1)
         .maybeSingle();
 

@@ -20,7 +20,7 @@ Deno.serve(async req=>{
   const token=(req.headers.get('authorization')||'').replace(/^Bearer\s+/i,'');
   const user=await db.auth.getUser(token);if(user.error||!user.data.user)return reply({error:'Sign in to your PrepHub profile to continue'},401);
   const uid=user.data.user.id;
-  const profile=await db.from('prephub_leads').select('*').eq('user_id',uid).order('created_at',{ascending:false}).limit(1).maybeSingle();if(profile.error)throw profile.error;if(!profile.data)return reply({error:'No PrepHub profile is linked to this account'},404);const lead=profile.data;
+  let profileQuery=db.from('prephub_leads').select('*').eq('user_id',uid);if(body.lead_id)profileQuery=profileQuery.eq('lead_id',clean(body.lead_id,100));const profile=await profileQuery.order('created_at',{ascending:false}).limit(1).maybeSingle();if(profile.error)throw profile.error;if(!profile.data)return reply({error:'No PrepHub profile is linked to this account'},404);const lead=profile.data;
   if(action==='load'){
    const [workbook,reports]=await Promise.all([db.from('prephub_credit_workbooks').select('content,updated_at').eq('lead_id',lead.id).maybeSingle(),db.from('prephub_credit_reports').select('id,bureau,storage_path,extracted_text,reviewed_by_customer,created_at').eq('lead_id',lead.id).order('created_at',{ascending:false})]);if(workbook.error||reports.error)throw workbook.error||reports.error;
    return reply({profile:{id:lead.id,first_name:lead.first_name,credit_plan_request:lead.credit_plan_request},workbook:workbook.data,reports:reports.data});

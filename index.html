@@ -1092,7 +1092,7 @@ setTimeout(function(){entry.scrollIntoView({behavior:"smooth",block:"start"});},
 };
 
 function getStableLeadId(){
-let id=sessionStorage.getItem("dpa_desktop_lead_id");
+let id=null; // A new form visit is a new submission; retries reuse leadData.lead_id.
 if(!id){
 id="DPA-"+Date.now()+"-"+Math.random().toString(36).substring(2,8).toUpperCase();
 sessionStorage.setItem("dpa_desktop_lead_id",id);
@@ -1254,6 +1254,7 @@ keepalive:true
 
 const result=await response.json().catch(()=>({}));
 if(!response.ok)throw new Error(result.error||"PrepHub could not save your plan.");
+localStorage.setItem("dpa_prephub_require_email","1");
 localStorage.setItem("dpa_prephub_email",leadData.email);
 localStorage.setItem("dpa_prephub_lead_id",leadData.lead_id);
 localStorage.setItem("dpa_prephub_score",String(leadData.readiness_score));
@@ -1600,11 +1601,14 @@ document.getElementById("resultsIntro").textContent=intakeResult.email_sent
 document.getElementById("beginAppBtn").style.display="block";
 document.getElementById("agentBtn").style.display="block";
 }else{
-document.getElementById("finalTitle").textContent="Sending you to your prep hub...";
+document.getElementById("finalTitle").textContent="Your preparation plan is saved.";
 document.getElementById("resultsIntro").textContent=intakeResult.email_sent
 ?"Your plan is saved. Check your email for your secure PrepHub login."
 :"Your plan is saved. Continue to PrepHub now; you can request a secure login link there.";
-setTimeout(()=>{window.top.location.href=destination},900);
+document.getElementById("resultsIntro").textContent=intakeResult.email_sent
+?"Check your email and use your secure login link to open your personal PrepHub."
+:"Your plan is saved. Open PrepHub and request a secure email login link.";
+const open=document.createElement("a");open.className="dpa-primary-btn";open.href="/prephub/";open.textContent="OPEN PREPHUB SIGN IN";document.getElementById("resultsIntro").append(document.createElement("br"),open);
 }
 };
 
