@@ -31,7 +31,7 @@ export function contactDecision(job:any,lead:any,op:any,pref:any,calls:any[],com
  if(callback)return {status:'needs_review',reason:'Existing callback: '+(callback.callback_at||callback.next_call_at)};
  if(communications.some(c=>c.direction==='inbound'&&timestamp(c.occurred_at)>timestamp(job.created_at)))return {status:'needs_review',reason:'Inbound reply or call received after enrollment'};
  if(job.step_key==='credit_followup'&&!creditNeed(lead,op))return {status:'skipped',reason:'Credit preparation need no longer indicated'};
- if(job.channel==='call'&&!pref?.voice_permission_verified_at)return {status:'needs_review',reason:'AI voice permission has not been verified'};
+ if(job.channel==='call'&&!job.owner_directed&&!pref?.voice_permission_verified_at)return {status:'needs_review',reason:'AI voice permission has not been verified'};
  const touches=communications.filter(c=>c.direction==='outbound'&&timestamp(c.occurred_at)>now-7*86400000&&!['failed','queued','canceled'].includes(norm(c.status)));
  if(touches.length>=3||(job.channel==='call'&&touches.filter(c=>c.channel==='call').length>=2))return {status:'pending',reason:'Weekly contact limit; deferred',due_at:iso(now+86400000)};
  const last=Math.max(0,...touches.map(c=>timestamp(c.occurred_at)));

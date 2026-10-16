@@ -1,4 +1,4 @@
-export const datasetNames=['clients','intake_assessments','archived_clients','deleted_clients','operations','helux_cases','communications','notes','partners','webinars','webinar_registrations','contact_preferences','followup_jobs','followup_scripts','followup_settings','saved_progress','visitor_presence','daisy_actions'] as const;
+export const datasetNames=['clients','intake_assessments','archived_clients','deleted_clients','operations','helux_cases','communications','notes','partners','webinars','webinar_registrations','contact_preferences','followup_jobs','followup_scripts','followup_settings','saved_progress','visitor_presence','daisy_actions','call_script_library'] as const;
 const forbidden=/token|secret|password|ssn|social_security|account_number|raw_text|report_text|results_url/i;
 export function businessClean(value:any):any{
  if(typeof value==='string')return value.slice(0,12000).replace(/\b\d{3}[- ]\d{2}[- ]\d{4}\b/g,'[identifier omitted]').replace(/([?&](?:token|key|code|access_token)=)[^&\s]+/gi,'$1[omitted]');

@@ -1,0 +1,32 @@
+const text=(v:any,n=5000)=>String(v??'').trim().slice(0,n);
+const check=(r:any)=>{if(r.error)throw r.error;return r.data;};
+const owner=(member:any)=>{if(member.role!=='owner')throw Error('Owner access required');};
+const at=()=>new Date().toISOString();
+export function templateContent(content:any,recipient:any):Record<string,any>{
+ const pairs=[['client_name',recipient.name],['first_name',recipient.first_name||String(recipient.name||'').split(' ')[0]],['lead_id',recipient.public_id],['phone',recipient.phone],['email',recipient.email]].filter(([,value])=>String(value||'').length>=2).sort((a,b)=>String(b[1]).length-String(a[1]).length);
+ const replace=(value:string)=>{let out=value;for(const [key,raw] of pairs){const escaped=String(raw).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');out=out.replace(new RegExp('(?<![\\w])'+escaped+'(?![\\w])','gi'),()=>'{'+key+'}');}return out;};
+ return Object.fromEntries(Object.entries(content).map(([key,value])=>[key,typeof value==='string'?replace(value):Array.isArray(value)?value.map(v=>typeof v==='string'?replace(v):v):value]));
+}
+export function personalizeScript(content:any,lead:any):Record<string,any>{const values:any={first_name:lead.first_name,client_name:`${lead.first_name} ${lead.last_name}`,lead_id:lead.lead_id,phone:lead.phone,email:lead.email};const replace=(v:string)=>v.replace(/\{(first_name|client_name|lead_id|phone|email)\}/g,(_,key)=>String(values[key]||''));return Object.fromEntries(Object.entries(content).map(([key,v])=>[key,typeof v==='string'?replace(v):Array.isArray(v)?v.map(x=>typeof x==='string'?replace(x):x):v]));}
+export async function archiveCallDraft(client:any,member:any,action:any,category='General'){
+ owner(member);if(action.kind!=='call')return null;
+ const script=check(await client.from('daisy_call_scripts').upsert({created_by:member.user_id,source_action_id:action.id,title:text(action.reason||action.payload.content.objective,200),category:text(category,80)||'General',content:templateContent(action.payload.content,action.payload.recipient)},{onConflict:'source_action_id',ignoreDuplicates:true}).select('*').maybeSingle());
+ return script;
+}
+export async function finalizeCallDraft(client:any,member:any,id:string){owner(member);const action=check(await client.from('daisy_crm_actions').select('*').eq('id',id).eq('created_by',member.user_id).single());if(action.kind!=='call'||action.status!=='draft')throw Error('Only an unexecuted call draft can be finalized');if(action.payload.finalized_at)return {ok:true,action};
+ let script=check(await client.from('daisy_call_scripts').select('*').eq('source_action_id',id).maybeSingle());if(!script)script=await archiveCallDraft(client,member,action);
+ const updated=check(await client.from('daisy_crm_actions').update({payload:{...action.payload,finalized_at:at(),script_id:script?.id},updated_at:at()}).eq('id',id).eq('status','draft').eq('updated_at',action.updated_at).select('*'));if(updated.length!==1)throw Error('Draft changed; refresh before finalizing');
+ if(script)check(await client.from('daisy_call_scripts').update({finalized_at:at(),updated_at:at()}).eq('id',script.id));return {ok:true,action:updated[0]};
+}
+export async function libraryAction(client:any,member:any,body:any,validate:(kind:string,c:any)=>any){
+ owner(member);const action=body.action;
+ if(action==='script_library'){const existing=check(await client.from('daisy_crm_actions').select('*').eq('created_by',member.user_id).eq('kind','call').order('created_at',{ascending:false}).limit(500));for(const draft of existing)await archiveCallDraft(client,member,draft);const scripts=check(await client.from('daisy_call_scripts').select('*').order('updated_at',{ascending:false}).limit(500));const leads=check(await client.from('prephub_leads').select('id,lead_id,first_name,last_name').order('created_at',{ascending:false}));const ops=check(await client.from('lead_operations').select('lead_id,archived_at,deleted_at'));const hidden=new Set(ops.filter((o:any)=>o.archived_at||o.deleted_at).map((o:any)=>o.lead_id));return {ok:true,scripts,clients:leads.filter((l:any)=>!hidden.has(l.id))};}
+ const script=check(await client.from('daisy_call_scripts').select('*').eq('id',body.script_id).single());
+ if(action==='archive_call_script'){check(await client.from('daisy_call_scripts').update({archived_at:body.restore?null:at(),updated_at:at()}).eq('id',script.id));return {ok:true};}
+ if(action==='duplicate_call_script'){const copy=check(await client.from('daisy_call_scripts').insert({created_by:member.user_id,parent_id:script.id,title:text(script.title+' · Copy',200),category:script.category,content:script.content}).select('*').single());return {ok:true,script:copy};}
+ if(action==='save_call_script'){const title=text(body.title,200),category=text(body.category,80);if(!title||!category)throw Error('Enter a title and category');if(body.version!==script.version)throw Error('This script changed. Reload it before saving.');const content=validate('call',body.content);const saved=check(await client.from('daisy_call_scripts').update({title,category,content,source_action_id:null,version:script.version+1,finalized_at:null,history:[...(script.history||[]),{version:script.version,title:script.title,category:script.category,content:script.content,saved_at:at()}],updated_at:at()}).eq('id',script.id).eq('version',script.version).select('*'));if(saved.length!==1)throw Error('Script changed while saving. Reload and retry.');return {ok:true,script:saved[0]};}
+ throw Error('Unknown script library action');
+}
+export const savedScriptTool={type:'function',name:'prepare_saved_script_call',description:'Prepare a reviewable call draft from a saved call_script_library script for one resolved active client. Does not call. Resolve script ID and public DPA lead ID with query_crm_records. Replaces name/contact placeholders only. Review all other facts and offers for this client before owner approval.',strict:true,parameters:{type:'object',properties:{script_id:{type:'string'},lead_id:{type:'string'},reason:{type:'string'}},required:['script_id','lead_id','reason'],additionalProperties:false}};
+
+export const finalizeScriptTool={type:'function',name:'finalize_call_script',description:'Finalize and save an exact previously displayed call script without placing a call. Use when the owner approves the wording but has not asked to call yet.',strict:true,parameters:{type:'object',properties:{action_id:{type:'string'}},required:['action_id'],additionalProperties:false}};
