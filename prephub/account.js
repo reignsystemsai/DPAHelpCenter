@@ -73,3 +73,5 @@ async function init(){
 }
 init().catch(async error=>{q('#prep-auth-copy').textContent=error.message;q('#prep-auth-title').textContent='We couldn’t open your preparation yet.';q('#prep-account-status').textContent=error.message;const current=await client.auth.getSession();if(!current.error){const signedIn=!!current.data?.session;q('#prep-account-login').hidden=signedIn;q('#prep-account-logout').hidden=!signedIn;}});
 })();
+
+(()=>{const s=document.createElement('script');s.src='/prephub/page-presence.js?v=20261020-live-guide-1';document.head.appendChild(s);})();

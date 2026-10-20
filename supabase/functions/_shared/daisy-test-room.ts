@@ -15,7 +15,7 @@ export async function testRoomAction(client:any,member:any,body:any){
   const lead=take(await client.from('prephub_leads').select('*').eq('lead_id',String(body.lead_id||'')).single());
   const primary=take(await client.from('daisy_call_scripts').select('*').eq('id',String(body.script_id||'')).eq('direction','outbound').is('archived_at',null).is('deleted_at',null).single());
   const sequence=await prepareScriptSequence(client,primary,lead),settings=await readCallerSettings(client);
-  payload={first_name:lead.first_name,script:sequence.content,script_sources:sequence.sources,preparation_areas:sequence.areas,preparation_sections:sequence.sections||[],preparation_context:{...await preparationContext(client,lead),call_at:new Date().toISOString(),timezone:'America/New_York'},caller_settings:{version:settings.version,settings:settings.settings}};
+  payload={lead_id:lead.lead_id,first_name:lead.first_name,script:sequence.content,script_sources:sequence.sources,preparation_areas:sequence.areas,preparation_sections:sequence.sections||[],preparation_context:{...await preparationContext(client,lead),call_at:new Date().toISOString(),timezone:'America/New_York'},caller_settings:{version:settings.version,settings:settings.settings}};
  }
  if(['audio','session','delete'].includes(operation)&&!/^[a-f0-9-]{36}$/i.test(String(body.id||'')))throw Error('Choose a saved test session');
  const key=Deno.env.get('HELUX_API_KEY');if(!key)throw Error('Caller connection is not configured');
