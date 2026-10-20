@@ -41,3 +41,12 @@ The owner assistant always receives execute_approved_crm_action in its tool cata
 ## Goal-based preparation coaching
 
 The caller briefing now includes current name/contact details, city/ZIP when saved, home-price goal, assistance estimate, credit/income/work/tax history, preparation gaps and stored scores. It also includes selected historical form answers (first-home answer, yes/no preparation answers and answered flags), labeled historical, and the saved workbook readiness projection/update timestamp. Canonical current fields and newer saved progress take priority; discrepancies require clarification. No raw reports, uploads, identifiers, credentials, live screen, or unrestricted other-client access are supplied. Owner-approved custom guidance defines persuasive but non-aggressive preparation coaching and connects one manageable action to the client's own stated goal without pressure or promises.
+
+
+## Concrete workflow blocks
+
+The existing task API now attaches a read-only preparation_plan to each active task. It derives the next missing website step from saved report metadata, workbook task flags/readiness, document metadata and the linked account’s last_sign_in_at (server-only Auth admin read). Only the sign-in timestamp is retained, never the user/auth object or credentials. Account linkage alone is not proof of sign-in. If Auth is unavailable the step remains unconfirmed unless saved authenticated activity supports it.
+
+The original Monday-style board remains. Vague default task titles are projected as the concrete next action; specific callbacks, commitments, pause controls and recorded task titles remain intact. The View panel contains collapsed step blocks labeled Not confirmed, In progress, Client reported, Saved evidence or Saved assessment complete. Plan steps are not new database jobs, do not initiate outreach, and do not change readiness or label a loan approved. Actual saved customer work updates the projection on refresh; staff cannot fabricate completion by checking a display box. Conditional dispute work is explained as optional where no inaccuracies exist.
+
+New call previews receive the same preparation plans, so the caller can use the visible next step and evidence. An already prepared preview retains its snapshot; prepare a fresh preview after workbook changes. The caller opening adds a short rapport turn, brief empathy, availability confirmation, and a transparent digital-assistant explanation with accurate limits.
