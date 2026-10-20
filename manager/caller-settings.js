@@ -13,4 +13,4 @@ box.querySelector('form').oninput=()=>{dirty=true;preview();};box.querySelector(
 box.querySelector('[data-settings-refresh]').onclick=()=>{if(dirty&&!confirm('Discard unsaved caller settings and reload?'))return;refresh(true);};box.addEventListener('toggle',()=>{if(box.open)refresh();});document.querySelector('[data-view=scripts]')?.addEventListener('click',()=>refresh());window.DaisyCallerSettings={refresh:()=>refresh(),show(){box.open=true;refresh();}};
 })();
 
-(()=>{const script=document.createElement('script');script.src='/manager/test-daisy.js?v=20261020-test-room-1';document.body.append(script);})();
+(()=>{const script=document.createElement('script');script.src='/manager/test-daisy.js?v=20261020-test-room-2';document.body.append(script);})();
