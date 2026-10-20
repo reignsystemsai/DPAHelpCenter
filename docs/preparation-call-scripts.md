@@ -36,3 +36,8 @@ Scripts #44 and #45 name the two recent completed calendar tax years through {re
 ## Owner execution tool availability
 
 The owner assistant always receives execute_approved_crm_action in its tool catalog. Dispatch still requires an eligible previously displayed or finalized draft and an exact current approval quote, plus the existing fresh server-side checks. Empty eligibility is a workflow state, not a provider failure. Completed actions cannot be replayed; a repeat call requires a fresh preview. Finalized owner call drafts remain eligible when the browser omits visible_action_ids, provided they were created before the request and are less than 24 hours old.
+
+
+## Goal-based preparation coaching
+
+The caller briefing now includes current name/contact details, city/ZIP when saved, home-price goal, assistance estimate, credit/income/work/tax history, preparation gaps and stored scores. It also includes selected historical form answers (first-home answer, yes/no preparation answers and answered flags), labeled historical, and the saved workbook readiness projection/update timestamp. Canonical current fields and newer saved progress take priority; discrepancies require clarification. No raw reports, uploads, identifiers, credentials, live screen, or unrestricted other-client access are supplied. Owner-approved custom guidance defines persuasive but non-aggressive preparation coaching and connects one manageable action to the client's own stated goal without pressure or promises.
