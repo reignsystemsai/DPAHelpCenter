@@ -346,6 +346,7 @@ async function sendPrepHubEmail(
   score: number,
   focusAreas: Array<keyof typeof taskCatalog>,
   loginUrl: string,
+  idempotencyKey?: string,
 ) {
   const apiKey = clean(Deno.env.get("RESEND_API_KEY"), 500);
   if (!apiKey) {
@@ -359,6 +360,7 @@ async function sendPrepHubEmail(
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
+        ...(idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {}),
       },
       body: JSON.stringify({
         from: "DPA Help Center PrepHub <ready@mail.dpahelpcenter.com>",
@@ -439,7 +441,20 @@ Deno.serve(async (req: Request) => {
     );
 
     if (payload.action === "send_login") {
-      const loginEmail = clean(payload.email, 320).toLowerCase();
+      const callerWelcome = payload.template === "welcome";
+      let callerLead: any = null;
+      if (callerWelcome) {
+        const expected = Deno.env.get("HELUX_API_KEY") || "", supplied = req.headers.get("x-helux-key") || "";
+        let difference = expected.length ^ supplied.length;
+        for (let i = 0; i < Math.max(expected.length, supplied.length); i++) difference |= (expected.charCodeAt(i) || 0) ^ (supplied.charCodeAt(i) || 0);
+        if (!expected || !supplied || difference || !/^[a-f0-9-]{36}$/i.test(String(payload.caller_action_id || ""))) return json({ error: "Authorized call required" }, 401, origin);
+        const call = await supabase.from("daisy_crm_actions").select("lead_id,status,created_at").eq("id", payload.caller_action_id).eq("kind", "call").in("status", ["executing", "submitted"]).maybeSingle();
+        if (call.error || !call.data || !Number.isFinite(Date.parse(call.data.created_at)) || Date.now() - Date.parse(call.data.created_at) > 30 * 60_000) return json({ error: "Active approved call required" }, 403, origin);
+        const person = await supabase.from("prephub_leads").select("id,lead_id,email,first_name,current_readiness_score,focus_areas").eq("id", call.data.lead_id).maybeSingle();
+        if (person.error || !person.data || person.data.lead_id !== payload.lead_id) return json({ error: "Call recipient changed" }, 409, origin);
+        callerLead = person.data;
+      }
+      const loginEmail = clean(callerWelcome ? callerLead.email : payload.email, 320).toLowerCase();
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginEmail)) {
         return json({ error: "Enter a valid email address." }, 400, origin);
       }
@@ -453,7 +468,12 @@ Deno.serve(async (req: Request) => {
         .limit(1)
         .maybeSingle();
 
-      if (!loginLead) return json({ ok: true }, 200, origin);
+      if (!loginLead) return json(callerWelcome ? { error: "Call recipient unavailable" } : { ok: true }, callerWelcome ? 404 : 200, origin);
+      if (callerWelcome) {
+        const prior = await supabase.from("lead_communications").select("provider_message_id").eq("lead_id", loginLead.id).eq("metadata->>daisy_call_action_id", payload.caller_action_id).eq("status", "sent").limit(1).maybeSingle();
+        if (prior.error) return json({ error: "Email history unavailable" }, 503, origin);
+        if (prior.data?.provider_message_id) return json({ ok: true, provider_accepted: true, duplicate: true }, 200, origin);
+      }
 
       const oneMinuteAgo = new Date(Date.now() - 60_000).toISOString();
       const { data: recentLogin } = await supabase
@@ -488,28 +508,27 @@ Deno.serve(async (req: Request) => {
 
       const actionLink = new URL(linkData.properties.action_link);
       actionLink.searchParams.set("redirect_to", redirectTo);
-      const sent = await sendPrepHubLoginEmail(
-        loginEmail,
-        clean(loginLead.first_name, 100) || "Homebuyer",
-        actionLink.toString(),
-      );
+      const sent = callerWelcome
+        ? await sendPrepHubEmail(loginEmail, clean(loginLead.first_name, 100) || "Homebuyer", Number(loginLead.current_readiness_score) || 0, loginFocusAreas.filter((area: string) => Object.hasOwn(taskCatalog, area)), actionLink.toString(), "daisy-welcome-" + payload.caller_action_id)
+        : await sendPrepHubLoginEmail(loginEmail, clean(loginLead.first_name, 100) || "Homebuyer", actionLink.toString());
+      const accepted = sent.ok && (!callerWelcome || ("id" in sent && !!sent.id));
 
-      await supabase.from("lead_communications").insert({
+      const audit = await supabase.from("lead_communications").insert({
         lead_id: loginLead.id,
         channel: "email",
         direction: "outbound",
         provider: "resend",
         template_key: "prephub_login_link",
-        subject: "Your secure PrepHub login link",
-        summary: "Passwordless PrepHub login link",
-        status: sent.ok ? "sent" : "failed",
+        subject: callerWelcome ? "Your PrepHub welcome and preparation plan" : "Your secure PrepHub login link",
+        summary: callerWelcome ? (accepted ? "Client-requested welcome email accepted by provider; delivery not confirmed" : "Client-requested welcome email failed or acceptance unconfirmed") : "Passwordless PrepHub login link",
+        status: accepted ? "sent" : "failed",
         provider_message_id: "id" in sent ? sent.id : null,
-        metadata: { email_status: sent.status },
+        metadata: { email_status: sent.status, ...(callerWelcome ? { daisy_call_action_id: payload.caller_action_id, client_requested: true, template: "welcome" } : {}) },
         occurred_at: new Date().toISOString(),
       });
 
-      if (!sent.ok) return json({ error: "We could not send the login email. Please try again." }, 503, origin);
-      return json({ ok: true }, 200, origin);
+      if (!accepted) return json({ error: "We could not send the login email. Please try again." }, 503, origin);
+      return json(callerWelcome ? { ok: true, provider_accepted: true, audit_saved: !audit.error } : { ok: true }, 200, origin);
     }
 
     const leadId = clean(payload.lead_id, 100);
