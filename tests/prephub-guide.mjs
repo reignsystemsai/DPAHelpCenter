@@ -9,3 +9,6 @@ test('stale, hidden and future page evidence cannot be presented as live',()=>{f
 test('different open visible tabs require a page-heading question',()=>{const s=navigationStatus(['Credit'],[row('income'),row('credit')],now);a.equal(s.page_status,'ambiguous');a.equal(s.current_page,null);});
 test('telemetry drops financial values and unknown subsections',()=>{const s=normalizePresence({tab:'credit',session_id:'12345678-1234-1234-1234-123456789012',panel:'SSN',visible:true,income:65000,password:'secret'});a.equal(s.panel,null);a.deepEqual(Object.keys(s).sort(),['panel','session_id','tab','visible']);a.throws(()=>normalizePresence({tab:'admin',session_id:'bad',visible:true}));});
 test('tax filing guidance stays separate from document upload completion',()=>{a.deepEqual(navigationStatus(['Taxes'],[],now).allowed_tabs,['documents']);});
+
+import {preparationAreas} from '../supabase/functions/_shared/call-scripts.ts';
+test('existing job intake alias routes work-history preparation',()=>{a.deepEqual(preparationAreas({focus_areas:['job']}),['Work History']);a.equal(navigationStatus(preparationAreas({focus_areas:['job']}),[row('income')],now).recommended_tab,'employment');});
