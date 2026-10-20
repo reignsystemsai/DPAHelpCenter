@@ -1,3 +1,4 @@
+import {testRoomAction} from '../_shared/daisy-test-room.ts';
 import {preparationQueue,workflowCommand,workflowTool,workflowEvent,taskColumns} from '../_shared/preparation-workflow.ts';
 import {readCallerSettings,saveCallerSettings,callerSettingsTool} from '../_shared/caller-settings.ts';
 import {callHistoryAction,archiveRecording} from '../_shared/call-history.ts';
@@ -17,6 +18,7 @@ Deno.serve(async req=>{
  if(req.method==='OPTIONS')return new Response('ok',{headers});if(req.method!=='POST')return json({error:'POST required'},405);
  try{
   const requestStartedAt=Date.now(),client=db(),member=await manager(client,req),body=await req.json(),action=body.action||'report';
+  if(action==='test_room'){const r=await testRoomAction(client,member,body);if(r.audio_response){const bytes=new Uint8Array(await r.audio_response.arrayBuffer());let binary='';for(let i=0;i<bytes.length;i+=8192)binary+=String.fromCharCode(...bytes.subarray(i,i+8192));return json({ok:true,audio_base64:btoa(binary)});}return json(r);}
   if(action==='preparation_queue')return json(await preparationQueue(client,member));
   if(action==='preparation_task')return json(await workflowCommand(client,member,body));
   if(action==='caller_settings'){if(member.role!=='owner')throw Error('Owner access required');return json({ok:true,...await readCallerSettings(client)});}
