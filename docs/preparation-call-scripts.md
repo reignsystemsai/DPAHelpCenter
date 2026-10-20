@@ -26,3 +26,8 @@ In conversational mode the caller supplies per-area assessments and literal clie
 Turn detection now waits 600ms of silence (previously 900ms). The closing response no longer waits for CRM callback/report synchronization. Normal response audio remains streamed. Server timing samples from speech-stop events to first audio are saved under call_quality after disconnect; this is not an end-to-end measurement and does not justify a promised latency target.
 
 Phone voice is selectable in Caller Settings: Marin, Coral, Shimmer or Sage. Marin is retained until the owner chooses a different voice. Voice choice is snapshotted per call and does not change a call already in progress. No subjective audio quality claim is made without listening to a real test.
+
+
+## Proactive tax preparation playbook
+
+Scripts #44 and #45 name the two recent completed calendar tax years through {recent_tax_year} and {previous_tax_year}, expanded using the current Eastern calendar year when preparing the call. In October 2026 these resolve to 2025 and 2024. These are preparation references, not a lender-specific requirement or a statement that a return is overdue. The playbook conditions referral and check-in questions on actual client answers, reuses known filing history, and moves to the next preparation area. Previous script versions are retained. Existing drafts require fresh review after an edit.
