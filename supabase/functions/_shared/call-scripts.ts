@@ -22,7 +22,7 @@ export function scriptArea(script:any):string|null{
 }
 const spokenArea:Record<string,string>={Credit:'credit',Income:'income',DTI:'income and monthly debts','Work History':'work history',Taxes:'tax-filing history'};
 export function composePreparationScripts(primary:any,available:any[],lead:any){
- const areas=preparationAreas(lead),primaryArea=scriptArea(primary);if(!areas.length||!primaryArea)return {content:personalizeScript({...primary.content,script_text:scriptText(primary.content)},lead),sources:[{id:primary.id,version:primary.version,script_number:primary.script_number}],areas:[]};
+ const areas=preparationAreas(lead),primaryArea=scriptArea(primary);if(!primaryArea)return {content:personalizeScript({...primary.content,script_text:scriptText(primary.content)},lead),sources:[{id:primary.id,version:primary.version,script_number:primary.script_number}],areas:[]};
  const ordered=[...areas];if(!ordered.includes(primaryArea))ordered.push(primaryArea);if(ordered[0]!=='Credit'){ordered.splice(ordered.indexOf(primaryArea),1);ordered.unshift(primaryArea);}
  const selected=ordered.map(area=>{if(area===primaryArea)return primary;const candidates=available.filter(s=>s.direction==='outbound'&&!s.archived_at&&!s.deleted_at&&scriptArea(s)===area),categorized=candidates.filter(s=>!['general','other'].includes(String(s.category).toLowerCase())),matches=categorized.length?categorized:candidates;if(matches.length!==1)throw Error('Choose one active '+area+' script before preparing this multi-area call; found '+matches.length+'.');return matches[0];});
  const names=ordered.map(a=>spokenArea[a]),list=names.length===1?names[0]:names.slice(0,-1).join(', ')+' and '+names.at(-1);
