@@ -1,0 +1,15 @@
+# Preparation call wording and coverage
+
+The existing Supabase `daisy_call_scripts.content.script_text` is the editable dialogue source. Script numbers, versions and history stay in that library. Nothing is copied into a second library. `scripts/update-preparation-wording.sql` records the owner-requested one-time wording changes with the former version preserved.
+
+`{first_name}` personalizes the name. `{preparation_overview}` expands to the client's recorded preparation areas, once at the start of the approved call preview. The server combines the selected script with the active saved scripts for other recorded areas. It omits only repeated identical script openings and the repeated overview token; all section dialogue is preserved. Bracketed preparation headings are unspoken stage directions. The final combined wording appears in the existing review card before approval.
+
+Recorded `focus_areas` and an explicitly reported credit score below 640 determine areas. Credit comes first if present. Otherwise the selected area comes first. Income and DTI remain separate script topics although their stored category is shared. Missing or ambiguous supporting scripts block preparation with an accurate error. General custom scripts are fallback candidates only when no categorized script exists.
+
+Each call action snapshots `script_sources` (ID, number and version), `preparation_areas`, `preparation_sections`, and the exact combined `script_text`. Every source version is checked before finalization and dispatch. A later edit/archive/delete requires a fresh review; active calls retain their original snapshots. Stale action drafts are not silently rewritten.
+
+GitHub DPAHelpCenter: `_shared/call-scripts.ts` composes and pins the sources; `_shared/crm-actions.ts` stores and dispatches them; `manager-daisy/index.ts` tells Daisy to use the library and client-facing preparation wording. GitHub helux-ai-workforce: `manager-calls.js` holds universal identity, recording, opt-out, truthful scope, script-delivery and section-coverage rules. Caller settings remain editable through the existing CRM settings.
+
+The voice model is instructed to read dialogue verbatim, acknowledge factual answers briefly, and return to the next saved question. Backend mission guidance does not authorize extra questions. A normal finish is rejected if any section's opening question has not appeared verbatim in the assistant transcript; the server supplies that saved question to resume. An evidenced client request to stop/defer, opt-out, wrong number or voicemail permits closure with unaddressed areas recorded as deferred. This is a spoken-text coverage check, not proof that audio was heard, that the client answered, or that a milestone is complete. Realtime generation can still deviate, so a live owner test remains necessary; this is not a deterministic prerecorded audio player.
+
+No schema changes, customer calls, emails, automatic campaigns or readiness updates are performed by the wording update. Tests use local mocked call providers and in-memory records.

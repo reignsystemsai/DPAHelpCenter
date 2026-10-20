@@ -3,7 +3,38 @@ const check=(r:any)=>{if(r.error)throw r.error;return r.data;};
 const owner=(member:any)=>{if(member.role!=='owner')throw Error('Owner access required');};
 const at=()=>new Date().toISOString();
 export function scriptText(content:any){return typeof content?.script_text==='string'?content.script_text:[content?.opening,...(content?.key_points||[]),...(content?.questions||[])].filter(Boolean).join('\n\n');}
-export async function assertScriptVersion(client:any,action:any){if(!action.payload?.script_id)return;const script=check(await client.from('daisy_call_scripts').select('*').eq('id',action.payload.script_id).single());if(script.deleted_at||script.archived_at)throw Error('This saved script is deleted or archived. Choose an active script.');if(script.version!==action.payload.script_version)throw Error('The saved script has changed. Open Scripts and prepare a call from the latest version.');}
+export async function assertScriptVersion(client:any,action:any){
+ const sources=action.payload?.script_sources|| (action.payload?.script_id?[{id:action.payload.script_id,version:action.payload.script_version}]:[]);
+ for(const source of sources){const script=check(await client.from('daisy_call_scripts').select('*').eq('id',source.id).single());if(script.deleted_at||script.archived_at)throw Error('A saved script is deleted or archived. Prepare a new call.');if(script.version!==source.version)throw Error('A saved script has changed. Open Scripts and prepare a call from the latest version.');}
+}
+export function preparationAreas(lead:any):string[]{
+ const aliases:Record<string,string>={credit:'Credit',credit_review:'Credit',income:'Income',income_review:'Income',dti:'DTI',dti_review:'DTI',employment:'Work History',work_history:'Work History',employment_review:'Work History',taxes:'Taxes',taxes_review:'Taxes',tax:'Taxes'};
+ const areas=new Set<string>();for(const raw of Array.isArray(lead.focus_areas)?lead.focus_areas:[]){const area=aliases[String(raw).toLowerCase()];if(area)areas.add(area);}
+ if(lead.credit_score!==null&&lead.credit_score!==undefined&&Number.isFinite(Number(lead.credit_score))&&Number(lead.credit_score)<640)areas.add('Credit');
+ return [...areas].sort((a,b)=>a==='Credit'?-1:b==='Credit'?1:0);
+}
+export function scriptArea(script:any):string|null{
+ const category=String(script.category||'').toLowerCase(),title=String(script.title||'').toLowerCase();
+ if(category==='credit')return 'Credit';if(category==='taxes')return 'Taxes';if(category==='work history')return 'Work History';
+ if(category.includes('income')||category==='dti')return /\bdti\b|debt.to.income/.test(title)?'DTI':'Income';
+ // Older custom call scripts may be stored as General; infer only their topic, never client facts.
+ const words=String(script.content?.objective||'').toLowerCase();if(/tax|filing/.test(words))return 'Taxes';if(/credit/.test(words))return 'Credit';if(/work history|employment/.test(words))return 'Work History';if(/dti|monthly.debt/.test(words))return 'DTI';if(/income/.test(words))return 'Income';return null;
+}
+const spokenArea:Record<string,string>={Credit:'credit',Income:'income',DTI:'income and monthly debts','Work History':'work history',Taxes:'tax-filing history'};
+export function composePreparationScripts(primary:any,available:any[],lead:any){
+ const areas=preparationAreas(lead),primaryArea=scriptArea(primary);if(!areas.length||!primaryArea)return {content:personalizeScript({...primary.content,script_text:scriptText(primary.content)},lead),sources:[{id:primary.id,version:primary.version,script_number:primary.script_number}],areas:[]};
+ const ordered=[...areas];if(!ordered.includes(primaryArea))ordered.push(primaryArea);if(ordered[0]!=='Credit'){ordered.splice(ordered.indexOf(primaryArea),1);ordered.unshift(primaryArea);}
+ const selected=ordered.map(area=>{if(area===primaryArea)return primary;const candidates=available.filter(s=>s.direction==='outbound'&&!s.archived_at&&!s.deleted_at&&scriptArea(s)===area),categorized=candidates.filter(s=>!['general','other'].includes(String(s.category).toLowerCase())),matches=categorized.length?categorized:candidates;if(matches.length!==1)throw Error('Choose one active '+area+' script before preparing this multi-area call; found '+matches.length+'.');return matches[0];});
+ const names=ordered.map(a=>spokenArea[a]),list=names.length===1?names[0]:names.slice(0,-1).join(', ')+' and '+names.at(-1);
+ const overview='I see you may need a little preparation in '+list+'. We’ll go through each area one at a time.';
+ const content=personalizeScript({...primary.content,script_text:scriptText(primary.content)},lead),opening=String(content.opening||'').trim();
+ const sections=selected.map((s,i)=>{const c=personalizeScript({...s.content,script_text:scriptText(s.content)},lead);let words=String(c.script_text).replace(/\\n/g,'\n').trim();const opener=String(c.opening||'').trim();if(opener&&words.startsWith(opener))words=words.slice(opener.length).trim();words=words.replace(/\{preparation_overview\}/g,'').trim();return {area:ordered[i],script_id:s.id,version:s.version,script_number:s.script_number,text:words};});
+ const text=[opening,overview,...sections.flatMap(s=>['[Preparation area: '+spokenArea[s.area]+']',s.text])].filter(Boolean).join('\n\n');
+ if(text.length>12000)throw Error('Combined preparation script is too long. Shorten the saved scripts before review.');
+ return {content:{...content,script_text:text},sources:selected.map(s=>({id:s.id,version:s.version,script_number:s.script_number})),areas:ordered,sections};
+}
+export async function prepareScriptSequence(client:any,primary:any,lead:any){const available=check(await client.from('daisy_call_scripts').select('*').is('archived_at',null).is('deleted_at',null).eq('direction','outbound'));return composePreparationScripts(primary,available,lead);}
+
 
 export function templateContent(content:any,recipient:any):Record<string,any>{
  const pairs=[['client_name',recipient.name],['first_name',recipient.first_name||String(recipient.name||'').split(' ')[0]],['lead_id',recipient.public_id],['phone',recipient.phone],['email',recipient.email]].filter(([,value])=>String(value||'').length>=2).sort((a,b)=>String(b[1]).length-String(a[1]).length);
