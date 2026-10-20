@@ -13,3 +13,16 @@ GitHub DPAHelpCenter: `_shared/call-scripts.ts` composes and pins the sources; `
 The voice model is instructed to read dialogue verbatim, acknowledge factual answers briefly, and return to the next saved question. Backend mission guidance does not authorize extra questions. A normal finish is rejected if any section's opening question has not appeared verbatim in the assistant transcript; the server supplies that saved question to resume. An evidenced client request to stop/defer, opt-out, wrong number or voicemail permits closure with unaddressed areas recorded as deferred. This is a spoken-text coverage check, not proof that audio was heard, that the client answered, or that a milestone is complete. Realtime generation can still deviate, so a live owner test remains necessary; this is not a deterministic prerecorded audio player.
 
 No schema changes, customer calls, emails, automatic campaigns or readiness updates are performed by the wording update. Tests use local mocked call providers and in-memory records.
+
+
+## Objective conversation update
+
+Owner-approved conversational mode uses the existing `guided` setting. The script is a playbook: the caller may ask relevant follow-ups, answer basic process questions, skip answered questions, and return to the next preparation area. Truthfulness, contact controls, recording handling and professional-service boundaries remain. Exact (`verbatim`) mode remains available.
+
+New call previews snapshot a lead-specific context: reported intake and goals, current preparation task, up to three recent notes and three recent communication summaries. Context is untrusted data and is not proof of qualification. This is client-specific context, not unrestricted access to other client records or arbitrary CRM mutation.
+
+In conversational mode the caller supplies per-area assessments and literal client quotes. The server validates quote presence in the transcript before accepting an area as discussed or explicitly deferred. These remain AI assessments, not independently verified facts or completed milestones. The existing post-call workflow extracts actual commitments and dates. The phone connection still cannot directly send emails or book appointments; those are recorded requests for the existing controlled workflow.
+
+Turn detection now waits 600ms of silence (previously 900ms). The closing response no longer waits for CRM callback/report synchronization. Normal response audio remains streamed. Server timing samples from speech-stop events to first audio are saved under call_quality after disconnect; this is not an end-to-end measurement and does not justify a promised latency target.
+
+Phone voice is selectable in Caller Settings: Marin, Coral, Shimmer or Sage. Marin is retained until the owner chooses a different voice. Voice choice is snapshotted per call and does not change a call already in progress. No subjective audio quality claim is made without listening to a real test.
