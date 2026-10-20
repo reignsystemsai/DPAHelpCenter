@@ -31,3 +31,8 @@ Phone voice is selectable in Caller Settings: Marin, Coral, Shimmer or Sage. Mar
 ## Proactive tax preparation playbook
 
 Scripts #44 and #45 name the two recent completed calendar tax years through {recent_tax_year} and {previous_tax_year}, expanded using the current Eastern calendar year when preparing the call. In October 2026 these resolve to 2025 and 2024. These are preparation references, not a lender-specific requirement or a statement that a return is overdue. The playbook conditions referral and check-in questions on actual client answers, reuses known filing history, and moves to the next preparation area. Previous script versions are retained. Existing drafts require fresh review after an edit.
+
+
+## Owner execution tool availability
+
+The owner assistant always receives execute_approved_crm_action in its tool catalog. Dispatch still requires an eligible previously displayed or finalized draft and an exact current approval quote, plus the existing fresh server-side checks. Empty eligibility is a workflow state, not a provider failure. Completed actions cannot be replayed; a repeat call requires a fresh preview. Finalized owner call drafts remain eligible when the browser omits visible_action_ids, provided they were created before the request and are less than 24 hours old.
