@@ -27,11 +27,12 @@ export async function scheduleClientCallback(client:any,body:any){
  return {ok:true,scheduled:true,callback:job};
 }
 export function callbackConfirmation(value:any){const s=String(value||'').trim().replace(/^(?:oh|um|uh)[, ]+/i,'');return /^(?:yes|yeah|yep|yup|sure|okay|ok|correct|absolutely|that (?:works|is fine|sounds good)|sounds good|perfect|please do|go ahead)\b/i.test(s)&&!/\b(?:not|don.t|do not|no|wait|but|instead|actually)\b/i.test(s);}
-export async function runDueCallbacks(client:any,settings:any,now=Date.now()){
+export async function runDueCallbacks(client:any,settings:any,now=Date.now(),callbackId?:string){
  if(!settings.callbacks_enabled)return {callbacks_enabled:false,processed:[]};
  if(!dailyWorkState(settings,now).authorized)return {callbacks_enabled:true,waiting_for_daily_instructions:true,processed:[]};
  const stale=await client.from('prephub_followup_jobs').update({status:'needs_review',reason:'Callback dispatch uncertain; reconcile provider before any retry'}).eq('task_kind','callback').eq('status','working').lt('updated_at',new Date(now-10*60000).toISOString());check(stale);
- const due=check(await client.from('prephub_followup_jobs').select('*').eq('task_kind','callback').eq('status','pending').lte('due_at',new Date(now).toISOString()).order('due_at').limit(3)),processed=[];
+ let query=client.from('prephub_followup_jobs').select('*').eq('task_kind','callback').eq('status','pending').lte('due_at',new Date(now).toISOString());if(callbackId)query=query.eq('id',callbackId);
+ const due=check(await query.order('due_at').limit(3)),processed=[];
  for(const job of due){
   if(now-Date.parse(job.due_at)>15*60000){check(await client.from('prephub_followup_jobs').update({status:'needs_review',reason:'Requested callback time was missed; reschedule before dialing'}).eq('id',job.id).eq('status','pending'));processed.push({id:job.id,status:'needs_review'});continue;}
   const fresh=check(await client.from('prephub_followup_settings').select('*').eq('id',true).single());if(!fresh.callbacks_enabled||!dailyWorkState(fresh).authorized)break;

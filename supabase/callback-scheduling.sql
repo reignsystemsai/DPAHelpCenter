@@ -8,11 +8,4 @@ alter table public.prephub_followup_jobs add constraint followup_script_required
 create index if not exists prephub_callback_due_idx on public.prephub_followup_jobs(due_at) where task_kind='callback' and status='pending';
 -- Owner-authorized callback release. General automatic outreach remains disabled.
 update public.prephub_followup_settings set callbacks_enabled=true,updated_at=now() where id=true;
-select cron.schedule('prephub-phone-email-sweep','* * * * *',$job$
- select net.http_post(
-  url:='https://fklchtsxahepzfzgcqdp.supabase.co/functions/v1/prephub-followup-worker',
-  headers:='{"Content-Type":"application/json"}'::jsonb,
-  body:=jsonb_build_object('runner_token',runner_token),
-  timeout_milliseconds:=120000
- ) from public.prephub_followup_settings where id=true and (enabled=true or callbacks_enabled=true);
-$job$);
+-- Apply callback-wakeups.sql for per-callback scheduling and daily reconciliation.
