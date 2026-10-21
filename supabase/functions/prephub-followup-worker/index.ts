@@ -1,3 +1,4 @@
+import {runDueCallbacks} from '../_shared/callback-scheduler.ts';
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import {db,manager,snapshot,enroll} from '../_shared/prephub-data.ts';
 import {contactDecision,escapeHtml,iso,norm,timestamp} from '../_shared/prephub-flow.ts';
@@ -51,7 +52,7 @@ Deno.serve(async req=>{
   }
   const setting=await client.from('prephub_followup_settings').select('*').eq('id',true).single();if(setting.error)throw setting.error;
   if(!body.runner_token||!equal(String(body.runner_token),setting.data.runner_token)){const m=await manager(client,req);if(m.role!=='owner')return json({error:'Owner access required'},403);}
-  if(setting.data.workflow_mode)return json({ok:true,paused:true,reason:'Preparation queue requires reviewed actions. Legacy automatic dispatch is disabled.'});
+  if(setting.data.workflow_mode){const callbacks=await runDueCallbacks(client,setting.data);return json({ok:true,...callbacks,legacy_dispatch_disabled:true});}
   if(!setting.data.enabled)return json({ok:true,paused:true});
   const s=await snapshot(client);await enroll(client,s.active.filter(l=>timestamp(l.created_at)>=timestamp(setting.data.started_at)),s.ops);
   // A lost response must never trigger a duplicate call. Reconcile manually instead.
