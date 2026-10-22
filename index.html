@@ -609,6 +609,15 @@ border-radius:16px;
 }
   </style>
 
+<style>
+/* Optional SMS consent stays separate from the application action. */
+#dpa-desktop-funnel .dpa-sms-consent{display:flex;align-items:flex-start;gap:10px;margin:16px 0 12px;color:#52617c;font-size:12px;line-height:1.6;text-align:left}
+#dpa-desktop-funnel .dpa-sms-consent input{appearance:auto;flex:0 0 18px;width:18px;height:18px;min-height:18px;margin:3px 0 0;accent-color:#081f5c;cursor:pointer}
+#dpa-desktop-funnel .dpa-sms-consent label{flex:1;cursor:pointer}
+#dpa-desktop-funnel .dpa-sms-consent a,#dpa-desktop-funnel .dpa-legal a{color:#174f9a;text-decoration:underline;text-underline-offset:3px}
+#dpa-desktop-funnel .dpa-sms-consent input:focus-visible,#dpa-desktop-funnel a:focus-visible{outline:3px solid #174f9a;outline-offset:3px}
+#dpa-desktop-funnel .dpa-legal{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 20px;padding:22px 20px;font-size:12px;color:#52617c;border-top:1px solid #e4e9f1;margin-top:28px}
+</style>
 <div id="dpaApp"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.3/dist/umd/supabase.min.js"></script>
@@ -844,6 +853,7 @@ app.innerHTML=`
 <input id="email" class="dpa-field" type="email" placeholder="Email Address" oninput="dpaValidateLead()">
 <input id="phone" class="dpa-field" type="tel" placeholder="Phone Number" oninput="dpaValidateLead()">
 </div>
+<div class="dpa-sms-consent" id="sms-consent"><input id="smsOptIn" type="checkbox" onchange="dpaValidateLead()" aria-describedby="smsPolicyLinks"><label for="smsOptIn"><span id="smsDisclosure" data-version="2026-10-22">I agree to receive recurring automated text messages from DPA Help Center about my PrepHub preparation, account access, appointments, and requested callbacks at the number provided. Message frequency varies. Message and data rates may apply. Reply STOP to opt out or HELP for help. Consent is optional and is not a condition of purchase or receiving services.</span> <span id="smsPolicyLinks">Read our <a href="/privacy/" target="_blank" rel="noopener">Privacy Policy</a> and <a href="/sms-terms/" target="_blank" rel="noopener">SMS Terms</a>.</span></label></div>
 <button type="button" id="leadNextBtn" class="dpa-submit" onclick="dpaSaveLeadAndContinue()" disabled>YES, I WANT HELP</button>
 </div>
 
@@ -883,6 +893,7 @@ app.innerHTML=`
 </div>
 </div>
 </div>
+<footer class="dpa-legal"><span>The Down Payment Assistance Help Center LLC</span><a href="/privacy/">Privacy Policy</a><a href="/sms-terms/">SMS Terms &amp; Conditions</a><a href="mailto:info@dpahelpcenter.com">Contact</a></footer>
 </main>`;
 
 initMain();
@@ -1212,6 +1223,7 @@ first_name:leadData.first_name||"",
 last_name:leadData.last_name||"",
 email:leadData.email||"",
 phone:(leadData.phone||"").replace(/\D/g,""),
+sms_consent:{opted_in:document.getElementById("smsOptIn")?.checked===true,disclosure_version:"2026-10-22",disclosure_text:document.getElementById("smsDisclosure")?.textContent||"",source_url:window.location.origin+window.location.pathname,client_submitted_at:new Date().toISOString()},
 readiness_score:Number(leadData.readiness_score)||0,
 credit_score:Number(leadData.credit_score)||0,
 household_income:Number(leadData.household_income)||0,
