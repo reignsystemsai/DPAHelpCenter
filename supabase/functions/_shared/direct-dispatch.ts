@@ -1,13 +1,11 @@
-import {normalizeDirectPhone} from './direct-number.ts';
+import {normalizeDirectPhone,dictatedPhones} from './direct-number.ts';
 import {prepareDirectNumberCall,executeAction} from './crm-actions.ts';
 import {finalizeCallDraft} from './call-scripts.ts';
 import {readCallerSettings} from './caller-settings.ts';
 export function immediateCallCommand(question:string){return /\b(call|dial|ring)\b/i.test(question)&&!/\b(?:can|could|does|will|should|would)\s+(?:daisy|the system|this feature)\b|\b(?:how (?:do|can|would)|what happens|is it possible|if i (?:say|said|ask|asked|tell|told))\b/i.test(question)&&/\b(tell|say|ask|message|let .{0,30}know)\b/i.test(question)&&!/\b(example|hypothetical|what if|draft|preview|cancel|instead of calling|without calling)\b/i.test(question)&&!/\b(don.t|do not|never)\s+(?:call|dial|ring)\b/i.test(question);}
 export function directCallTarget(question:string){
  if(!immediateCallCommand(question))return null;
- const words:Record<string,string>={zero:'0',oh:'0',one:'1',two:'2',three:'3',four:'4',five:'5',six:'6',seven:'7',eight:'8',nine:'9'};
- const source=question.toLowerCase().replace(/\b(zero|oh|one|two|three|four|five|six|seven|eight|nine)\b/g,w=>words[w]);
- const numbers=[...new Set((source.match(/\+?\d[\d\s().-]{5,}\d/g)||[]).flatMap(raw=>{try{return [normalizeDirectPhone(raw)];}catch{return [];}}))];return numbers.length===1?numbers[0]:null;
+ const numbers=dictatedPhones(question);return numbers.length===1?numbers[0]:null;
 }
 const check=(r:any)=>{if(r.error)throw Error(r.error.message||'Call could not be saved');return r.data;};
 export async function executeCurrentCall(client:any,member:any,action:any,question:string){
@@ -31,6 +29,21 @@ export async function dispatchDirectCommand(client:any,member:any,question:strin
 // Only owner turns supply phone/message content; assistant suggestions are never authority.
 export function resolveDirectCallCommand(question:string,history:any[]=[]){
  if(directCallTarget(question))return question;
+ // A country-code correction continues the owner's recent complete call request.
+ // Reuse supplied national digits; never derive a different national number.
+ const correction=question.toLowerCase().replace(/\bplus\s*/g,'+').match(/(?:country code\s*(?:is\s*|of\s*)?\+?|(?:use|it.s|it is)\s+\+|^\s*\+)([1-9]\d{0,2})(?!\d)/);
+ if(correction&&!/\b(?:don.t|do not|never|cancel|draft|preview|example|hypothetical|what if)\b/i.test(question)){
+  const turns=(Array.isArray(history)?history:[]).filter(t=>t?.role==='user'&&typeof t.content==='string').slice(-5);
+  for(let i=turns.length-1;i>=0;i--){const text=turns[i].content;if(/\b(?:cancel|don.t call|do not call|different person|someone else)\b/i.test(text))break;
+   const previous=directCallTarget(text);if(!previous)continue;
+   if(turns.slice(i+1).some(t=>!/country code|\bmake the call\b|\bcall (?:her|him|them)\b|^\s*(?:yes|okay|ok|correct)[.! ]*$/i.test(t.content)))break;
+   const code=correction[1];const corrected=previous.startsWith('+'+code)?previous:previous.startsWith('+1')?'+'+code+previous.slice(2):null;if(!corrected)break;
+   const base=text.replace(/\+?\d[\d\s().-]{5,}\d/g,(raw:string)=>{try{return normalizeDirectPhone(raw)===previous?'[number corrected below]':raw;}catch{return raw;}});
+   const resolved=base+'\nCurrent owner instruction: call '+corrected+'. '+question;
+   if(directCallTarget(resolved)===corrected)return resolved;break;
+  }
+ }
+
  const continuation=question.trim().replace(/^(?:(?:hey|okay|ok|yes|daisy|please|just)[,! ]+)*/i,'').replace(/[.!]+$/,'').trim();
  if(!/^(?:use (?:the|that|my) message(?: i (?:gave|told) you)?(?: and)? )?(?:(?:make|place|start) (?:the|that|this) (?:phone )?call|call (?:her|him|them|that number|the number|this number))(?: (?:now|please|using (?:the|that|my) message|with (?:the|that|my) message))*$/i.test(continuation))return question;
  if(/\b(?:don.t|do not|never|cancel|draft|preview|example|hypothetical|what if|instead of|without)\b/i.test(question)||/\b(?:can|could|would|should)\s+(?:daisy|the system|this feature)\b|\b(?:how|why|when)\b/i.test(question))return question;
