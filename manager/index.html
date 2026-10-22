@@ -1107,8 +1107,8 @@
     supabaseClient.channel("network-manager-live").on("postgres_changes",{event:"*",schema:"public",table:"prephub_leads"},()=>managerSession&&loadManagerData()).on("postgres_changes",{event:"*",schema:"public",table:"lead_operations"},()=>managerSession&&loadManagerData()).on("postgres_changes",{event:"*",schema:"public",table:"lead_communications"},()=>managerSession&&loadManagerData()).on("postgres_changes",{event:"*",schema:"public",table:"helux_cases"},()=>managerSession&&loadManagerData()).on("postgres_changes",{event:"*",schema:"public",table:"webinars"},()=>managerSession&&loadManagerData()).on("postgres_changes",{event:"*",schema:"public",table:"site_daily_visitors"},()=>managerSession&&loadManagerData()).subscribe();
     renderKanban();updateMetrics();renderMonths();renderPrep();renderCredit();renderTax();renderReview();renderHelux();syncWebinarForm();renderWebinarLibrary();bindToasts();bootstrapManager();window.setInterval(()=>managerSession&&loadManagerData(),10000);
   </script>
-<script src="/manager/daisy.js?v=20261020-preparation-scripts"></script>
-<script src="/manager/call-history.js?v=20261020-objective-calls"></script>
+<script src="/manager/daisy.js?v=20261022-direct-number"></script>
+<script src="/manager/call-history.js?v=20261022-direct-number"></script>
 <script src="/manager/script-library.js?v=20261020-objective-calls"></script><script src="/manager/caller-settings.js?v=20261020-objective-calls"></script><script src="/manager/preparation-queue.js?v=20261020-preparation-blocks"></script></body>
 </html>
 

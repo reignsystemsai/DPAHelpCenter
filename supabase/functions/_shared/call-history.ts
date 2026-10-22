@@ -3,7 +3,7 @@ export async function archiveRecording(client:any,item:any){
  if(item.result?.recording_storage_path)return item.result.recording_storage_path;
  if(item.result?.recording_status!=='completed')return null;
  const r=await fetch(`https://helux-ai-workforce.onrender.com/api/v1/manager/calls/${item.id}/recording`,{headers:{'x-helux-key':Deno.env.get('HELUX_API_KEY')||''},signal:AbortSignal.timeout(20000)});if(!r.ok)throw Error('Recording archive is pending; retry shortly');
- const path=`${item.lead_id}/${item.id}.mp3`,audio=new Uint8Array(await r.arrayBuffer());if(audio.byteLength>40000000)throw Error('Recording exceeds archive limit');
+ const path=`${item.lead_id||'direct/'+item.created_by}/${item.id}.mp3`,audio=new Uint8Array(await r.arrayBuffer());if(audio.byteLength>40000000)throw Error('Recording exceeds archive limit');
  const saved=await client.storage.from('daisy-call-recordings').upload(path,audio,{contentType:'audio/mpeg',upsert:true});if(saved.error)throw saved.error;
  const fresh=await client.from('daisy_crm_actions').select('result,updated_at').eq('id',item.id).single();if(fresh.error)throw fresh.error;
  const update=await client.from('daisy_crm_actions').update({result:{...fresh.data.result,recording_storage_path:path}}).eq('id',item.id).eq('updated_at',fresh.data.updated_at).select('id');if(update.error)throw update.error;if(!update.data.length)throw Error('Recording archive metadata changed; retry');return path;
