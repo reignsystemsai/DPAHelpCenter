@@ -27,3 +27,25 @@ export async function dispatchDirectCommand(client:any,member:any,question:strin
  const prepared=await prepareDirectNumberCall(client,member,{phone,recipient_name:words.recipient_name,owner_request:question,reason:words.objective,content:{...words,key_points:[words.objective],recording_requested:true}},question,requestId);
  return executeCurrentCall(client,member,prepared.action,question);
 }
+// A current instruction can authorize the complete call the owner just dictated.
+// Only owner turns supply phone/message content; assistant suggestions are never authority.
+export function resolveDirectCallCommand(question:string,history:any[]=[]){
+ if(directCallTarget(question))return question;
+ const continuation=question.trim().replace(/^(?:(?:hey|okay|ok|yes|daisy|please|just)[,! ]+)*/i,'').replace(/[.!]+$/,'').trim();
+ if(!/^(?:use (?:the|that|my) message(?: i (?:gave|told) you)?(?: and)? )?(?:(?:make|place|start) (?:the|that|this) (?:phone )?call|call (?:her|him|them|that number|the number|this number))(?: (?:now|please|using (?:the|that|my) message|with (?:the|that|my) message))*$/i.test(continuation))return question;
+ if(/\b(?:don.t|do not|never|cancel|draft|preview|example|hypothetical|what if|instead of|without)\b/i.test(question)||/\b(?:can|could|would|should)\s+(?:daisy|the system|this feature)\b|\b(?:how|why|when)\b/i.test(question))return question;
+ // A new number or named recipient must be resolved on its own, not silently replaced.
+ if(/\d|\b(?:zero|one|two|three|four|five|six|seven|eight|nine)\b/i.test(question))return question;
+ const ownerTurns=(Array.isArray(history)?history:[]).filter(t=>t?.role==='user'&&typeof t.content==='string').slice(-5).map(t=>t.content.trim());
+ for(let i=ownerTurns.length-1;i>=0;i--){
+  const text=ownerTurns[i];
+  if(/\b(?:cancel|don.t call|do not call|never call|different person|someone else)\b/i.test(text))return question;
+  if(directCallTarget(text)){
+   // Intervening substantive instructions may have changed the target or message.
+   const later=ownerTurns.slice(i+1);
+   if(later.some(t=>!/^\s*(?:(?:yes|yeah|okay|ok|please|daisy|go ahead|correct|that.s correct)[,.! ]*)*(?:(?:make|place) (?:the|that) call|call (?:her|him|them)|use (?:the|that|my) message(?: i (?:gave|told) you)?[.! ]*)?\s*$/i.test(t)))return question;
+   return text+'\nCurrent owner instruction: '+question;
+  }
+ }
+ return question;
+}
