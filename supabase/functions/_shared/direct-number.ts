@@ -38,7 +38,7 @@ export function ownerPhoneEvidence(phone:string,request:string,history:any[]=[],
  const name=recipientName.trim();
  const named=!!name&&name!==phone&&request.toLowerCase().includes(name.toLowerCase());
  if(!referential&&!named)return null;
- const turns=(Array.isArray(history)?history:[]).filter(t=>t?.role==='user'&&typeof t.content==='string').slice(-5);
+ const turns=(Array.isArray(history)?history:[]).filter(t=>t?.role==='user'&&typeof t.content==='string').slice(-30);
  for(let i=turns.length-1;i>=0;i--){
   const text=turns[i].content;
   if(/\b(?:cancel|don.t call|do not call|never call|different person|someone else)\b/i.test(text))return null;
@@ -60,7 +60,7 @@ export function normalizeOwnerPhone(value:any,request:string,history:any[]=[],re
  let phone:string|null=null;try{phone=normalizeDirectPhone(raw);}catch{}
  if(phone&&ownerPhoneEvidence(phone,request,history,recipientName))return phone;
  if(!/^[+\d().\s-]+$/.test(raw))throw Error('Give the complete phone number without an extension');
- const candidates=[...new Set([request,...(Array.isArray(history)?history:[]).filter(t=>t?.role==='user'&&typeof t.content==='string').slice(-5).map(t=>t.content)].flatMap(dictatedPhones))];
+ const candidates=[...new Set([request,...(Array.isArray(history)?history:[]).filter(t=>t?.role==='user'&&typeof t.content==='string').slice(-30).map(t=>t.content)].flatMap(dictatedPhones))];
  const matches=candidates.filter(p=>p.slice(1)===raw.replace(/\D/g,'')&&ownerPhoneEvidence(p,request,history,recipientName));
  if(matches.length===1)return matches[0];
  throw Error('The proposed number does not match the owner-supplied country code and digits in this conversation. Clarify only missing or conflicting digits.');
