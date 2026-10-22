@@ -6,7 +6,7 @@ create or replace function public.daisy_phone_contact_state(p_phone text) return
 language sql stable security invoker set search_path='' as $$
  with matched as (
   select l.id from public.prephub_leads l where
-  (case when length(regexp_replace(l.phone,'[^0-9]','','g'))=10 then '1'||regexp_replace(l.phone,'[^0-9]','','g') else regexp_replace(l.phone,'[^0-9]','','g') end)=regexp_replace(p_phone,'[^0-9]','','g')
+  (case when length(regexp_replace(l.phone,'[^0-9]','','g'))=10 and l.phone !~ '^\s*\+' then '1'||regexp_replace(l.phone,'[^0-9]','','g') else regexp_replace(l.phone,'[^0-9]','','g') end)=regexp_replace(p_phone,'[^0-9]','','g')
  ), history as (
   select a.* from public.daisy_crm_actions a where a.kind='call' and
   (a.lead_id in (select id from matched) or a.payload->'recipient'->>'phone'=p_phone)
