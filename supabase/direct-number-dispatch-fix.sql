@@ -1,0 +1,3 @@
+create or replace function private.preparation_dispatch_failure() returns trigger language plpgsql security invoker set search_path='' as $$ begin
+ if new.lead_id is not null and new.kind in ('call','email') and new.status='needs_review' and new.provider_id is null and (tg_op='INSERT' or old.status is distinct from new.status) then
+ perform public.preparation_task_event(new.lead_id,'dispatch_failure:'||new.id,'provider_failure',jsonb_build_object('task_title','Review unconfirmed provider dispatch before retrying','status','needs_review','reason','Provider failure or acceptance unconfirmed; no delivery/conversation assumed','evidence',jsonb_build_object('source','daisy_action','action_id',new.id,'summary',new.result->>'summary')));end if;return new;end;$$;
