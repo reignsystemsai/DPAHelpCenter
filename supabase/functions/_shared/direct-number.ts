@@ -23,3 +23,45 @@ export function dictatedPhones(instruction:string){
 }
 export function numberWasDictated(phone:string,instruction:string){return dictatedPhones(instruction).includes(phone);}
 export function directAction(action:any){return action.kind==='call'&&action.lead_id===null&&action.payload?.call_mode==='direct_number'&&action.payload?.recipient?.kind==='direct_phone';}
+
+// Resolve follow-up commands only from owner turns, never Daisy's proposed digits.
+export function ownerCallInstruction(request:string){
+ const q=request.trim().replace(/^(?:(?:hey|okay|ok|yes|daisy|please|just|rain)[,! ]+)*/i,'');
+ return /^(?:(?:i (?:want|need) you to|can you|could you|would you|go ahead and|please|just)\s+)*(?:(?:call|dial|ring)\s+|(?:make|place|start|retry|try)\s+(?:(?:the|that|this|same)\s+)*(?:phone\s+)?call\b)/i.test(q)&&!/\b(?:don.t|do not|never|cancel|draft|preview|example|hypothetical|what if|instead of|without calling)\b/i.test(request);
+}
+export function ownerPhoneEvidence(phone:string,request:string,history:any[]=[],recipientName=''){
+ const current=dictatedPhones(request);
+ if(current.length)return current.length===1&&current[0]===phone?request:null;
+ // A new/incomplete phone expression must be clarified, never replaced by history.
+ if(/\+\s*\d|country code|\d[\d ().-]{5,}\d/i.test(request)||!ownerCallInstruction(request))return null;
+ const referential=/\b(?:call|dial|ring)\s+(?:(?:her|him|them|again|back)|(?:(?:the|that|this|same)\s+)?(?:number|person|client))\b|\b(?:make|place|retry|start|try)\s+(?:(?:the|that|this|same)\s+)*(?:phone\s+)?call\b/i.test(request);
+ const name=recipientName.trim();
+ const named=!!name&&name!==phone&&request.toLowerCase().includes(name.toLowerCase());
+ if(!referential&&!named)return null;
+ const turns=(Array.isArray(history)?history:[]).filter(t=>t?.role==='user'&&typeof t.content==='string').slice(-5);
+ for(let i=turns.length-1;i>=0;i--){
+  const text=turns[i].content;
+  if(/\b(?:cancel|don.t call|do not call|never call|different person|someone else)\b/i.test(text))return null;
+  const numbers=dictatedPhones(text);
+  if(numbers.length){
+   if(numbers.length!==1||numbers[0]!==phone)return null;
+   if(named&&!text.toLowerCase().includes(name.toLowerCase()))return null;
+   return text;
+  }
+  if(/\+\s*\d|country code|\d[\d ().-]{5,}\d/i.test(text))return null;
+ }
+ return null;
+}
+
+export function normalizeOwnerPhone(value:any,request:string,history:any[]=[],recipientName=''){
+ // A tool may omit '+' even though the owner explicitly supplied the country code.
+ // Reconstruct only an exact digit match to an authoritative owner expression.
+ const raw=String(value??'').trim().replace(/[‐‑–—]/g,'-');
+ let phone:string|null=null;try{phone=normalizeDirectPhone(raw);}catch{}
+ if(phone&&ownerPhoneEvidence(phone,request,history,recipientName))return phone;
+ if(!/^[+\d().\s-]+$/.test(raw))throw Error('Give the complete phone number without an extension');
+ const candidates=[...new Set([request,...(Array.isArray(history)?history:[]).filter(t=>t?.role==='user'&&typeof t.content==='string').slice(-5).map(t=>t.content)].flatMap(dictatedPhones))];
+ const matches=candidates.filter(p=>p.slice(1)===raw.replace(/\D/g,'')&&ownerPhoneEvidence(p,request,history,recipientName));
+ if(matches.length===1)return matches[0];
+ throw Error('The proposed number does not match the owner-supplied country code and digits in this conversation. Clarify only missing or conflicting digits.');
+}
