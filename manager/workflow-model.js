@@ -15,6 +15,11 @@
     if(task?.due_at&&Date.parse(task.due_at)>now)return 'Not due yet';
     return null;
   }
+  function checkpointGroups(rows){return [
+    {key:'new',title:'New / Not Engaged',goal:'First goal: Prep Hub login',rows:rows.filter(r=>!r.transferred&&!r.login)},
+    {key:'preparation',title:'Engaged / Preparation',goal:'Next goal: Complete the next checkpoint',rows:rows.filter(r=>!r.transferred&&r.login)},
+    {key:'dpa',title:'DPA Ready',goal:'Preparation handoff recorded · Ready for real estate follow-up',rows:rows.filter(r=>r.transferred)}
+  ];}
   const terminal=a=>['completed','no-answer','busy','failed','canceled'].includes(a?.result?.call_status);
-  return {areas,loginConfirmed,needs,rows,worklist,areaKey,eligible,terminal};
+  return {areas,loginConfirmed,needs,rows,worklist,areaKey,eligible,terminal,checkpointGroups};
 });
