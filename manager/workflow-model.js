@@ -20,6 +20,14 @@
     {key:'preparation',title:'Engaged / Preparation',goal:'Next goal: Complete the next checkpoint',rows:rows.filter(r=>!r.transferred&&r.login)},
     {key:'dpa',title:'DPA Ready',goal:'Preparation handoff recorded · Ready for real estate follow-up',rows:rows.filter(r=>r.transferred)}
   ];}
+  function stepState(step){const checked=['recorded','saved_complete'].includes(step?.status);return {checked,label:checked?'Complete':step?.status==='client_reported'?'Client reported':step?.status==='in_progress'?'In progress':'Pending'};}
+  function liveStatus(snapshot,receivedAt,leadId,now=Date.now()){
+    if(!snapshot?.ok||!Number.isFinite(Date.parse(snapshot.as_of)))return {state:'unavailable'};
+    const elapsed=now-receivedAt;if(elapsed<0||elapsed>45000)return {state:'unavailable'};
+    const person=(snapshot.live||[]).find(x=>x.lead_id===leadId);if(!person)return {state:'no_signal'};
+    const age=Date.parse(snapshot.as_of)-Date.parse(person.seen_at)+elapsed;if(!Number.isFinite(age)||age<0||age>45000)return {state:'no_signal'};
+    return {state:'live',pages:person.pages||[],seen_at:person.seen_at};
+  }
   const terminal=a=>['completed','no-answer','busy','failed','canceled'].includes(a?.result?.call_status);
-  return {areas,loginConfirmed,needs,rows,worklist,areaKey,eligible,terminal,checkpointGroups};
+  return {areas,loginConfirmed,needs,rows,worklist,areaKey,eligible,terminal,checkpointGroups,stepState,liveStatus};
 });
