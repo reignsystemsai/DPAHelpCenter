@@ -43,3 +43,11 @@ test('conversational addresses and polite requests always dispatch the exact cho
  assert.equal(savedScriptIntent('Chat, do not call +13055550101 using script 40'),null);
  assert.equal(savedScriptIntent('Chat, can Daisy call +13055550101 using script 40?'),null);
 });
+
+test('transcription noise before an explicit Daisy call still uses the requested saved script',async()=>{
+ const q='Jake Paul Daisy call +1-305-555-0101 you script number 40';const f=fixture();
+ const intent=savedScriptIntent(q);assert.equal(intent.scriptNumber,40);assert.deepEqual(intent.phones,['+13055550101']);
+ const result=await dispatchSavedScriptCommand(f.client,{role:'owner',user_id:'owner'},q,[],requestId,f.deps);
+ assert.equal(result.action.status,'submitted');assert.equal(result.action.payload.script_id,scriptId);assert.equal(f.dispatches,1);assert.equal(f.tables.daisy_call_scripts.length,1);
+ for(const text of ['Why did Jake Paul Daisy call +13055550101 using script 40?','He said Daisy call +13055550101 using script 40','Do not let Daisy call +13055550101 using script 40'])assert.equal(savedScriptIntent(text),null,text);
+});
