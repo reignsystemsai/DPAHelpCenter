@@ -33,20 +33,7 @@
     const value=r.transferred?r.customer.handoffAt:r.login?(r.customer.claimedAt||r.steps.find(s=>s.id==='access'&&s.status==='recorded')?.recorded_at):r.customer.intakeCreatedAt;
     const at=validStamp(value,now);return at===null?null:{at,days:Math.floor((now-at)/86400000)};
   }
-  function attention(r,call,now=Date.now()){
-    if(r.transferred)return [];
-    const t=r.task,reasons=[],pending=(t?.scheduled_callbacks||[]).filter(c=>!['completed','canceled','cancelled','skipped'].includes(c.status));
-    const overdue=pending.some(c=>{const at=validStamp(c.due_at,now);return at!==null&&at<now;});
-    const held=Boolean(t?.admin_paused||t?.preferences?.call_paused||['paused','working','submitted','completed','canceled'].includes(t?.status));
-    const due=validStamp(t?.due_at,now);
-    if(overdue)reasons.push('Overdue callback');
-    else if(!held&&due!==null&&due<now&&!pending.some(c=>Date.parse(c.due_at)>now))reasons.push('Overdue task');
-    if(/^(failed|error)$/i.test(call?.last_call_result||''))reasons.push('Latest call failed');
-    const dates=[stageTiming(r,now)?.at,...r.steps.filter(s=>stepState(s).checked).map(s=>validStamp(s.recorded_at,now))].filter(n=>n!==null&&n!==undefined);
-    if(!held&&dates.length&&now-Math.max(...dates)>=7*86400000)reasons.push('No recorded checkpoint progress in 7+ days');
-    return reasons;
-  }
   function funnel(rows){const total=rows.length,logged=rows.filter(r=>r.login).length,handoffs=rows.filter(r=>r.transferred).length;return {total,logged,handoffs,loginRate:total?Math.round(logged/total*100):null,handoffRate:total?Math.round(handoffs/total*100):null};}
   const terminal=a=>['completed','no-answer','busy','failed','canceled'].includes(a?.result?.call_status);
-  return {areas,loginConfirmed,needs,rows,worklist,areaKey,eligible,terminal,checkpointGroups,stepState,liveStatus,stageTiming,attention,funnel};
+  return {areas,loginConfirmed,needs,rows,worklist,areaKey,eligible,terminal,checkpointGroups,stepState,liveStatus,stageTiming,funnel};
 });
