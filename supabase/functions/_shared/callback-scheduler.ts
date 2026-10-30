@@ -29,7 +29,7 @@ export async function scheduleClientCallback(client:any,body:any){
  await workflowEvent(client,source.lead_id,'callback-scheduled:'+source.id,'call_outcome',{status:'pending',stage:'Connected',task_title:'Daisy: scheduled PrepHub callback',due_at:slot.due_at,reason:'Client confirmed callback time',evidence:{...evidence,outcome:'callback',callback_job_id:job.id,summary:'Daisy callback scheduled for '+slot.due_at,client_quote:body.request_quote,identity_confirmed:true}});
  return {ok:true,scheduled:true,callback:job};
 }
-export function callbackConfirmation(value:any){const s=String(value||'').trim().replace(/^(?:oh|um|uh)[, ]+/i,'');return /^(?:yes|yeah|yep|yup|sure|okay|ok|correct|absolutely|that (?:works|is fine|sounds good)|sounds good|perfect|please do|go ahead)\b/i.test(s)&&!/\b(?:not|don.t|do not|no|wait|but|instead|actually)\b/i.test(s);}
+export function callbackConfirmation(value:any){const s=String(value||'').trim().replace(/^(?:uh[ -]*huh|mhm|mm[ -]*hmm)\b/i,'Yes').replace(/^(?:oh|um|uh)[, ]+/i,'');return /^(?:yes|yeah|yep|yup|sure|okay|ok|correct|absolutely|that (?:works|is fine|sounds good)|sounds good|perfect|please do|go ahead)\b/i.test(s)&&!/\b(?:not|don.t|do not|no|wait|but|instead|actually)\b/i.test(s);}
 export async function runDueCallbacks(client:any,settings:any,now=Date.now(),callbackId?:string){
  if(!settings.callbacks_enabled)return {callbacks_enabled:false,processed:[]};
  if(!dailyWorkState(settings,now).authorized)return {callbacks_enabled:true,waiting_for_daily_instructions:true,processed:[]};
