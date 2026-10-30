@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 const root=document.getElementById('homebuyer-credit-staging'),q=s=>root.querySelector(s),client=window.PrepHubAccount;
-const taxesScript=document.createElement('script');taxesScript.src='/prephub/taxes.js?v=20261030-taxes-1';const taxesReady=new Promise((resolve,reject)=>{taxesScript.onload=resolve;taxesScript.onerror=()=>reject(Error('Taxes could not load. Refresh to retry.'));});document.head.append(taxesScript);
+const taxesScript=document.createElement('script');taxesScript.src='/prephub/taxes.js?v=20261030-tax-filing-plan-2';const taxesReady=new Promise((resolve,reject)=>{taxesScript.onload=resolve;taxesScript.onerror=()=>reject(Error('Taxes could not load. Refresh to retry.'));});document.head.append(taxesScript);
 const params=new URLSearchParams(location.search),mapping={credit:'credit',dti:'income',job:'employment',taxes:'taxes'},paths={credit:'credit',dti:'income',employment:'employment',taxes:'taxes'};
 const requested=params.get('view')||paths[location.pathname.split('/').filter(Boolean)[0]]||null;
 const showView=window.PrepHubView.show;

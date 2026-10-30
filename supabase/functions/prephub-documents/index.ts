@@ -11,7 +11,7 @@ const fileFields='id,person_id,category,slot_id,period_label,filename,mime_type,
 class Problem extends Error{constructor(message:string,public code=400){super(message);}}
 function check(error:any){if(error)throw new Problem('Could not save your document work. Please retry.',503);}
 function workspaceContent(x:any){
- if(!x||!Array.isArray(x.people)||x.people.length<1||x.people.length>2)throw new Problem('Add one or two people to your document packet.');
+ if(!x||!Array.isArray(x.people)||x.people.length<1||x.people.length>4)throw new Problem('Add one to four people to your document packet.');
  const ids=new Set();const people=x.people.map((p:any)=>{
   if(!uuid(p.id)||ids.has(p.id))throw new Problem('Invalid person in document packet.');ids.add(p.id);
   const slots:any={};for(const [category,list] of Object.entries(p.slots||{})){
@@ -45,10 +45,10 @@ Deno.serve(async(req:Request)=>{
   const token=(req.headers.get('authorization')||'').replace(/^Bearer\s+/i,'');if(!token)throw new Problem('Sign in to save your documents.',401);
   const auth=await db.auth.getUser(token);if(auth.error||!auth.data.user)throw new Problem('Sign in to your PrepHub account.',401);const user=auth.data.user,uid=user.id;
   const raw=await req.text();if(raw.length>100000)throw new Problem('Document request is too large.');let body:any;try{body=JSON.parse(raw);}catch{throw new Problem('Invalid document request.');}
-  let profileQuery=db.from('prephub_leads').select('id,first_name').eq('user_id',uid);if(body.lead_id)profileQuery=profileQuery.eq('lead_id',clean(body.lead_id,100));const lead=await profileQuery.order('created_at',{ascending:false}).limit(1).maybeSingle();check(lead.error);if(!lead.data)throw new Problem('No PrepHub profile is connected to this account.',404);
+  let profileQuery=db.from('prephub_leads').select('id,first_name,last_name').eq('user_id',uid);if(body.lead_id)profileQuery=profileQuery.eq('lead_id',clean(body.lead_id,100));const lead=await profileQuery.order('created_at',{ascending:false}).limit(1).maybeSingle();check(lead.error);if(!lead.data)throw new Problem('No PrepHub profile is connected to this account.',404);
   const leadId=lead.data.id,action=clean(body.action,30);
   if(action==='load'){
-   const [workspace,documents,packets]=await Promise.all([storedWorkspace(uid),db.from('prephub_documents').select(fileFields).eq('user_id',uid).eq('state','saved').order('created_at'),db.from('prephub_document_packets').select('id,recipient,state,document_ids,created_at,sent_at,expires_at').eq('user_id',uid).order('created_at',{ascending:false}).limit(10)]);check(documents.error||packets.error);return reply({workspace,files:documents.data.map(fileOutput),packets:packets.data,max_file_bytes:MAX_FILE});
+   const [workspace,documents,packets]=await Promise.all([storedWorkspace(uid),db.from('prephub_documents').select(fileFields).eq('user_id',uid).eq('state','saved').order('created_at'),db.from('prephub_document_packets').select('id,recipient,state,document_ids,created_at,sent_at,expires_at').eq('user_id',uid).order('created_at',{ascending:false}).limit(10)]);check(documents.error||packets.error);return reply({profile:{first_name:lead.data.first_name,last_name:lead.data.last_name},workspace,files:documents.data.map(fileOutput),packets:packets.data,max_file_bytes:MAX_FILE});
   }
   if(action==='save_workspace'){
    const content=workspaceContent(body.content),existing=await storedWorkspace(uid),revision=Number(body.revision)||0;

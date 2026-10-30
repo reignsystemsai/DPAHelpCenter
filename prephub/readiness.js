@@ -43,7 +43,7 @@
   const badge=document.getElementById('credit-readiness-contribution');badge.textContent=scores.credit+'% / 25%';badge.classList.toggle('is-complete',complete);
   const status=document.getElementById('credit-readiness-status');status.textContent=!creditAssessed&&baseline.credit?'Intake-reported FICO of 640+ · 25% added. Your lender confirms the score.':complete?'Credit ready · '+(detected?'Report-detected':'Self-reported')+' · 25% added to My PrepHub.':creditScore>=640&&creditScore<=850?'Confirm your middle mortgage FICO to earn 25%.':'A middle mortgage FICO of 640+ earns 25%.';
   status.classList.toggle('is-complete',complete);
-  for(const option of root.querySelectorAll('#prep-department option'))option.textContent=['savings','documents'].includes(option.value)?names[option.value]:names[option.value]+' · '+(scores[option.value]||0)+'%';
+  for(const option of root.querySelectorAll('#prep-department option'))option.textContent=['savings','documents'].includes(option.value)?names[option.value]:names[option.value]+' — '+(scores[option.value]||0)+'%';
  }
  function persist(){window.PrepHubSectionSave.writeReadiness(saved);update();}
  fico.addEventListener('input',()=>{saved.fico=fico.value;saved.selfConfirmed=false;persist();});
