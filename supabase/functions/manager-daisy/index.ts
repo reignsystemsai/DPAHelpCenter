@@ -1,3 +1,4 @@
+import {dispatchSavedScriptCommand} from '../_shared/saved-script-dispatch.ts';
 import {commandHistory,recentOwnerCallContext,beginCommandAudit} from '../_shared/command-context.ts';
 import {ownerCallInstruction} from '../_shared/direct-number.ts';
 import {stopCallCommand,stopOwnerCalls,stopCallTool} from '../_shared/call-control.ts';
@@ -70,6 +71,7 @@ Deno.serve(async req=>{
    try{finishCommandAudit=await beginCommandAudit(client,member,body);}catch{console.error('Daisy command audit unavailable');}
    const question=clean(body.question);if(!question)return await reportJson({error:'Ask a CRM question first'},400);
    if(member.role==='owner'&&stopCallCommand(question)){const stopped=await stopOwnerCalls(client,member,question);return await reportJson({ok:true,answer:stopped.answer,action_drafts:stopped.actions,query_evidence:[],script_changes:[],caller_settings_changes:[]});}
+   if(member.role==='owner'&&body.request_id){const savedCall=await dispatchSavedScriptCommand(client,member,question,body.history,String(body.request_id));if(savedCall)return await reportJson({ok:true,answer:savedCall.answer,action_drafts:savedCall.action?[savedCall.action]:[],query_evidence:[],script_changes:[],caller_settings_changes:[],as_of:iso(Date.now()),mode:'saved_script_call',request_strategy:'saved_script_direct_v1',client_context_count:0});}
    const directCommand=resolveDirectCallCommand(question,body.history),directPhone=directCallTarget(directCommand);if(member.role==='owner'&&directPhone&&body.request_id){const result=await dispatchDirectCommand(client,member,directCommand,String(body.request_id),directPhone);return await reportJson({ok:true,answer:result.answer,action_drafts:[result.action],query_evidence:[],script_changes:[],caller_settings_changes:[],as_of:iso(Date.now()),mode:'direct_call',request_strategy:'direct_dispatch_v1',client_context_count:0});}
    const visibleIds=Array.isArray(body.visible_action_ids)?body.visible_action_ids.filter((id:any)=>typeof id==='string'&&/^[0-9a-f-]{36}$/i.test(id)).slice(-20):[];
    const needsDraftContext=visibleIds.length>0||/\b(call|script|draft|place|send|approve|finalize|execute|go ahead|do it|yes)\b/i.test(question);

@@ -22,7 +22,7 @@ export function dictatedPhones(instruction:string){
  const national:string[]=[];for(const raw of spoken.match(/\d[\d\s().-]{5,}\d/g)||[])add(raw,national);return [...new Set(national)];
 }
 export function numberWasDictated(phone:string,instruction:string){return dictatedPhones(instruction).includes(phone);}
-export function directAction(action:any){return action.kind==='call'&&action.lead_id===null&&action.payload?.call_mode==='direct_number'&&action.payload?.recipient?.kind==='direct_phone';}
+export function directAction(action:any){return action.kind==='call'&&action.lead_id===null&&['direct_number','saved_script_phone'].includes(action.payload?.call_mode)&&action.payload?.recipient?.kind==='direct_phone';}
 
 // Resolve follow-up commands only from owner turns, never Daisy's proposed digits.
 export function ownerCallInstruction(request:string){
