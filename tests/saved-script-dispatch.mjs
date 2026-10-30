@@ -31,3 +31,15 @@ test('two separate requests to the same person each dispatch while retrying the 
  await dispatchSavedScriptCommand(f.client,{role:'owner',user_id:'owner'},'Another call using script 40',[{role:'user',content:q}],'33333333-3333-4333-8333-333333333333',f.deps);
  assert.equal(f.dispatches,2);
 });
+
+test('conversational addresses and polite requests always dispatch the exact chosen saved script',async()=>{
+ for(const prefix of ['Chat I want you to','Chat, I need you to','Daisy, could you please','Hey Chat, go ahead and','I would like you to','Will you','Please, Daisy, just']){
+  const f=fixture(),q=prefix+" call +1-305-555-0101 the customer's name is Doug go over script number 40";
+  const intent=savedScriptIntent(q);assert.ok(intent,q);assert.equal(intent.scriptNumber,40);assert.deepEqual(intent.phones,['+13055550101']);
+  const r=await dispatchSavedScriptCommand(f.client,{role:'owner',user_id:'owner'},q,[],requestId,f.deps);
+  assert.equal(r.action.status,'submitted',q);assert.equal(r.action.payload.script_id,scriptId);assert.equal(f.dispatches,1);assert.equal(f.tables.daisy_call_scripts.length,1);
+ }
+ assert.equal(savedScriptIntent('Chat, why did you call +13055550101 using script 40?'),null);
+ assert.equal(savedScriptIntent('Chat, do not call +13055550101 using script 40'),null);
+ assert.equal(savedScriptIntent('Chat, can Daisy call +13055550101 using script 40?'),null);
+});

@@ -28,9 +28,17 @@ export function numberWasDictated(phone:string,instruction:string){return dictat
 export function directAction(action:any){return action.kind==='call'&&action.lead_id===null&&['direct_number','saved_script_phone'].includes(action.payload?.call_mode)&&action.payload?.recipient?.kind==='direct_phone';}
 
 // Resolve follow-up commands only from owner turns, never Daisy's proposed digits.
+export function ownerCallText(request:string){
+ let q=request.trim();
+ // Normalize conversational addresses and requests before classifying intent.
+ // Keep the call verb anchored: questions, quoted examples and cancellations stay non-actions.
+ const prefix=/^(?:(?:hey|okay|ok|yes|yeah|chatgpt|chat|assistant|daisy|please|just|rain)\b[\s,!:.—-]*|(?:i (?:want|need) you to|i would like you to|i['’]d like you to|can you|could you|would you|will you|go ahead and)\b[\s,!:.—-]*)/i;
+ while(prefix.test(q))q=q.replace(prefix,'').trim();
+ return q.replace(/^give me (?:a|the) call\b/i,'call me');
+}
 export function ownerCallInstruction(request:string){
- const q=request.trim().replace(/^(?:(?:hey|okay|ok|yes|daisy|please|just|rain)[,! ]+)*/i,'');
- return /^(?:(?:i (?:want|need) you to|can you|could you|would you|go ahead and|please|just)\s+)*(?:(?:call|dial|ring)\s+|(?:make|place|start|retry|try)\s+(?:(?:the|that|this|same)\s+)*(?:phone\s+)?call\b)/i.test(q)&&!/\b(?:don.t|do not|never|cancel|draft|preview|example|hypothetical|what if|instead of|without calling)\b/i.test(request);
+ const q=ownerCallText(request);
+ return /^(?:(?:call|dial|ring)\s+|(?:make|place|start|retry|try)\s+(?:(?:the|that|this|same|another|a|one more)\s+)*(?:phone\s+)?call\b)/i.test(q)&&!/\b(?:don.t|do not|never|cancel|draft|preview|example|hypothetical|what if|instead of|without calling)\b/i.test(request);
 }
 export function ownerPhoneEvidence(phone:string,request:string,history:any[]=[],recipientName=''){
  const current=dictatedPhones(request);

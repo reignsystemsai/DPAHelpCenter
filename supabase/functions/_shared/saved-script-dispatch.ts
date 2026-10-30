@@ -1,4 +1,4 @@
-import {dictatedPhones,normalizeDirectPhone,ownerCallInstruction} from './direct-number.ts';
+import {dictatedPhones,normalizeDirectPhone,ownerCallInstruction,ownerCallText} from './direct-number.ts';
 import {prepareAction,validatedContent} from './crm-actions.ts';
 import {personalizeScript,scriptText} from './call-scripts.ts';
 import {executeCurrentCall,immediateCallCommand} from './direct-dispatch.ts';
@@ -10,7 +10,7 @@ export function savedScriptIntent(question:string,history:any[]=[]){
  const prior=(Array.isArray(history)?history:[]).filter(t=>t?.role==='user'&&typeof t.content==='string').slice(-12);
  const repeat=/^(?:(?:it['’]?s|it is|this is)\s+)?(?:another|one more|repeat the|repeat that)\s+call\b/i.test(question.trim());
  const phoneReply=/^[+\d().\s-]+$/.test(question.trim())&&dictatedPhones(question).length===1;
- const command=question.replace(/\bgive me (?:a|the) call\b/i,'call me');if((!ownerCallInstruction(command)&&!repeat&&!phoneReply)||blocked(question))return null;
+ const command=ownerCallText(question);if((!ownerCallInstruction(command)&&!repeat&&!phoneReply)||blocked(question))return null;
  let number=savedScriptNumber(question);if(number===null&&immediateCallCommand(question))return null;let phones=dictatedPhones(question),source=question;
  let priorRequest=false;
  for(let i=prior.length-1;i>=0;i--){const text=prior[i].content;if(blocked(text)||/\b(?:different person|someone else)\b/i.test(text))break;
@@ -19,7 +19,7 @@ export function savedScriptIntent(question:string,history:any[]=[]){
  }
  if((repeat||phoneReply)&&!priorRequest)return null;
  if(number===null)number=40;
- const target=command.replace(/^(?:(?:hey|okay|ok|yes|daisy|please|just|rain)[,! ]+)*/i,'').replace(/^(?:(?:i (?:want|need) you to|can you|could you|would you|go ahead and|please|just)\s+)*(?:call|dial|ring)\s+/i,'').split(/\b(?:using|with|use|script|sprint|at)\b/i)[0].replace(/[,.! ]+$/,'').trim();
+ const target=command.replace(/^(?:call|dial|ring)\s+/i,'').split(/\b(?:using|with|use|script|sprint|at)\b/i)[0].replace(/[,.! ]+$/,'').trim();
  return {scriptNumber:number,phones,phoneSource:source,target};
 }
 export async function dispatchSavedScriptCommand(client:any,member:any,question:string,history:any[],requestId:string,deps={prepareAction,executeCurrentCall}){
