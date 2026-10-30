@@ -1,0 +1,7 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';
+import {buildPreparationPlan} from '../supabase/functions/_shared/preparation-plan.ts';
+import {navigationStatus} from '../supabase/functions/_shared/prephub-guide.ts';
+const lead={focus_areas:['taxes'],credit_score:700,claimed_at:'2026-10-01'};
+test('a completed general document packet cannot complete the tax preparation area',()=>{const p=buildPreparationPlan(lead,{task_title:''},{updated_at:'2026-10-30',plan:{readiness:{sections:{documents:25},assessed:{documents:true}}}});assert.equal(p.tab,'Taxes');assert.deepEqual(p.journey.remaining_areas,['Taxes']);assert.equal(p.journey.ready_for_review,false);assert.match(p.steps.find(s=>s.id==='tax_docs').action,/each year in Taxes/);});
+test('saved tax preparation completes Taxes independently of general documents',()=>{const p=buildPreparationPlan(lead,{task_title:''},{updated_at:'2026-10-30',plan:{readiness:{sections:{taxes:25,documents:0},assessed:{taxes:true}}}});assert.deepEqual(p.journey.completed_areas,['Taxes']);assert.equal(p.journey.ready_for_review,true);});
+test('a client in the document packet is directed to the separate Taxes tab',()=>{const n=navigationStatus(['Taxes'],[{tab:'documents',visible:true,seen_at:new Date().toISOString()}]);assert.equal(n.recommended_tab,'taxes');assert.equal(n.redirect_required,true);assert.match(n.navigation.taxes.steps.join(' '),/Save My Tax Progress/);});

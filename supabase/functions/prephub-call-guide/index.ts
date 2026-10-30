@@ -1,6 +1,6 @@
 import {createClient} from 'https://esm.sh/@supabase/supabase-js@2.112.3';
 import {normalizePresence,navigationStatus} from '../_shared/prephub-guide.ts';
-import {preparationAreas} from '../_shared/call-scripts.ts';
+import {buildPreparationPlan,loadPreparationEvidence} from '../_shared/preparation-plan.ts';
 const origins=['https://www.dpahelpcenter.com','https://dpahelpcenter.com'];
 const equal=(a:string,b:string)=>{let d=a.length^b.length;for(let i=0;i<Math.max(a.length,b.length);i++)d|=(a.charCodeAt(i)||0)^(b.charCodeAt(i)||0);return d===0;};
 Deno.serve(async req=>{
@@ -25,11 +25,13 @@ Deno.serve(async req=>{
  if(body.action!=='read')return reply({error:'Unsupported action'},400);
  const expected=Deno.env.get('HELUX_API_KEY')||'',key=req.headers.get('x-helux-key')||'';
  if(!expected||!key||!equal(expected,key))return reply({error:'Caller authentication required'},401);
- const found=await db.from('prephub_leads').select('id,focus_areas,credit_score').eq('lead_id',String(body.lead_id||'').slice(0,100)).maybeSingle();if(found.error)throw found.error;if(!found.data)return reply({error:'Call profile not found'},404);lead=found.data;
+ const found=await db.from('prephub_leads').select('id,user_id,focus_areas,credit_score,claimed_at,initial_readiness_score').eq('lead_id',String(body.lead_id||'').slice(0,100)).maybeSingle();if(found.error)throw found.error;if(!found.data)return reply({error:'Call profile not found'},404);lead=found.data;
  const [presence,book]=await Promise.all([db.from('prephub_page_presence').select('tab,panel,visible,seen_at').eq('lead_id',lead.id).gte('seen_at',new Date(Date.now()-45000).toISOString()).order('seen_at',{ascending:false}),db.from('prephub_credit_workbooks').select('updated_at,readiness:content->credit_inputs->prepHubReadiness').eq('lead_id',lead.id).maybeSingle()]);
  if(presence.error||book.error)throw presence.error||book.error;
- const readiness=book.data?.readiness||{},keys:Record<string,string>={Credit:'credit',Income:'income',DTI:'income','Work History':'employment'};
- const areas=preparationAreas(lead).filter(a=>!keys[a]||!(readiness.assessed?.[keys[a]]===true&&readiness.sections?.[keys[a]]===25));
- return reply({...navigationStatus(areas,presence.data||[]),saved_progress:{updated_at:book.data?.updated_at||null,sections:Object.fromEntries(['credit','income','employment','documents'].map(k=>[k,{assessed:readiness.assessed?.[k]===true,contribution:readiness.sections?.[k]===25?25:0}]))},evidence_note:'Saved preparation assessment, not lender approval. Document completion does not prove taxes filed.'});
+ const readiness=book.data?.readiness||{},evidence=await loadPreparationEvidence(db,[lead.id],[lead]);
+ const plan=buildPreparationPlan(lead,{preparation_area:'Preparation review',task_title:''},evidence.workbooks[0],evidence.reports,evidence.documents,evidence.access[0]);
+ const publicAreas:Record<string,string>={'Income / DTI':'DTI','My Documents':'Documents'};
+ const areas=plan.journey.remaining_areas.map((a:string)=>publicAreas[a]||a);
+ return reply({...navigationStatus(areas,presence.data||[]),journey:plan.journey,next_action:plan.next_action,steps:plan.steps,saved_progress:{updated_at:book.data?.updated_at||null,sections:Object.fromEntries(['credit','income','employment','taxes'].map(k=>[k,{assessed:readiness.assessed?.[k]===true,contribution:readiness.sections?.[k]===25?25:0}]))},evidence_note:'Saved preparation assessment, not lender approval. Document completion does not prove taxes filed.'});
  }catch{return reply({error:'Page status unavailable; ask the client what page heading they see.'},400);}
 });

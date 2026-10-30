@@ -1,14 +1,15 @@
 (function(){
 'use strict';
 const root=document.getElementById('homebuyer-credit-staging'),q=s=>root.querySelector(s),client=window.PrepHubAccount;
-const params=new URLSearchParams(location.search),mapping={credit:'credit',dti:'income',job:'employment',taxes:'documents'},paths={credit:'credit',dti:'income',employment:'employment',taxes:'documents'};
+const taxesScript=document.createElement('script');taxesScript.src='/prephub/taxes.js?v=20261030-taxes-1';const taxesReady=new Promise((resolve,reject)=>{taxesScript.onload=resolve;taxesScript.onerror=()=>reject(Error('Taxes could not load. Refresh to retry.'));});document.head.append(taxesScript);
+const params=new URLSearchParams(location.search),mapping={credit:'credit',dti:'income',job:'employment',taxes:'taxes'},paths={credit:'credit',dti:'income',employment:'employment',taxes:'taxes'};
 const requested=params.get('view')||paths[location.pathname.split('/').filter(Boolean)[0]]||null;
 const showView=window.PrepHubView.show;
 window.PrepHubView.show=function(view){showView(view);if(q('[data-panel="'+view+'"]')?.hidden===false){const url=new URL(location.href);url.searchParams.set('view',view);history.replaceState(null,'',url);}};
 root.addEventListener('click',event=>{const button=event.target.closest('[data-view],[data-go]');if(button)window.PrepHubView.show(button.dataset.view||button.dataset.go);});
 q('#prep-department').addEventListener('change',event=>window.PrepHubView.show(event.target.value));
-let connected=false,desired=['overview','credit','income','employment','documents','savings'].includes(requested)?requested:null;
-const labels={credit:'Credit preparation',dti:'Income & DTI',job:'Employment history',taxes:'My documents'};
+let connected=false,desired=['overview','credit','income','employment','taxes','documents','savings'].includes(requested)?requested:null;
+const labels={credit:'Credit preparation',dti:'Income & DTI',job:'Employment history',taxes:'Taxes'};
 function score(value){const n=Math.max(0,Math.min(100,Number(value)||0));q('#prep-readiness-score').textContent=n+'%';q('#prep-readiness-copy').textContent=n===100?'Your assessment is ready for the next step. Continue preparing with your lender.':'Complete your remaining preparation areas and return to review your progress.';}
 function login(view){if(view)desired=view;q('#prep-login-dialog').showModal();q('#prep-login-email').focus();}
 window.PrepHubSignIn=()=>login();
@@ -65,8 +66,8 @@ async function init(){
  await refresh();
  if(connected){
  if(!window.PrepHubWorkbookLoaded)await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('Your saved preparation could not finish loading. Refresh to retry.')),15000);window.addEventListener('prephub-workbook-loaded',()=>{clearTimeout(timer);resolve();},{once:true});});
- await window.PrepHubDocumentsReady;
- const pending=localStorage.getItem('dpa_prephub_next_view');if(['overview','credit','income','employment','documents','savings'].includes(pending)){desired=pending;localStorage.removeItem('dpa_prephub_next_view');}
+ await window.PrepHubDocumentsReady;await taxesReady;window.PrepHubTaxes?.refresh();
+ const pending=localStorage.getItem('dpa_prephub_next_view');if(['overview','credit','income','employment','taxes','documents','savings'].includes(pending)){desired=pending;localStorage.removeItem('dpa_prephub_next_view');}
  window.PrepHubView.show(desired||window.PrepHubPreparation.next(window.PrepHubReadinessScores||{}));document.body.classList.remove('prep-locked');localStorage.setItem('dpa_prephub_return_url',location.origin+'/prephub/');
  }
 

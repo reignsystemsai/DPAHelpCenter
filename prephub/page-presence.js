@@ -1,6 +1,6 @@
 /* Only authenticated page identifiers; no input values, document contents or credentials. */
 (()=>{'use strict';
-const endpoint='https://fklchtsxahepzfzgcqdp.supabase.co/functions/v1/prephub-call-guide',session_id=crypto.randomUUID(),tabs=['overview','credit','income','employment','documents','savings'];
+const endpoint='https://fklchtsxahepzfzgcqdp.supabase.co/functions/v1/prephub-call-guide',session_id=crypto.randomUUID(),tabs=['overview','credit','income','employment','taxes','documents','savings'];
 let client,busy=false,timer;
 async function send(){if(!client||busy)return;busy=true;try{
  const {data}=await client.auth.getSession();if(!data.session)return;

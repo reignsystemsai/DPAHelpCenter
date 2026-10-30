@@ -2,7 +2,7 @@
 (()=>{
  const root=document.getElementById('homebuyer-credit-staging'),fico=document.getElementById('credit-readiness-fico'),confirm=document.getElementById('credit-readiness-confirm');
  let saved={};
- const names={overview:'My PrepHub',credit:'Credit Preparation',income:'Income & DTI',employment:'Employment History',documents:'My Documents',savings:'Savings & Fees'};
+ const names={overview:'My PrepHub',credit:'Credit Preparation',income:'Income & DTI',employment:'Employment History',taxes:'Taxes',documents:'My Documents',savings:'Savings & Fees'};
  let detected=null;
  function reportScore(){
   const work=window.PrepHubSectionSave?.readWorkbook();if(!work)return null;
@@ -24,14 +24,14 @@
   document.getElementById('credit-readiness-confirm-label').textContent=detected?'I confirmed the mortgage FICO scores detected in my reports.':'I confirm this is my middle mortgage FICO.';
   document.getElementById('credit-readiness-source').textContent=detected?'Report-detected · '+detected.text+' · Confirm extracted scores; lender verification still applies.':'Self-reported · Use your mortgage FICO, not a general credit-monitoring score.';
   const creditScore=Number(fico.value),complete=fico.value!==''&&Number.isInteger(creditScore)&&creditScore>=640&&creditScore<=850&&confirm.checked,score=complete?25:0;
-  const signals=window.PrepHubReadinessSignals||{},assessed=window.PrepHubReadinessAssessed||{},baseline=window.PrepHubReadinessBaseline||{};const creditAssessed=detected||saved.fico!==undefined;const contribution=key=>(assessed[key]?signals[key]:baseline[key])?25:0;const scores={credit:creditAssessed?score:(baseline.credit?25:0),income:contribution('income'),employment:contribution('employment'),documents:contribution('documents')};scores.overview=scores.credit+scores.income+scores.employment+scores.documents;
- window.PrepHubSectionSave?.writeReadinessSnapshot?.({sections:{credit:scores.credit,income:scores.income,employment:scores.employment,documents:scores.documents},total:scores.overview,assessed:{credit:!!creditAssessed,income:!!assessed.income,employment:!!assessed.employment,documents:!!assessed.documents},basis:'PrepHub preparation progress; lender confirms qualification'});
+  const signals=window.PrepHubReadinessSignals||{},assessed=window.PrepHubReadinessAssessed||{},baseline=window.PrepHubReadinessBaseline||{};const creditAssessed=detected||saved.fico!==undefined;const contribution=key=>(assessed[key]?signals[key]:baseline[key])?25:0;const scores={credit:creditAssessed?score:(baseline.credit?25:0),income:contribution('income'),employment:contribution('employment'),taxes:contribution('taxes')};scores.overview=scores.credit+scores.income+scores.employment+scores.taxes;
+ window.PrepHubSectionSave?.writeReadinessSnapshot?.({sections:{credit:scores.credit,income:scores.income,employment:scores.employment,taxes:scores.taxes},total:scores.overview,assessed:{credit:!!creditAssessed,income:!!assessed.income,employment:!!assessed.employment,taxes:!!assessed.taxes},basis:'PrepHub preparation progress; lender confirms qualification'});
  window.PrepHubReadinessScores=scores;
- const completed=['credit','income','employment','documents'].filter(key=>scores[key]===25).length;
+ const completed=['credit','income','employment','taxes'].filter(key=>scores[key]===25).length;
  const mainScore=root.querySelector('#prep-readiness-score');mainScore.textContent=scores.overview+'%';mainScore.classList.toggle('prep-ready',scores.overview===100);
  root.querySelector('#prep-readiness-copy').textContent=completed+' of 4 sections complete. Preparation progress; your lender confirms qualification.';
  root.querySelector('#prep-task-summary').textContent=completed===4?'All four preparation areas are complete.':'Complete each area to earn 25%. Your score updates as you make changes.';
- const areaMap={credit:'credit',dti:'income',job:'employment',taxes:'documents'};
+ const areaMap={credit:'credit',dti:'income',job:'employment',taxes:'taxes'};
  for(const area of root.querySelectorAll('[data-prep-key]')){const key=areaMap[area.dataset.prepKey];if(!key)continue;const label=area.querySelector('.prep-area-state');label.hidden=false;label.textContent=scores[key]+'%';label.classList.add('prep-score-badge');label.classList.toggle('is-complete',scores[key]===25);}
  const chosen=window.PrepHubPreparation.next(scores),next=chosen==='overview'?null:chosen;
  const hero=root.querySelector('[data-panel="overview"] .hero');
@@ -43,7 +43,7 @@
   const badge=document.getElementById('credit-readiness-contribution');badge.textContent=scores.credit+'% / 25%';badge.classList.toggle('is-complete',complete);
   const status=document.getElementById('credit-readiness-status');status.textContent=!creditAssessed&&baseline.credit?'Intake-reported FICO of 640+ · 25% added. Your lender confirms the score.':complete?'Credit ready · '+(detected?'Report-detected':'Self-reported')+' · 25% added to My PrepHub.':creditScore>=640&&creditScore<=850?'Confirm your middle mortgage FICO to earn 25%.':'A middle mortgage FICO of 640+ earns 25%.';
   status.classList.toggle('is-complete',complete);
-  for(const option of root.querySelectorAll('#prep-department option'))option.textContent=option.value==='savings'?names.savings:names[option.value]+' · '+(scores[option.value]||0)+'%';
+  for(const option of root.querySelectorAll('#prep-department option'))option.textContent=['savings','documents'].includes(option.value)?names[option.value]:names[option.value]+' · '+(scores[option.value]||0)+'%';
  }
  function persist(){window.PrepHubSectionSave.writeReadiness(saved);update();}
  fico.addEventListener('input',()=>{saved.fico=fico.value;saved.selfConfirmed=false;persist();});

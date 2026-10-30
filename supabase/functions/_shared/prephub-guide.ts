@@ -4,10 +4,11 @@ export const pages:Record<string,{label:string,steps:string[]}>= {
  credit:{label:'Credit Preparation',steps:['Gather My Three Credit Reports','My Free Homebuyer Credit Analysis','Start My Disputes','Track Your Progress']},
  income:{label:'Income & DTI',steps:['Choose the appropriate income type and use your own records.','Add monthly debt payments.','Include principal and interest, taxes, insurance and applicable PMI in the housing estimate.','Review the estimate, then Save My Numbers.']},
  employment:{label:'Employment History',steps:['Add employers and work dates across two years; different employers are allowed.','Explain any gaps, then Save My History.']},
+ taxes:{label:'Taxes',steps:['Open the year heading for each of the last two years.','Confirm whether that year’s federal tax return has been filed.','Choose the complete return and applicable schedules, then Upload & Save that year’s Return.','Record any missing filing and next step under Your filing plan, then Save My Tax Progress.']},
  documents:{label:'My Documents',steps:['Choose the relevant document category and upload your own records. Never read private identifiers aloud.']},
  savings:{label:'Savings & Fees',steps:['Review estimated upfront costs; your lender confirms exact amounts.']}
 };
-export const areaTabs:Record<string,string>={Credit:'credit',Income:'income',DTI:'income','Work History':'employment',Taxes:'documents'};
+export const areaTabs:Record<string,string>={Credit:'credit',Income:'income',DTI:'income','Work History':'employment',Taxes:'taxes',Documents:'documents','My Documents':'documents','Income / DTI':'income'};
 export function normalizePresence(body:any){
  if(!pages[body.tab]||!/^[0-9a-f-]{36}$/i.test(body.session_id||'')||typeof body.visible!=='boolean')throw Error('Invalid page metadata');
  const panel=body.tab==='credit'&&['reports','flags','disputes','followup','balances','questions'].includes(body.panel)?body.panel:null;
