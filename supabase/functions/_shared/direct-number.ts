@@ -9,6 +9,9 @@ export function dictatedPhones(instruction:string){
  const words:Record<string,string>={zero:'0',oh:'0',one:'1',two:'2',three:'3',four:'4',five:'5',six:'6',seven:'7',eight:'8',nine:'9'};
  let spoken=instruction.toLowerCase().replace(/\b(zero|oh|one|two|three|four|five|six|seven|eight|nine)\b/g,w=>words[w]).replace(/\bplus\s*/g,'+').replace(/\+((?:\d\s+){1,2}\d)(?=[,;])/g,(_,v)=>'+'+v.replace(/\s/g,''));
  if(!/\+\d/.test(spoken))spoken=spoken.replace(/\bcountry code\s*(?:is\s*|of\s*|:)?\s*([1-9]\d{0,2})(?=[\s,;]|$)/g,'country code +$1');
+ // Accept a country code spoken after the national number as well as before it.
+ const suffix=spoken.match(/\b(?:use[ds]?\s+)?\+([1-9]\d{0,2})(?!\d)\s+(?:for\s+)?(?:the\s+)?country code\b/);
+ if(suffix){const before=spoken.slice(0,suffix.index);const numbers=before.match(/\d[\d ().-]{6,}\d/g)||[];const resolved:string[]=[];for(const raw of numbers){const digits=raw.replace(/\D/g,'');try{resolved.push(normalizeDirectPhone('+'+(digits.startsWith(suffix[1])&&digits.length===11?digits:suffix[1]+digits)));}catch{}}if(resolved.length)return [...new Set(resolved)];}
  const explicit:string[]=[];
  const add=(raw:string,target:string[])=>{try{target.push(normalizeDirectPhone(raw));}catch{}};
  for(const m of spoken.matchAll(/\+(\d[\d ().-]{6,}\d)/g))add('+'+m[1],explicit);

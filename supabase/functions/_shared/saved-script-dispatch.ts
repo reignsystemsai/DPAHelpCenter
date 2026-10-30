@@ -7,10 +7,17 @@ const uuid=(s:string)=>/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f
 const blocked=(q:string)=>/\b(?:don.t|do not|never|cancel|draft|preview|example|hypothetical|what if|without calling|instead of calling)\b/i.test(q);
 export function savedScriptNumber(q:string){const words:Record<string,number>={forty:40,'forty one':41,'forty two':42,'forty three':43,'forty four':44};const found=[...q.matchAll(/\b(?:script|sprint)\s*(?:number\s*|no\.?\s*|#\s*)?(\d{1,5}\b|forty(?:[ -](?:one|two|three|four))?\b)/gi)].map(m=>/^\d/.test(m[1])?Number(m[1]):words[m[1].toLowerCase().replace('-',' ')]);return new Set(found).size===1?found[0]:null;}
 export function savedScriptIntent(question:string,history:any[]=[]){
- const command=question.replace(/\bgive me (?:a|the) call\b/i,'call me');if(!ownerCallInstruction(command)||blocked(question))return null;
- let number=savedScriptNumber(question);if(number===null&&immediateCallCommand(question))return null;let phones=dictatedPhones(question),source=question;
  const prior=(Array.isArray(history)?history:[]).filter(t=>t?.role==='user'&&typeof t.content==='string').slice(-12);
- for(let i=prior.length-1;i>=0&&(number===null||!phones.length);i--){const text=prior[i].content;if(blocked(text)||/\b(?:different person|someone else)\b/i.test(text))break;if(ownerCallInstruction(text)&&savedScriptNumber(text)!==null){if(number===null)number=savedScriptNumber(text);if(!phones.length&&!/\+\s*\d|\d[\d ().-]{5,}\d/.test(question)){phones=dictatedPhones(text);source=text;}break;}}
+ const repeat=/^(?:(?:it['’]?s|it is|this is)\s+)?(?:another|one more|repeat the|repeat that)\s+call\b/i.test(question.trim());
+ const phoneReply=/^[+\d().\s-]+$/.test(question.trim())&&dictatedPhones(question).length===1;
+ const command=question.replace(/\bgive me (?:a|the) call\b/i,'call me');if((!ownerCallInstruction(command)&&!repeat&&!phoneReply)||blocked(question))return null;
+ let number=savedScriptNumber(question);if(number===null&&immediateCallCommand(question))return null;let phones=dictatedPhones(question),source=question;
+ let priorRequest=false;
+ for(let i=prior.length-1;i>=0;i--){const text=prior[i].content;if(blocked(text)||/\b(?:different person|someone else)\b/i.test(text))break;
+  const priorPhones=dictatedPhones(text);if(!phones.length&&priorPhones.length&&!/\+\s*\d|\d[\d ().-]{5,}\d/.test(question)){phones=priorPhones;source=text;}
+  if(ownerCallInstruction(text)&&savedScriptNumber(text)!==null){priorRequest=true;if(number===null)number=savedScriptNumber(text);break;}
+ }
+ if((repeat||phoneReply)&&!priorRequest)return null;
  if(number===null)number=40;
  const target=command.replace(/^(?:(?:hey|okay|ok|yes|daisy|please|just|rain)[,! ]+)*/i,'').replace(/^(?:(?:i (?:want|need) you to|can you|could you|would you|go ahead and|please|just)\s+)*(?:call|dial|ring)\s+/i,'').split(/\b(?:using|with|use|script|sprint|at)\b/i)[0].replace(/[,.! ]+$/,'').trim();
  return {scriptNumber:number,phones,phoneSource:source,target};

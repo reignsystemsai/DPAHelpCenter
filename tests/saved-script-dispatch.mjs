@@ -11,3 +11,23 @@ test('a phone outside the CRM uses the saved script directly without creating a 
 test('an explicit follow-up call retains the earlier owner-provided script and number',()=>{const h=[{role:'user',content:'Call 3055550101 using Sprint number 40'},{role:'user',content:'That is for Doug'}];const intent=savedScriptIntent('Call Doug',h);assert.equal(intent.scriptNumber,40);assert.deepEqual(intent.phones,['+13055550101']);assert.equal(intent.target,'Doug');});
 
 test('an in-flight retry does not finalize or dispatch a half-prepared request',async()=>{const f=fixture(),q='Call 3055550101 using script 40';f.tables.daisy_crm_actions.push({id:requestId,created_by:'owner',status:'draft',payload:{owner_saved_script_request:q}});await dispatchSavedScriptCommand(f.client,{role:'owner',user_id:'owner'},q,[],requestId,f.deps);assert.equal(f.dispatches,0);assert.equal(f.prepared,0);});
+
+test('country code after national digits, numeric correction and another-call wording keep script 40 on the direct route',()=>{
+ const q="Daisy call 305-555-0101 with script number 40 the customer's name is Doug used plus one for the country code";
+ assert.deepEqual(savedScriptIntent(q).phones,['+13055550101']);
+ const h=[{role:'user',content:q}];
+ assert.deepEqual(savedScriptIntent('1305-555-0101',h).phones,['+13055550101']);
+ h.push({role:'user',content:'1305-555-0101'});
+ const repeat=savedScriptIntent("it's another call and you script number 40",h);
+ assert.equal(repeat.scriptNumber,40);assert.deepEqual(repeat.phones,['+13055550101']);
+ assert.equal(savedScriptIntent('1305-555-0101'),null);
+ assert.equal(savedScriptIntent('Another call',h.concat({role:'user',content:'Cancel that call'})),null);
+});
+test('two separate requests to the same person each dispatch while retrying the same request does not',async()=>{
+ const f=fixture();const q='Call 3055550101 using script 40';
+ await dispatchSavedScriptCommand(f.client,{role:'owner',user_id:'owner'},q,[],requestId,f.deps);
+ await dispatchSavedScriptCommand(f.client,{role:'owner',user_id:'owner'},'Another call using script 40',[{role:'user',content:q}],'33333333-3333-4333-8333-333333333333',f.deps);
+ assert.equal(f.dispatches,2);
+ await dispatchSavedScriptCommand(f.client,{role:'owner',user_id:'owner'},'Another call using script 40',[{role:'user',content:q}],'33333333-3333-4333-8333-333333333333',f.deps);
+ assert.equal(f.dispatches,2);
+});
