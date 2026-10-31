@@ -31,7 +31,8 @@ export async function scheduleClientCallback(client:any,body:any){
  return {ok:true,scheduled:true,callback:job};
 }
 export function confirmedCallback(args:any,transcript:any[]){
- const turns=(transcript||[]).filter((t:any)=>['client','daisy'].includes(t.role)&&String(t.text||'').trim()),last=turns.at(-1),readback=turns.at(-2);
+ const turns=(transcript||[]).filter((t:any)=>['client','daisy'].includes(t.role)&&String(t.text||'').trim()),last=turns.at(-1);let readback=turns.at(-2);
+ if(/^Just to make sure I understand you correctly, was that a yes or a no[?!. ]*$/i.test(String(readback?.text||''))&&turns.at(-3)?.role==='client'&&!/[0-9]|\b(?:instead|actually|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i.test(String(turns.at(-3)?.text||'')))readback=turns.at(-4);
  if(last?.role!=='client'||!callbackConfirmation(last.text)||readback?.role!=='daisy'||/\bor\b/i.test(readback.text))return null;
  const at=Date.parse(args.callback_at);if(!Number.isFinite(at)||callbackZone(readback.text)!==args.timezone)return null;
  const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:args.timezone,month:'long',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}).formatToParts(at).map((p:any)=>[p.type,p.value]));
