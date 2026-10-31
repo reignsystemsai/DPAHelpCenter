@@ -11,11 +11,20 @@ export function conversationMode(q:string){
  return fresh&&!follow?'new_client':follow&&!fresh?'follow_up':null;
 }
 export function savedScriptNumber(q:string){const words:Record<string,number>={forty:40,'forty one':41,'forty two':42,'forty three':43,'forty four':44};const found=[...q.matchAll(/\b(?:script|sprint)\s*(?:number\s*|no\.?\s*|#\s*)?(\d{1,5}\b|forty(?:[ -](?:one|two|three|four))?\b)/gi)].map(m=>/^\d/.test(m[1])?Number(m[1]):words[m[1].toLowerCase().replace('-',' ')]);return new Set(found).size===1?found[0]:null;}
+// A complete saved-script instruction may survive dictation without the call verb.
+// Recognize its intent from the recipient + selected script + requested action/mode,
+// instead of requiring one particular assistant address or polite prefix.
+export function impliedSavedScriptRequest(question:string){
+ const q=ownerCallText(question);
+ if(blocked(question)||savedScriptNumber(question)===null||dictatedPhones(question).length!==1)return false;
+ if(/^(?:why|how|when|what|which|who|where|did|does|is|was|are|were|has|have|would|should|could|can|will|tell me|explain|check|look|review|if|he said|she said|they said)\b/i.test(q)||/\b(?:said|says|asked|hypothetical|example)\b/i.test(q))return false;
+ return !!conversationMode(question)||/\b(?:go (?:over|through)|use|using|run|read|follow|with)\b[\s\S]*\b(?:script|sprint)\b/i.test(q);
+}
 export function savedScriptIntent(question:string,history:any[]=[]){
  const prior=(Array.isArray(history)?history:[]).filter(t=>t?.role==='user'&&typeof t.content==='string').slice(-12);
  const repeat=/^(?:(?:it['’]?s|it is|this is)\s+)?(?:another|one more|repeat the|repeat that)\s+call\b/i.test(question.trim());
  const phoneReply=/^[+\d().\s-]+$/.test(question.trim())&&dictatedPhones(question).length===1;
- const command=ownerCallText(question),mode=conversationMode(question),modeRequest=!!mode&&dictatedPhones(question).length===1&&/^\s*(?:(?:hey|chat|daisy)[, ]+)*(?:i need you to|i want you to|please|go ahead)\b/i.test(question)&&savedScriptNumber(question)!==null;if((!ownerCallInstruction(command)&&!repeat&&!phoneReply&&!modeRequest)||blocked(question))return null;
+ const command=ownerCallText(question),mode=conversationMode(question);if((!ownerCallInstruction(command)&&!repeat&&!phoneReply&&!impliedSavedScriptRequest(question))||blocked(question))return null;
  let number=savedScriptNumber(question);if(number===null&&!mode&&immediateCallCommand(question))return null;let phones=dictatedPhones(question),source=question;
  let priorRequest=false;
  for(let i=prior.length-1;i>=0;i--){const text=prior[i].content;if(blocked(text)||/\b(?:different person|someone else)\b/i.test(text))break;

@@ -15,3 +15,9 @@ test('saved-script call command dispatches without the analytical model or a rep
 test('the actual latest dictated wording reaches the saved-script endpoint path without an analytical turn',async()=>{const {savedScriptIntent}=await import('../supabase/functions/_shared/saved-script-dispatch.ts');const f=fixture({question:'Jake Paul Daisy call +13055550101 you script number 40',intentResolver:savedScriptIntent});const r=await f.request();assert.equal(r.body.mode,'saved_script_call');assert.equal(f.modelRequests.length,0);assert.equal(f.draftWrites,0);});
 
 test('even an analytical fallback cannot create a custom-number replacement for a selected script',async()=>{const {savedScriptNumber}=await import('../supabase/functions/_shared/saved-script-dispatch.ts');const f=fixture({question:'I am still trying to call +13055550101 with script number 40',scriptNumber:savedScriptNumber,toolCall:'prepare_direct_number_call'});const r=await f.request();assert.equal(r.status,200);assert.equal(f.draftWrites,0);assert.match(f.modelRequests[1].input.at(-1).output,/existing script number/);});
+
+test('latest omitted-call dictation bypasses the model and custom-call tool at the actual endpoint',async()=>{
+ const {savedScriptIntent}=await import('../supabase/functions/_shared/saved-script-dispatch.ts');
+ const f=fixture({question:"Daisy plus 1 3 0 5 5 5 5 0 1 0 1 the customer's name is Doug go over script number 40 and treat him as a new client",intentResolver:savedScriptIntent});
+ const r=await f.request();assert.equal(r.body.mode,'saved_script_call');assert.equal(f.modelRequests.length,0);assert.equal(f.draftWrites,0);
+});

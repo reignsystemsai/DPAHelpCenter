@@ -73,3 +73,17 @@ test('the customer is Doug wording preserves the spoken name for a fresh call',a
  const f=fixture({linked:false}),q='Daisy I need you to call +1-305-555-0101 the customer is Doug go over script number 40 with him and treat him as a new client';
  assert.equal(savedScriptIntent(q).suppliedName,'Doug');const r=await dispatchSavedScriptCommand(f.client,{role:'owner',user_id:'owner'},q,[],requestId,f.deps);assert.equal(r.action.payload.recipient.name,'Doug');assert.match(r.action.payload.content.opening,/Hi, Doug/);assert.equal(f.dispatches,1);
 });
+
+test('complete dictated saved-script requests do not require a call verb or a special prefix',async()=>{
+ for(const q of [
+ "Daisy plus 1 3 0 5 5 5 5 0 1 0 1 the customer's name is Doug go over script number 40 and treat him as a new client",
+ 'Daisy +13055550101 customer name Doug use script 40 as a follow-up client',
+ '+13055550101 Doug script 40 as a new client',
+ 'Doug at +13055550101 go through script number 40',
+ 'Please +13055550101 using script 40',
+ ]){
+ const f=fixture();const intent=savedScriptIntent(q);assert.ok(intent,q);assert.deepEqual(intent.phones,['+13055550101']);assert.equal(intent.scriptNumber,40);
+ const result=await dispatchSavedScriptCommand(f.client,{role:'owner',user_id:'owner'},q,[],requestId,f.deps);assert.equal(result.action.status,'submitted',q);assert.equal(f.dispatches,1);assert.equal(f.tables.daisy_call_scripts.length,1);
+ }
+ for(const q of ['Why did Daisy use +13055550101 script 40 as a new client?','If I say +13055550101 use script 40 as a new client','Do not use script 40 with +13055550101 as a new client','He said +13055550101 use script 40 as a new client','Preview +13055550101 using script 40','Can Daisy use script 40 with +13055550101 as a new client?'])assert.equal(savedScriptIntent(q),null,q);
+});
