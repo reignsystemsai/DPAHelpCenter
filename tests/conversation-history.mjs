@@ -1,0 +1,7 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';
+import {priorConversations} from '../supabase/functions/_shared/crm-actions.ts';
+test('follow-up loads only matched client history, excludes unanswered and voicemail calls and keeps tax notes',async()=>{
+ const reads=[],rows=[{id:'missed',lead_id:'matched',kind:'call',result:{transcript:[]}},{id:'voicemail',lead_id:'matched',kind:'call',result:{outcome:'voicemail',transcript:[{role:'client',text:'Leave a message'},{role:'daisy',text:'Hello'}]}},{id:'conversation',lead_id:'matched',kind:'call',result:{summary:'Filed 2024, still needs 2025.',client_reported_tax_years:{years:{2024:true,2025:false}},transcript:[{role:'daisy',text:'Which year did you file?'},{role:'client',text:'2024'}]}},{id:'other',lead_id:'other',kind:'call',result:{summary:'Other person',transcript:[{role:'client',text:'Private'},{role:'daisy',text:'Hi'}]}}];
+ const client={from:t=>{reads.push(t);let filtered=rows;const q={select:()=>q,eq:(k,v)=>{filtered=filtered.filter(r=>r[k]===v);return q},order:()=>q,limit:()=>Promise.resolve({data:filtered,error:null})};return q}};
+ const result=await priorConversations(client,'matched');assert.deepEqual(reads,['daisy_crm_actions']);assert.deepEqual(result.map(r=>r.action_id),['conversation']);assert.equal(result[0].client_reported_tax_years.years[2025],false);assert.match(result[0].summary,/2024/);
+});

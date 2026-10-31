@@ -51,3 +51,20 @@ test('transcription noise before an explicit Daisy call still uses the requested
  assert.equal(result.action.status,'submitted');assert.equal(result.action.payload.script_id,scriptId);assert.equal(f.dispatches,1);assert.equal(f.tables.daisy_call_scripts.length,1);
  for(const text of ['Why did Jake Paul Daisy call +13055550101 using script 40?','He said Daisy call +13055550101 using script 40','Do not let Daisy call +13055550101 using script 40'])assert.equal(savedScriptIntent(text),null,text);
 });
+
+test('natural new-client override dispatches the supplied number without consulting CRM history',async()=>{
+ const f=fixture(),queries=[],original=f.client.from;f.client.from=t=>{queries.push(t);return original(t);};
+ const q='I need you to plus 1305-555-0101 ask for Doug you script 40 and treat me as a new client';
+ const intent=savedScriptIntent(q);assert.equal(intent.conversationMode,'new_client');assert.equal(intent.suppliedName,'Doug');
+ const r=await dispatchSavedScriptCommand(f.client,{role:'owner',user_id:'owner'},q,[],requestId,f.deps);
+ assert.equal(r.action.payload.conversation_mode,'new_client');assert.equal(r.action.payload.recipient.name,'Doug');assert.equal(f.dispatches,1);assert.equal(f.prepared,0);assert.ok(!queries.includes('prephub_leads'));assert.ok(!queries.includes('lead_notes'));
+});
+test('follow-up with ask-for wording uses saved script 40 and resolves the phone to its client',async()=>{
+ const f=fixture(),prepare=f.deps.prepareAction;let ownerArgs;f.deps.prepareAction=async(...args)=>{ownerArgs=args;return prepare(...args);};
+ const q='Daisy call +1-305-555-0101 ask for Doug and treat me as a follow-up client';
+ assert.equal(savedScriptIntent(q).conversationMode,'follow_up');
+ await dispatchSavedScriptCommand(f.client,{role:'owner',user_id:'owner'},q,[],requestId,f.deps);
+ assert.equal(f.prepared,1);assert.equal(ownerArgs[2].lead_id,'DPA-EXAMPLE');assert.equal(ownerArgs[3].conversationMode,'follow_up');assert.equal(f.dispatches,1);
+ for(const q of ['Call Doug as a new client','Daisy, call Doug as a first-time customer','Call Doug as a follow up','Call Doug as an existing client'])assert.ok(savedScriptIntent(q),q);
+ for(const q of ['Why did you treat +13055550101 as a new client using script 40?','Do not call +13055550101 as a new client with script 40'])assert.equal(savedScriptIntent(q),null);
+});
