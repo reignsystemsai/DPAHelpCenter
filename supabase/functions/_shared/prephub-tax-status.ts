@@ -1,0 +1,2 @@
+// Return only this recipient's saved tax-status flags, never workbook notes or documents.
+export function savedTaxStatus(book:any,years:number[]){const raw=book?.tax_preparation?.people||{};return {saved_at:book?.updated_at||null,source:'saved client selections; not IRS verification',people:Object.entries(raw).slice(0,4).map(([person,value]:[string,any])=>({person_id:person,years:Object.fromEntries(years.filter(y=>typeof value?.[y]?.filed==='boolean').map(y=>[y,value[y].filed]))}))};}
