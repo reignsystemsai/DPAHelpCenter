@@ -9,7 +9,7 @@ export async function recoverDisconnectedCall(client:any,body:any){
  if(!['completed','failed','no-answer','busy'].includes(r.call_status)||!(p.disconnect_recovery_policy===1||r.disconnect_recovery_requested?.policy===1)||r.owner_ended_call||r.normal_end_requested||r.duration_wrapup||r.outcome||r.stop_calls||r.callback_schedule?.scheduled)return {ok:true,skipped:'Not an unexpected disconnect'};
  if(!r.disconnect_recovery_requested)return {ok:true,skipped:'No recovery requested by caller'};
  const turns=r.transcript||[];
- if(turns.some((t:any)=>t.role==='client'&&/\b(?:stop calling|do not call|don't call|remove me|wrong number|goodbye|bye|have to go|got to go|need to go|can't talk|cannot talk|not interested)\b/i.test(t.text||'')))return {ok:true,skipped:'Client ended the conversation'};
+ if(turns.some((t:any)=>t.role==='client'&&/\b(?:stop calling|do not call|don't call|remove me|wrong number|goodbye|bye|hang up|getting off|come back when|come back whenever|return when|have to go|got to go|need to go|can't talk|cannot talk|not interested)\b/i.test(t.text||'')))return {ok:true,skipped:'Client ended the conversation'};
  const retry=p.disconnect_recovery?.attempt===1,root=retry?p.disconnect_recovery.root_action_id:source.id;
  if(!/^[a-f0-9-]{36}$/i.test(root)||(!retry&&(turns.filter((t:any)=>t.role==='client').length<2||!r.recovery_checkpoint||!['completed','failed'].includes(r.call_status))))return {ok:true,skipped:'No established conversation to resume'};
  if(Date.now()-Date.parse(source.executed_at||source.created_at)>35*60000)return {ok:true,skipped:'Recovery window expired'};

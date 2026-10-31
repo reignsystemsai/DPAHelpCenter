@@ -16,7 +16,7 @@ function workspaceContent(x:any){
   if(!uuid(p.id)||ids.has(p.id))throw new Problem('Invalid person in document packet.');ids.add(p.id);
   const slots:any={};for(const [category,list] of Object.entries(p.slots||{})){
    if(!categories.has(category)||!Array.isArray(list)||list.length>24)throw new Problem('Invalid document slots.');
-   const keys=new Set();slots[category]=list.map((s:any)=>{const id=clean(s.id,64);if(!/^[a-z_]+:[1-9][0-9]?$/.test(id)||!id.startsWith(category+':')||keys.has(id))throw new Problem('Invalid upload slot.');keys.add(id);return {id,label:clean(s.label,100),period:clean(s.period,80)};});
+   const keys=new Set();slots[category]=list.map((s:any)=>{const id=clean(s.id,64);if(!/^[a-z][a-z0-9_]*:(?:[1-9]|1[0-9]|2[0-4])$/.test(id)||!id.startsWith(category+':')||keys.has(id))throw new Problem('Invalid upload slot.');keys.add(id);return {id,label:clean(s.label,100),period:clean(s.period,80)};});
   }
   return {id:p.id,name:clean(p.name,60),lastName:clean(p.lastName,60),mode:p.mode==='self'?'self':'w2',frequency:['weekly','biweekly','semimonthly','monthly'].includes(p.frequency)?p.frequency:'biweekly',payDays:p.payDays===60?60:30,taxYear:Math.max(2000,Math.min(new Date().getFullYear()-1,Number(p.taxYear)||new Date().getFullYear()-1)),notes:clean(p.notes,2000),slots};
  });
