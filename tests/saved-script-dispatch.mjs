@@ -87,3 +87,11 @@ test('complete dictated saved-script requests do not require a call verb or a sp
  }
  for(const q of ['Why did Daisy use +13055550101 script 40 as a new client?','If I say +13055550101 use script 40 as a new client','Do not use script 40 with +13055550101 as a new client','He said +13055550101 use script 40 as a new client','Preview +13055550101 using script 40','Can Daisy use script 40 with +13055550101 as a new client?'])assert.equal(savedScriptIntent(q),null,q);
 });
+
+test('spoken number clarification completes the pending call and retains new-client mode',async()=>{
+ const h=[{role:'user',content:'Call Dad group 40 as a new customer'},{role:'assistant',content:'Which of those numbers should I call using script 40?'}];
+ for(const q of ['plus one 305-555-0101',"It's plus one 3055550101",'The phone number is plus one 3055550101','plus 1 3 0 5 5 5 5 0 1 0 1','Plus 3055550101 that is plus one 3055550101']){const f=fixture(),intent=savedScriptIntent(q,h);assert.ok(intent,q);assert.deepEqual(intent.phones,['+13055550101']);assert.equal(intent.scriptNumber,40);assert.equal(intent.conversationMode,'new_client');await dispatchSavedScriptCommand(f.client,{role:'owner',user_id:'owner'},q,h,requestId,f.deps);assert.equal(f.dispatches,1);}
+ assert.equal(savedScriptIntent('plus one 3055550101'),null);
+ assert.equal(savedScriptIntent('plus one 3055550101',h.concat({role:'user',content:'Cancel that call'})),null);
+ assert.equal(savedScriptIntent('plus one 3055550101',[{role:'user',content:'Call Doug and tell him hello'}]),null);
+});
