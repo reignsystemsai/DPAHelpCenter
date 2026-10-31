@@ -25,3 +25,9 @@ test('late-night time is schedulable only with an actual full slot readback and 
  const result=await scheduleClientCallback(f.db,body);assert.equal(result.scheduled,true);assert.equal(f.tables.prephub_followup_jobs.find(j=>j.task_kind==='callback').evidence.client_selected_time,true);
  const g=fixture();await assert.rejects(()=>scheduleClientCallback(g.db,{...body,transcript:[{role:'client',text:request},{role:'daisy',text:'Does that sound good?'},{role:'client',text:'Yes.'}]}));
 });
+
+test('scheduled callbacks carry follow-up mode and the previous recipient conversation through dispatch',async()=>{
+ const f=fixture();f.tables.daisy_crm_actions[0].result={summary:'Filed 2024; still needs 2025.',transcript:[{role:'daisy',text:'Which year did you file?'},{role:'client',text:'I filed 2024.'}]};await f.book();let sent;
+ const existing=globalThis.fetch;globalThis.fetch=async(url,options)=>{if(url.includes('/manager/calls'))sent=JSON.parse(options.body);return existing(url,options);};
+ try{await runDueCallbacks(f.db,f.settings,clock);assert.equal(f.dispatches,1);assert.equal(sent.conversation_mode,'follow_up');assert.equal(sent.call_mode,'prephub_followup');assert.match(sent.preparation_context.prior_conversations[0].summary,/Filed 2024/);assert.equal(sent.preparation_context.prior_conversations[0].action_id,sourceId);assert.equal(sent.preparation_context.scheduled_callback.request_quote,f.body.request_quote);}finally{globalThis.fetch=existing;}
+});
