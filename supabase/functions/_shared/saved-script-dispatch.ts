@@ -2,7 +2,7 @@ import {dictatedPhones,normalizeDirectPhone,ownerCallInstruction,ownerCallText} 
 import {prepareAction,validatedContent} from './crm-actions.ts';
 import {personalizeScript,scriptText} from './call-scripts.ts';
 import {executeCurrentCall,immediateCallCommand} from './direct-dispatch.ts';
-const check=(r:any)=>{if(r.error)throw r.error;return r.data;};
+const check=(r:any)=>{if(r.error)throw Error(r.error.message||'Call request could not be saved');return r.data;};
 const uuid=(s:string)=>/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
 const blocked=(q:string)=>/\b(?:don.t|do not|never|cancel|draft|preview|example|hypothetical|what if|without calling|instead of calling)\b/i.test(q);
 export function conversationMode(q:string){
@@ -25,7 +25,7 @@ export function savedScriptIntent(question:string,history:any[]=[]){
  if((repeat||phoneReply)&&!priorRequest)return null;
  if(number===null)number=40;
  const target=command.replace(/^(?:call|dial|ring)\s+/i,'').split(/\b(?:using|with|use|script|sprint|at)\b/i)[0].replace(/[,.! ]+$/,'').trim();
- const suppliedName=question.match(/\b(?:ask for|customer(?:['’]s)? name(?: is)?|name is|named)\s+([a-z][a-z'’-]*)/i)?.[1];
+ const suppliedName=question.match(/\b(?:ask for|customer is|customer(?:['’]s)? name(?: is)?|name is|named)\s+([a-z][a-z'’-]*)/i)?.[1];
  return {scriptNumber:number,phones,phoneSource:source,target:target.replace(/\s+(?:as|and treat|treat|as if)\b[\s\S]*$/i,'').trim(),conversationMode:mode,suppliedName};
 }
 export async function dispatchSavedScriptCommand(client:any,member:any,question:string,history:any[],requestId:string,deps={prepareAction,executeCurrentCall}){

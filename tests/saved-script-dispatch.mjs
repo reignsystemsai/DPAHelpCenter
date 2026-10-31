@@ -68,3 +68,8 @@ test('follow-up with ask-for wording uses saved script 40 and resolves the phone
  for(const q of ['Call Doug as a new client','Daisy, call Doug as a first-time customer','Call Doug as a follow up','Call Doug as an existing client'])assert.ok(savedScriptIntent(q),q);
  for(const q of ['Why did you treat +13055550101 as a new client using script 40?','Do not call +13055550101 as a new client with script 40'])assert.equal(savedScriptIntent(q),null);
 });
+
+test('the customer is Doug wording preserves the spoken name for a fresh call',async()=>{
+ const f=fixture(),q='Daisy I need you to call +1-305-555-0101 the customer is Doug go over script number 40 with him and treat him as a new client';
+ assert.equal(savedScriptIntent(q).suppliedName,'Doug');const r=await dispatchSavedScriptCommand(f.client,{role:'owner',user_id:'owner'},q,[],requestId,f.deps);assert.equal(r.action.payload.recipient.name,'Doug');assert.match(r.action.payload.content.opening,/Hi, Doug/);assert.equal(f.dispatches,1);
+});
