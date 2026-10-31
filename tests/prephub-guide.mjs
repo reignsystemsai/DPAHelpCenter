@@ -12,3 +12,4 @@ test('tax filing guidance stays separate from document upload completion',()=>{a
 
 import {preparationAreas} from '../supabase/functions/_shared/call-scripts.ts';
 test('existing job intake alias routes work-history preparation',()=>{a.deepEqual(preparationAreas({focus_areas:['job']}),['Work History']);a.equal(navigationStatus(preparationAreas({focus_areas:['job']}),[row('income')],now).recommended_tab,'employment');});
+test('section headings match the real PrepHub pages, separately from navigation labels',()=>{a.equal(pages.credit.heading,'Your Credit Readiness');a.equal(pages.income.heading,'Understand Your Income');a.equal(pages.employment.heading,'Do You Have Two Years of Work History?');a.equal(navigationStatus(['Taxes'],[],now).navigation.taxes.heading,'Prepare Your Tax Returns');});
