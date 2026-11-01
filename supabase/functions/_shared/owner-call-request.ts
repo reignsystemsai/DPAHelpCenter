@@ -24,15 +24,17 @@ export function reduceCallRequest(previous:any,question:string,newRequestId:stri
  if(x.cancel)return previous?{...previous,cancelled:true}:null;
  const scriptReply=previous?.kind==='saved_script'&&(!previous.script_number||previous.awaiting_field==='script')?savedScriptNumber('script '+x.q):null;
  const selection=previous?.candidates?.length>1?question.trim().match(/^(?:the )?(first|second|last)(?: (?:one|number))?[.! ]*$/i):null;
+ const latestCorrection=!!previous&&previous.kind==='saved_script'&&!previous.phone&&!previous.phone_required&&/\b(?:last|latest|newest|most[ -]recent)\b/i.test(previous.target||'')&&/^(?:(?:as|a|the|last|latest|newest)\s+)?(?:lead|client|customer)[.! ]*$/i.test(x.q);
  const nameReply=!!previous&&(!previous.target||previous.awaiting_field==='recipient')&&!previous.phone&&/^[a-z][a-z .'’-]{0,60}$/i.test(x.q);
- const clarifying=!!previous&&(!!scriptReply||!!selection||nameReply||x.phones.length>0||previous.awaiting_field==='phone'&&x.phoneHint||x.phoneReply||x.scriptMention||!!x.mode||!!x.name||previous.kind==='custom'&&!previous.message);
+ const clarifying=!!previous&&(latestCorrection||!!scriptReply||!!selection||nameReply||x.phones.length>0||previous.awaiting_field==='phone'&&x.phoneHint||x.phoneReply||x.scriptMention||!!x.mode||!!x.name||previous.kind==='custom'&&!previous.message);
  if(!x.start&&!clarifying)return null;
  const fresh=x.start&&!previous;let p:any=previous?structuredClone(previous):{request_id:newRequestId,kind:'saved_script',script_number:40,phone:null,target:'',name:null,mode:null,message:null,phone_required:false,turns:[]};
  if(x.start&&latestLeadRequested(question)&&!x.phoneHint){p.phone=null;p.phone_required=false;p.candidates=[];p.name=null;}
  if(x.start){p.target=x.target||p.target;p.name=x.name||p.name;if(x.phoneHint){p.phone=null;p.phone_required=true;}if(x.scriptMention){p.kind='saved_script';p.script_number=x.scriptNumber;}else if(x.custom){p.kind='custom';p.script_number=null;p.message=x.customMessage;}else if(fresh)p.script_number=40;}
  if(scriptReply){p.kind='saved_script';p.script_number=scriptReply;}
  if(selection){p.phone=p.candidates[selection[1].toLowerCase()==='first'?0:selection[1].toLowerCase()==='second'?1:p.candidates.length-1];p.candidates=[];p.phone_required=false;}
- if(nameReply)p.target=x.q;
+ if(latestCorrection){p.target='the last lead';p.phone=null;p.phone_required=false;p.candidates=[];}
+ if(nameReply&&!latestCorrection)p.target=x.q;
  if(!x.phones.length&&x.phoneHint){p.phone=null;p.phone_required=true;}
  if(x.phones.length===1){p.phone=x.phones[0];p.candidates=[];p.phone_required=false;}else if(x.phones.length>1){p.phone=null;p.candidates=x.phones;p.phone_required=true;}
  if(x.scriptMention){p.kind='saved_script';p.script_number=x.scriptNumber;}

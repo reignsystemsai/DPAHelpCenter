@@ -11,7 +11,7 @@ export function conversationMode(q:string){
  return fresh&&!follow?'new_client':follow&&!fresh?'follow_up':null;
 }
 export function latestLeadRequested(q:string){
- return /\b(?:last|latest|newest|most[ -]recent)\s+(?:new\s+)?(?:lead|client|customer)\b|\b(?:lead|client|customer)\s+(?:(?:that|who)\s+)?(?:just|recently)\s+(?:came\s+in|submitted|signed\s+up)|\b(?:lead|client|customer)\s+(?:i|we)\s+just\s+(?:submitted|added|created)\b/i.test(q);
+ return /\b(?:call|dial|ring)\s+(?:the\s+)?(?:last|latest|newest|most[ -]recent)(?=\s+(?:using|use|with|and|script|sprint)\b|[.! ]*$)/i.test(q)||/\b(?:last|latest|newest|most[ -]recent)\s+(?:new\s+)?(?:lead|client|customer)\b|\b(?:lead|client|customer)\s+(?:(?:that|who)\s+)?(?:just|recently)\s+(?:came\s+in|submitted|signed\s+up)|\b(?:lead|client|customer)\s+(?:i|we)\s+just\s+(?:submitted|added|created)\b/i.test(q);
 }
 export function savedScriptNumber(q:string){
  const words:Record<string,number>={zero:0,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19,twenty:20,thirty:30,forty:40,fifty:50,sixty:60,seventy:70,eighty:80,ninety:90};
@@ -65,7 +65,7 @@ export async function dispatchSavedScriptCommand(client:any,member:any,question:
  if(intent.phones.length>1)return {ok:true,answer:'Which of those numbers should I call using script '+intent.scriptNumber+'?'};
  const scripts=check(await client.from('daisy_call_scripts').select('*').eq('script_number',intent.scriptNumber).eq('direction','outbound').is('archived_at',null).is('deleted_at',null));
  if(scripts.length!==1)return {ok:true,answer:'I could not find one active outbound script #'+intent.scriptNumber+'. No call was placed.'};const script=scripts[0];
- const latest=latestLeadRequested(question)||latestLeadRequested(intent.phoneSource||'');
+ const latest=latestLeadRequested(question)||latestLeadRequested(intent.target||'')||latestLeadRequested(intent.phoneSource||'');
  let leads:any[]=[];
  if(intent.phones.length){const phone=intent.phones[0],candidates=check(await client.from('prephub_leads').select('*').ilike('phone','%'+phone.slice(-4)).order('created_at',{ascending:false}).limit(25));leads=candidates.filter((l:any)=>{try{return normalizeDirectPhone(l.phone)===phone;}catch{return false;}});}
  else if(latest&&!intent.phones.length)leads=check(await client.from('prephub_leads').select('*').order('created_at',{ascending:false}).order('id',{ascending:false}).limit(1));
