@@ -6,7 +6,7 @@ export async function recoveryId(root:string,kind:string){const bytes=new Uint8A
 export function recoveryEmail(template:any,name:string){const content=template.content||{},fill=(s:string)=>String(s||'').replace(/\{first_name\}/g,name||'there');return {subject:fill(content.subject),text:fill(content.body)};}
 export async function recoverDisconnectedCall(client:any,body:any){
  const source=checked(await client.from('daisy_crm_actions').select('*').eq('id',body.action_id).eq('kind','call').single()),r=source.result||{},p=source.payload||{};
- if(!['completed','failed','no-answer','busy'].includes(r.call_status)||!(p.disconnect_recovery_policy===1||r.disconnect_recovery_requested?.policy===1)||r.owner_ended_call||r.normal_end_requested||r.duration_wrapup||r.outcome||r.stop_calls||r.callback_schedule?.scheduled)return {ok:true,skipped:'Not an unexpected disconnect'};
+ if(!['completed','failed','no-answer','busy'].includes(r.call_status)||!(p.disconnect_recovery_policy===1||r.disconnect_recovery_requested?.policy===1)||r.owner_ended_call||r.normal_end_requested||r.recovery_checkpoint?.stage==='wrapup'||r.duration_wrapup||r.outcome||r.stop_calls||r.callback_schedule?.scheduled)return {ok:true,skipped:'Not an unexpected disconnect'};
  if(!r.disconnect_recovery_requested)return {ok:true,skipped:'No recovery requested by caller'};
  const turns=r.transcript||[];
  if(turns.some((t:any)=>t.role==='client'&&/\b(?:stop calling|do not call|don't call|remove me|wrong number|goodbye|bye|hang up|getting off|come back when|come back whenever|return when|have to go|got to go|need to go|can't talk|cannot talk|not interested)\b/i.test(t.text||'')))return {ok:true,skipped:'Client ended the conversation'};

@@ -1,5 +1,5 @@
 import {dictatedPhones,ownerCallInstruction,ownerCallText} from './direct-number.ts';
-import {conversationMode,savedScriptNumber,impliedSavedScriptRequest,phoneClarification,dispatchSavedScriptCommand} from './saved-script-dispatch.ts';
+import {latestLeadRequested,conversationMode,savedScriptNumber,impliedSavedScriptRequest,phoneClarification,dispatchSavedScriptCommand} from './saved-script-dispatch.ts';
 import {dispatchDirectCommand} from './direct-dispatch.ts';
 const TABLE='daisy_owner_call_requests';
 const uuid=(x:any)=>typeof x==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(x);
@@ -28,6 +28,7 @@ export function reduceCallRequest(previous:any,question:string,newRequestId:stri
  const clarifying=!!previous&&(!!scriptReply||!!selection||nameReply||x.phones.length>0||previous.awaiting_field==='phone'&&x.phoneHint||x.phoneReply||x.scriptMention||!!x.mode||!!x.name||previous.kind==='custom'&&!previous.message);
  if(!x.start&&!clarifying)return null;
  const fresh=x.start&&!previous;let p:any=previous?structuredClone(previous):{request_id:newRequestId,kind:'saved_script',script_number:40,phone:null,target:'',name:null,mode:null,message:null,phone_required:false,turns:[]};
+ if(x.start&&latestLeadRequested(question)&&!x.phoneHint){p.phone=null;p.phone_required=false;p.candidates=[];p.name=null;}
  if(x.start){p.target=x.target||p.target;p.name=x.name||p.name;if(x.phoneHint){p.phone=null;p.phone_required=true;}if(x.scriptMention){p.kind='saved_script';p.script_number=x.scriptNumber;}else if(x.custom){p.kind='custom';p.script_number=null;p.message=x.customMessage;}else if(fresh)p.script_number=40;}
  if(scriptReply){p.kind='saved_script';p.script_number=scriptReply;}
  if(selection){p.phone=p.candidates[selection[1].toLowerCase()==='first'?0:selection[1].toLowerCase()==='second'?1:p.candidates.length-1];p.candidates=[];p.phone_required=false;}

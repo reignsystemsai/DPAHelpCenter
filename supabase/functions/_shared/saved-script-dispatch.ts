@@ -10,6 +10,9 @@ export function conversationMode(q:string){
  const follow=/\bfollow[ -]?up(?:\s+(?:client|customer|call))?\b|\b(?:returning|existing)\s+(?:client|customer)\b|\b(?:pick up|continue)\s+(?:where|from)\b/i.test(q);
  return fresh&&!follow?'new_client':follow&&!fresh?'follow_up':null;
 }
+export function latestLeadRequested(q:string){
+ return /\b(?:last|latest|newest|most[ -]recent)\s+(?:new\s+)?(?:lead|client|customer)\b|\b(?:lead|client|customer)\s+(?:(?:that|who)\s+)?(?:just|recently)\s+(?:came\s+in|submitted|signed\s+up)|\b(?:lead|client|customer)\s+(?:i|we)\s+just\s+(?:submitted|added|created)\b/i.test(q);
+}
 export function savedScriptNumber(q:string){
  const words:Record<string,number>={zero:0,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19,twenty:20,thirty:30,forty:40,fifty:50,sixty:60,seventy:70,eighty:80,ninety:90};
  const found:number[]=[];
@@ -45,7 +48,7 @@ export function savedScriptIntent(question:string,history:any[]=[]){
  let number=savedScriptNumber(question);if(number===null&&!mode&&immediateCallCommand(question))return null;let phones=clarifiedPhones||dictatedPhones(question),source=question;
  let priorRequest=false;
  for(let i=prior.length-1;i>=0;i--){const text=prior[i].content;if(blocked(text)||/\b(?:different person|someone else)\b/i.test(text))break;
-  const priorPhones=dictatedPhones(text);if(!phones.length&&priorPhones.length&&!/\+\s*\d|\d[\d ().-]{5,}\d/.test(question)){phones=priorPhones;source=text;}
+  const priorPhones=dictatedPhones(text);if(!latestLeadRequested(question)&&!phones.length&&priorPhones.length&&!/\+\s*\d|\d[\d ().-]{5,}\d/.test(question)){phones=priorPhones;source=text;}
   if(ownerCallInstruction(text)&&(savedScriptNumber(text)!==null||!immediateCallCommand(text))){priorRequest=true;if(number===null)number=savedScriptNumber(text)??40;if(phoneReply&&mode===null)mode=conversationMode(text);break;}
  }
  if((repeat||phoneReply)&&!priorRequest)return null;
@@ -62,10 +65,15 @@ export async function dispatchSavedScriptCommand(client:any,member:any,question:
  if(intent.phones.length>1)return {ok:true,answer:'Which of those numbers should I call using script '+intent.scriptNumber+'?'};
  const scripts=check(await client.from('daisy_call_scripts').select('*').eq('script_number',intent.scriptNumber).eq('direction','outbound').is('archived_at',null).is('deleted_at',null));
  if(scripts.length!==1)return {ok:true,answer:'I could not find one active outbound script #'+intent.scriptNumber+'. No call was placed.'};const script=scripts[0];
+ const latest=latestLeadRequested(question)||latestLeadRequested(intent.phoneSource||'');
  let leads:any[]=[];
- if(intent.phones.length){const phone=intent.phones[0],candidates=check(await client.from('prephub_leads').select('*').ilike('phone','%'+phone.slice(-4)).limit(25));leads=candidates.filter((l:any)=>{try{return normalizeDirectPhone(l.phone)===phone;}catch{return false;}});}
+ if(intent.phones.length){const phone=intent.phones[0],candidates=check(await client.from('prephub_leads').select('*').ilike('phone','%'+phone.slice(-4)).order('created_at',{ascending:false}).limit(25));leads=candidates.filter((l:any)=>{try{return normalizeDirectPhone(l.phone)===phone;}catch{return false;}});}
+ else if(latest&&!intent.phones.length)leads=check(await client.from('prephub_leads').select('*').order('created_at',{ascending:false}).order('id',{ascending:false}).limit(1));
  else if(!intent.phones.length&&/^me(?: now| please)?[.! ]*$/i.test(intent.target)){const profile=check(await client.from('manager_members').select('email').eq('user_id',member.user_id).single());if(profile?.email)leads=check(await client.from('prephub_leads').select('*').eq('email',profile.email).limit(3));}
  else if(!intent.phones.length&&/^[a-z][a-z .'’-]{0,80}$/i.test(intent.target)&&!/^(?:him|her|them|the number|that number|again|now)$/i.test(intent.target)){const names=intent.target.split(/\s+/);let query=client.from('prephub_leads').select('*').ilike('first_name',names[0]+'%');if(names.length>1)query=query.ilike('last_name',names.slice(1).join(' '));leads=check(await query.limit(3));}
+ if(latest&&leads.length>1)leads=leads.slice(0,1);
+ if(latest&&!leads.length)return {ok:true,answer:'No matching saved lead was found. No call was placed.'};
+ if(leads.length>1&&intent.phones.length)return {ok:true,answer:'More than one client matches that number. Should I use the newest lead or a specific DPA record?'};
  if(leads.length!==1&&!intent.phones.length)return {ok:true,answer:leads.length>1?'More than one client matches. Which client should I call using script '+intent.scriptNumber+'?':intent.phones.length?'That number is not linked to a PrepHub client, so I could not load the client context for script '+intent.scriptNumber+'. No call was placed.':'What complete phone number should I call using script '+intent.scriptNumber+'?'};
  const lead=leads.length===1?leads[0]:null;
  let action;
