@@ -32,7 +32,7 @@ export function ownerCallText(request:string){
  let q=request.trim();
  // Normalize conversational addresses and requests before classifying intent.
  // Keep the call verb anchored: questions, quoted examples and cancellations stay non-actions.
- const prefix=/^(?:(?:hey|okay|ok|yes|yeah|chatgpt|chat|assistant|daisy|please|just|rain)\b[\s,!:.—-]*|(?:i (?:want|need) you to|i would like you to|i['’]d like you to|can you|could you|would you|will you|go ahead and)\b[\s,!:.—-]*)/i;
+ const prefix=/^(?:(?:easy|daisey|dazey)\b[\s,!:.—-]+(?=(?:call|dial|ring)\b)|(?:hey|okay|ok|yes|yeah|chatgpt|chat|assistant|daisy|please|just|rain)\b[\s,!:.—-]*|(?:i (?:want|need) you to|i would like you to|i['’]d like you to|can you|could you|would you|will you|go ahead and)\b[\s,!:.—-]*)/i;
  // Speech recognition can insert unrelated words before the assistant address.
  // Extract an addressed imperative, but never turn a question or reported speech into a call.
  const addressed=q.match(/\b(?:daisy|chatgpt|chat|assistant)[\s,!:.—-]+(?=(?:(?:please|just|can you|could you|would you|i want you to|i need you to)\s+)*(?:call|dial|ring|give me (?:a|the) call)\b)/i);

@@ -22,4 +22,4 @@ test('latest omitted-call dictation bypasses the model and custom-call tool at t
  const r=await f.request();assert.equal(r.body.mode,'saved_script_call');assert.equal(f.modelRequests.length,0);assert.equal(f.draftWrites,0);
 });
 
-test('an unhandled recipient clarification cannot silently become a prepared-only call draft',async()=>{const f=fixture({question:'as lead',toolCall:'prepare_saved_script_call'});const r=await f.request();assert.equal(r.status,200);assert.equal(f.draftWrites,0);assert.match(f.modelRequests[1].input.at(-1).output,/does not request a review draft/);assert.deepEqual(r.body.action_drafts,[]);});
+test('an unhandled recipient clarification cannot silently become a prepared-only call draft',async()=>{const f=fixture({question:'as lead',toolCall:'prepare_saved_script_call'});const r=await f.request();assert.equal(r.status,200);assert.equal(f.draftWrites,0);assert.match(f.modelRequests[1].input.at(-1).output,/does not request a review draft/);assert.deepEqual(r.body.action_drafts,[]);assert.match(r.body.answer,/No new call was placed/);assert.doesNotMatch(r.body.answer,/existing pending/);});
