@@ -1614,13 +1614,17 @@ document.getElementById("beginAppBtn").style.display="block";
 document.getElementById("agentBtn").style.display="block";
 }else{
 document.getElementById("finalTitle").textContent="Your preparation plan is saved.";
+document.getElementById("finalScoreStatus").textContent="Opening PrepHub";
 document.getElementById("resultsIntro").textContent=intakeResult.email_sent
-?"Your plan is saved. Check your email for your secure PrepHub login."
-:"Your plan is saved. Continue to PrepHub now; you can request a secure login link there.";
-document.getElementById("resultsIntro").textContent=intakeResult.email_sent
-?"Check your email and use your secure login link to open your personal PrepHub."
-:"Your plan is saved. Open PrepHub and request a secure email login link.";
-const open=document.createElement("a");open.className="dpa-primary-btn";open.href="/prephub/";open.textContent="OPEN PREPHUB SIGN IN";document.getElementById("resultsIntro").append(document.createElement("br"),open);
+?"Opening your personal PrepHub. Your secure sign-in link is also in your email."
+:"Opening PrepHub. You can request a secure email login link there.";
+const next=new URL(destination,window.location.href);
+const first=buildDeficiencyList()[0]?.key;
+const views={credit:"credit",dti:"income",job:"employment",taxes:"taxes"};
+if(views[first])next.searchParams.set("view",views[first]);
+if(intakeResult.lead_id)next.searchParams.set("lead",intakeResult.lead_id);
+const open=document.createElement("a");open.className="dpa-primary-btn";open.href=next.href;open.textContent="CONTINUE TO PREPHUB";document.getElementById("resultsIntro").append(document.createElement("br"),open);
+setTimeout(()=>{window.location.assign(next.href);},400);
 }
 };
 
