@@ -32,7 +32,7 @@ export function ownerCallText(request:string){
  let q=request.trim();
  // Normalize conversational addresses and requests before classifying intent.
  // Keep the call verb anchored: questions, quoted examples and cancellations stay non-actions.
- const prefix=/^(?:(?:easy|daisey|dazey)\b[\s,!:.—-]+(?=(?:call|dial|ring)\b)|(?:hey|okay|ok|yes|yeah|chatgpt|chat|assistant|daisy|please|just|rain)\b[\s,!:.—-]*|(?:i (?:want|need) you to|i would like you to|i['’]d like you to|can you|could you|would you|will you|go ahead and)\b[\s,!:.—-]*)/i;
+ const prefix=/^(?:(?:easy|daisey|dazey|az|a[ .]z)\b[\s,!:.—-]+(?=(?:call|dial|ring|make|place|start)\b)|(?:you(?=\s+(?:make|place|start|call|dial|ring)\b)|hey|okay|ok|yes|yeah|chatgpt|chat|assistant|daisy|please|just|rain)\b[\s,!:.—-]*|(?:i (?:want|need) you to|i would like you to|i['’]d like you to|can you|could you|would you|will you|go ahead and)\b[\s,!:.—-]*)/i;
  // Speech recognition can insert unrelated words before the assistant address.
  // Extract an addressed imperative, but never turn a question or reported speech into a call.
  const addressed=q.match(/\b(?:daisy|chatgpt|chat|assistant)[\s,!:.—-]+(?=(?:(?:please|just|can you|could you|would you|i want you to|i need you to)\s+)*(?:call|dial|ring|give me (?:a|the) call)\b)/i);
@@ -42,14 +42,14 @@ export function ownerCallText(request:string){
 }
 export function ownerCallInstruction(request:string){
  const q=ownerCallText(request);
- return /^(?:(?:call|dial|ring)\s+|(?:make|place|start|retry|try)\s+(?:(?:the|that|this|same|another|a|one more)\s+)*(?:phone\s+)?call\b)/i.test(q)&&!/\b(?:don.t|do not|never|cancel|draft|preview|example|hypothetical|what if|instead of|without calling)\b/i.test(request);
+ return /^(?:(?:call|dial|ring)\s+|(?:make|place|start|retry|try)\s+(?:(?:the|that|this|same|another|a|one more)\s+)*(?:(?:test|phone|outbound)\s+)*call\b)/i.test(q)&&!/\b(?:don.t|do not|never|cancel|draft|preview|example|hypothetical|what if|instead of|without calling)\b/i.test(request);
 }
 export function ownerPhoneEvidence(phone:string,request:string,history:any[]=[],recipientName=''){
  const current=dictatedPhones(request);
  if(current.length)return current.length===1&&current[0]===phone?request:null;
  // A new/incomplete phone expression must be clarified, never replaced by history.
  if(/\+\s*\d|country code|\d[\d ().-]{5,}\d/i.test(request)||!ownerCallInstruction(request))return null;
- const referential=/\b(?:call|dial|ring)\s+(?:(?:her|him|them|again|back)|(?:(?:the|that|this|same)\s+)?(?:number|person|client))\b|\b(?:make|place|retry|start|try)\s+(?:(?:the|that|this|same)\s+)*(?:phone\s+)?call\b/i.test(request);
+ const referential=/\b(?:call|dial|ring)\s+(?:(?:her|him|them|again|back)|(?:(?:the|that|this|same)\s+)?(?:number|person|client))\b|\b(?:make|place|retry|start|try)\s+(?:(?:the|that|this|same)\s+)*(?:(?:test|phone|outbound)\s+)*call\b/i.test(request);
  const name=recipientName.trim();
  const named=!!name&&name!==phone&&request.toLowerCase().includes(name.toLowerCase());
  if(!referential&&!named)return null;

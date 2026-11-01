@@ -10,7 +10,7 @@ async function read(client:any,table:string,ids?:string[],key='lead_id',filters:
  if(ids&&ids.length===0)return [];
  const out:any[]=[];
  for(let start=0;;start+=1000){let q=client.from(table).select(columns);if(ids)q=q.in(key,ids);
-  for(const f of filters){if(['eq','gt','gte','lt','lte'].includes(f.operator)&&/^[a-z_]+$/.test(f.field)&&!['name','record_uuid'].includes(f.field)){if(f.value===null){if(f.operator==='eq')q=q.is(f.field,null);else if(f.operator==='ne')q=q.not(f.field,'is',null);}else if(f.operator==='eq'&&typeof f.value==='string')q=q.ilike(f.field,f.value.replace(/[\\%_]/g,'\\$&'));else q=q[f.operator](f.field,f.value);}}
+  for(const f of filters){if(['eq','gt','gte','lt','lte'].includes(f.operator)&&/^[a-z_]+$/.test(f.field)&&!['name','record_uuid'].includes(f.field)){if(f.value===null){if(f.operator==='eq')q=q.is(f.field,null);else if(f.operator==='ne')q=q.not(f.field,'is',null);}else if(f.operator==='eq'&&typeof f.value==='string'&&!/^(?:id|.*_id)$/.test(f.field))q=q.ilike(f.field,f.value.replace(/[\\%_]/g,'\\$&'));else q=q[f.operator](f.field,f.value);}}
   const r=await q.range(start,start+999);if(r.error)throw Error(r.error.message||'CRM read failed');out.push(...r.data);if(r.data.length<1000)return out;if(start>=99000)throw Error('Dataset too large; narrow the request');
  }
 }

@@ -97,7 +97,7 @@ test('spoken number clarification completes the pending call and retains new-cli
 });
 
 test('latest lead commands bind the actual newest credit record and retain script 40',async()=>{
- for(const q of ['Call the last lead and use script number 40','Daisy call the newest lead using script 40','Call the most recent customer with script 40','Call the lead that just came in using script 40','Call +13055550101 customer name Doug use script 40 as a new client the lead just came in']){
+ for(const q of ['Daisy you make a test call to the last lead using script 40','AZ call the last lead and use script number 40 the latest lead that just came in','Call the last lead and use script number 40','Daisy call the newest lead using script 40','Call the most recent customer with script 40','Call the lead that just came in using script 40','Call +13055550101 customer name Doug use script 40 as a new client the lead just came in']){
  const f=fixture();f.tables.prephub_leads[0].created_at='2026-10-01T00:00:00Z';f.tables.prephub_leads.push({id:'credit-lead',lead_id:'DPA-NEW-CREDIT',first_name:'Douglas',last_name:'Example',phone:'3055550101',created_at:'2026-11-01T01:00:00Z',focus_areas:['credit'],credit_score:607});let selected;const prepare=f.deps.prepareAction;f.deps.prepareAction=async(...args)=>{selected=args[2];return prepare(...args);};const r=await dispatchSavedScriptCommand(f.client,{role:'owner',user_id:'owner'},q,[],requestId,f.deps);assert.equal(selected.lead_id,'DPA-NEW-CREDIT',q);assert.equal(selected.saved_script.script_number,40);assert.equal(r.action.status,'submitted');assert.equal(f.dispatches,1);
  }
 });
