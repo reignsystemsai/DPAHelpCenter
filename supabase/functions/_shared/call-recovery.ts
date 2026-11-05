@@ -21,7 +21,7 @@ export async function recoverDisconnectedCall(client:any,body:any){
  const stamp=new Date().toISOString();let action:any;
  if(!retry){
   const payload={...p,conversation_mode:'follow_up',immediate_owner_command:true,finalized_at:stamp,lead_updated_at:lead?.updated_at||p.lead_updated_at,disconnect_recovery:{root_action_id:root,source_action_id:source.id,attempt:1,checkpoint:r.recovery_checkpoint},preparation_context:{...(p.preparation_context||{}),prior_conversations:[{action_id:source.id,transcript:turns.slice(-32),client_reported_tax_years:r.client_reported_tax_years}],disconnect_resume:true},owner_override:{authorized_by:source.created_by,authorized_at:stamp,source:'owner_approved_disconnect_recovery',reason:'One immediate reconnection attempt after unexpected disconnect',rules:['contact_hours','contact_spacing','weekly_frequency']}};
-  for(const key of ['workflow_job_id','workflow_task_version','client_callback_job_id','owner_request_id'])delete payload[key];
+  for(const key of ['workflow_job_id','workflow_task_version','client_callback_job_id','owner_request_id','intake_call_job_id'])delete payload[key];
   action={id,created_by:source.created_by,lead_id:source.lead_id,kind:'call',status:'draft',reason:'One reconnect attempt; resume interrupted conversation',payload,before_value:{value:null}};
  }else{
   if(!lead?.email||String(lead.email).toLowerCase()!==String(p.recipient?.email||'').toLowerCase())return {ok:true,skipped:'No verified email on this call recipient'};

@@ -1,3 +1,5 @@
+import {enqueueIntakeCall,runIntakeCalls} from '../_shared/automatic-intake-calls.ts';
+import {intakeConsent,intakePhone} from '../_shared/intake-call-policy.ts';
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.112.3";
 import { normalizeSmsConsent } from "../_shared/sms-consent.ts";
@@ -83,7 +85,7 @@ async function forwardToHelux(payload: Record<string, unknown>) {
         "Content-Type": "application/json",
         "x-helux-key": apiKey,
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({...payload,call_controller:"prephub-auto-call"}),
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) {
@@ -545,6 +547,7 @@ Deno.serve(async (req: Request) => {
 
     // SMS permission is separate from phone/email contact details. Never infer opt-in.
     payload.sms_consent = normalizeSmsConsent(payload.sms_consent, phone);
+    payload.voice_consent = intakeConsent(payload.voice_consent, phone, new Date().toISOString());
 
     const focusAreas = [] as Array<keyof typeof taskCatalog>;
     if (bool(payload.credit_640_plus) === false) focusAreas.push("credit");
@@ -594,6 +597,10 @@ Deno.serve(async (req: Request) => {
       if (taskError) throw taskError;
     }
 
+    // The durable request is saved before third-party sync/email and survives
+    // a browser navigation. The worker cron also picks up any pending request.
+    let autoCall:any={status:'not_requested'};
+    try{autoCall=await enqueueIntakeCall(supabase,lead.id);if(autoCall.job_id&&autoCall.status==='pending')EdgeRuntime.waitUntil(runIntakeCalls(supabase,autoCall.job_id).catch(error=>console.error('Intake call remains recorded for reconciliation',error.message)));}catch(error){console.error('Intake call enrollment unavailable',error instanceof Error?error.message:'Unknown');autoCall={status:'needs_review'};}
     const helux = await forwardToHelux(payload);
 
     await supabase.from("helux_cases").upsert({
@@ -687,6 +694,7 @@ Deno.serve(async (req: Request) => {
       email_sent: emailSent,
       email_status: emailStatus,
       helux,
+      auto_call: autoCall,
     }, 200, origin);
   } catch (error) {
     console.error("PrepHub intake failed", error);

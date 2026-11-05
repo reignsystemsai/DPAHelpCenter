@@ -5,7 +5,7 @@ import {executeCurrentCall} from './direct-dispatch.ts';
 const check=(r:any)=>{if(r.error)throw Error(r.error.message||'Could not load the selected lead');return r.data;};
 const uuid=(v:any)=>typeof v==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
 export const stageScriptTitles={preparation:'Engaged / Preparation — Progress Check',dpa:'DPA Ready — Handoff Follow-up'};
-export function leadCallStage(lead:any,op:any,task:any){return ['DPA Transfers','DPA Transfer Leads'].includes(op?.department_status?.prep_fields?.prep_group)?'dpa':lead.claimed_at||task?.preparation_plan?.steps?.some((s:any)=>s.id==='access'&&s.status==='recorded')?'preparation':'new';}
+export function leadCallStage(lead:any,op:any,task:any){const manual=op?.department_status?.prep_fields?.workflow_stage;if(['new','preparation','dpa'].includes(manual))return manual;return ['DPA Transfers','DPA Transfer Leads'].includes(op?.department_status?.prep_fields?.prep_group)?'dpa':lead.claimed_at||task?.preparation_plan?.steps?.some((s:any)=>s.id==='access'&&s.status==='recorded')?'preparation':'new';}
 export async function startLeadCall(client:any,member:any,body:any,deps={queue:preparationQueue,prepare:prepareAction,execute:executeCurrentCall,context:preparationContext,history:priorConversations}){
  if(member.role!=='owner')throw Error('Owner access required');
  if(!uuid(body.lead_id)||!uuid(body.request_id))throw Error('A saved lead and unique call request are required');

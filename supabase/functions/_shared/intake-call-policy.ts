@@ -1,0 +1,15 @@
+export const INTAKE_VOICE_VERSION='2026-11-05';
+export const INTAKE_VOICE_TEXT='By choosing GET MY RESULTS + DAISY CALL, I request an immediate automated AI-assisted call from Daisy at the number I provided about my homebuyer preparation results, and one retry if I do not answer. I can ask to stop at any time.';
+export const intakeCheck=(r:any)=>{if(r.error)throw Error(r.error.message||'Intake call storage unavailable');return r.data;};
+export const intakePhone=(phone:any)=>{let digits=String(phone||'').replace(/\D/g,'');if(digits.length===10)digits='1'+digits;if(!/^1\d{10}$/.test(digits))throw Error('A complete US phone number is required for the automatic call');return '+'+digits;};
+const answer=(x:any)=>x===true||x==='Yes'?true:x===false||x==='No'?false:null;
+export function intakeRoute(payload:any){const answers=['credit_640_plus','income_70k_plus','job_history_2yrs','tax_returns_2yrs'].map(k=>answer(payload[k]));if(payload.submit_type!=='qualification_final'||![true,'Yes'].includes(payload.final_submitted)||answers.some(a=>a===null))return null;return answers.every(a=>a===true)?{stage:'dpa',script_number:61}:{stage:'new',script_number:40};}
+export function intakeConsent(input:any,phone:string,receivedAt:string){return {requested:input?.requested===true&&input?.disclosure_version===INTAKE_VOICE_VERSION,phone,disclosure_version:INTAKE_VOICE_VERSION,disclosure_text:INTAKE_VOICE_TEXT,received_at:receivedAt,source:'qualification_final'};}
+export function contactDay(now:number){return new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);}
+export function retryDue(now:number,minutes=15){let due=now+minutes*60000;for(let i=0;i<96;i++){const hour=Number(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour:'numeric',hourCycle:'h23'}).format(due));if(hour>=9&&hour<18)return new Date(due).toISOString();due+=15*60000;}throw Error('Could not select the next retry window');}
+export async function intakeAuthorization(client:any,action:any,now=Date.now()){
+ const id=action.payload?.intake_call_job_id;if(!id)return false;
+ const job=intakeCheck(await client.from('daisy_intake_call_jobs').select('*').eq('id',id).single()),settings=intakeCheck(await client.from('daisy_intake_call_settings').select('*').eq('id',true).single());
+ if(!settings.enabled||!Number.isFinite(Date.parse(settings.activated_at))||!job||!['working','submitted'].includes(job.status)||job.action_id!==action.id||job.lead_id!==action.lead_id||job.authorized_by!==action.created_by||settings.authorized_by!==action.created_by||![0,1].includes(job.attempt)||job.consent?.requested!==true||job.consent.disclosure_version!==INTAKE_VOICE_VERSION||job.phone!==intakePhone(action.payload.recipient?.phone)||job.phone!==intakePhone(job.consent.phone)||Date.parse(job.due_at)>now||Date.parse(job.submitted_at)<Date.parse(settings.activated_at)||Date.parse(job.submitted_at)<now-36*3600000||Number(action.payload.script_sources?.[0]?.script_number)!==job.script_number)throw Error('Automatic intake call authorization is no longer valid');
+ return true;
+}
