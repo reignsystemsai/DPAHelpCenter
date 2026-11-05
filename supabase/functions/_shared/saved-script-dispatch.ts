@@ -65,15 +65,16 @@ export async function dispatchSavedScriptCommand(client:any,member:any,question:
  if(intent.phones.length>1)return {ok:true,answer:'Which of those numbers should I call using script '+intent.scriptNumber+'?'};
  const scripts=check(await client.from('daisy_call_scripts').select('*').eq('script_number',intent.scriptNumber).eq('direction','outbound').is('archived_at',null).is('deleted_at',null));
  if(scripts.length!==1)return {ok:true,answer:'I could not find one active outbound script #'+intent.scriptNumber+'. No call was placed.'};const script=scripts[0];
- const latest=latestLeadRequested(question)||latestLeadRequested(intent.target||'')||latestLeadRequested(intent.phoneSource||'');
+ const latest=intent.recipientSelection==='latest_global'||intent.recipientSelection==='latest_matching'||latestLeadRequested(question)||latestLeadRequested(intent.target||'');
  let leads:any[]=[];
- if(intent.phones.length){const phone=intent.phones[0],candidates=check(await client.from('prephub_leads').select('*').ilike('phone','%'+phone.slice(-4)).order('created_at',{ascending:false}).limit(25));leads=candidates.filter((l:any)=>{try{return normalizeDirectPhone(l.phone)===phone;}catch{return false;}});}
+ if(intent.recipientSelection==='latest_global')leads=check(await client.from('prephub_leads').select('*').order('created_at',{ascending:false}).order('id',{ascending:false}).limit(1));
+ else if(intent.phones.length){const phone=intent.phones[0],candidates=check(await client.from('prephub_leads').select('*').ilike('phone','%'+phone.slice(-4)).order('created_at',{ascending:false}).order('id',{ascending:false}).limit(25));leads=candidates.filter((l:any)=>{try{return normalizeDirectPhone(l.phone)===phone;}catch{return false;}});}
  else if(latest&&!intent.phones.length)leads=check(await client.from('prephub_leads').select('*').order('created_at',{ascending:false}).order('id',{ascending:false}).limit(1));
  else if(!intent.phones.length&&/^me(?: now| please)?[.! ]*$/i.test(intent.target)){const profile=check(await client.from('manager_members').select('email').eq('user_id',member.user_id).single());if(profile?.email)leads=check(await client.from('prephub_leads').select('*').eq('email',profile.email).limit(3));}
- else if(!intent.phones.length&&/^[a-z][a-z .'’-]{0,80}$/i.test(intent.target)&&!/^(?:him|her|them|the number|that number|again|now)$/i.test(intent.target)){const names=intent.target.split(/\s+/);let query=client.from('prephub_leads').select('*').ilike('first_name',names[0]+'%');if(names.length>1)query=query.ilike('last_name',names.slice(1).join(' '));leads=check(await query.limit(3));}
+ else if(!intent.phones.length&&/^[a-z][a-z .'’-]{0,80}$/i.test(intent.target)&&!/^(?:him|her|them|the number|that number|again|now)$/i.test(intent.target)){const names=intent.target.split(/\s+/);let query=client.from('prephub_leads').select('*').ilike('first_name',names[0]+'%');if(names.length>1)query=query.ilike('last_name',names.slice(1).join(' '));leads=check(await query.order('created_at',{ascending:false}).order('id',{ascending:false}).limit(3));}
  if(latest&&leads.length>1)leads=leads.slice(0,1);
  if(latest&&!leads.length)return {ok:true,answer:'No matching saved lead was found. No call was placed.'};
- if(leads.length>1&&intent.phones.length)return {ok:true,answer:'More than one client matches that number. Should I use the newest lead or a specific DPA record?'};
+ if(leads.length>1&&intent.phones.length)return {ok:true,answer:'Just so I make sure I understand you correctly, are you asking me to call the newest lead with that phone number using script '+intent.scriptNumber+'?'};
  if(leads.length!==1&&!intent.phones.length)return {ok:true,answer:leads.length>1?'More than one client matches. Which client should I call using script '+intent.scriptNumber+'?':intent.phones.length?'That number is not linked to a PrepHub client, so I could not load the client context for script '+intent.scriptNumber+'. No call was placed.':'What complete phone number should I call using script '+intent.scriptNumber+'?'};
  const lead=leads.length===1?leads[0]:null;
  let action;

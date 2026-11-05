@@ -1,6 +1,7 @@
 import {dictatedPhones,ownerCallInstruction,ownerCallText} from './direct-number.ts';
 import {latestLeadRequested,conversationMode,savedScriptNumber,impliedSavedScriptRequest,phoneClarification,dispatchSavedScriptCommand} from './saved-script-dispatch.ts';
 import {dispatchDirectCommand} from './direct-dispatch.ts';
+import {understandOwnerCall} from './owner-call-understanding.ts';
 const TABLE='daisy_owner_call_requests';
 const uuid=(x:any)=>typeof x==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(x);
 const data=(r:any)=>{if(r.error)throw Error(r.error.message||'Could not save the pending call request');return r.data;};
@@ -47,9 +48,9 @@ export async function cancelOwnerCallRequest(client:any,member:any,conversationI
  return data(await client.from(TABLE).update({status:'cancelled',updated_at:new Date().toISOString()}).eq('owner_id',member.user_id).eq('conversation_id',callScope(conversationId)).in('status',['awaiting_details','dispatching']).select('owner_id')).length>0;
 }
 async function actionReply(client:any,member:any,id:string,answer?:string){const action=data(await client.from('daisy_crm_actions').select('*').eq('id',id).eq('created_by',member.user_id).maybeSingle());return {ok:true,action:action||undefined,answer:answer||(action?.provider_id?'That call request has already been placed. Its transcript is available below.':'That call request is already being processed; no additional call was started.'),request_id:id};}
-export async function dispatchOwnerCallRequest(client:any,member:any,body:any,deps={saved:dispatchSavedScriptCommand,custom:dispatchDirectCommand}){
+export async function dispatchOwnerCallRequest(client:any,member:any,body:any,deps={saved:dispatchSavedScriptCommand,custom:dispatchDirectCommand,understand:understandOwnerCall}){
  if(member.role!=='owner')return null;if(!uuid(body.request_id))throw Error('A unique call request ID is required');
- const question=String(body.question||'').trim(),slots=callSlots(question);if(slots.readOnly)return null;
+ const originalQuestion=String(body.question||'').trim();let question=originalQuestion,slots=callSlots(question);
  // A retried turn can never dispatch another copy of its existing action.
  const existing=data(await client.from('daisy_crm_actions').select('id').eq('id',body.request_id).eq('created_by',member.user_id).maybeSingle());if(existing)return actionReply(client,member,existing.id);
  const ledger=data(await client.from('daisy_owner_call_turns').select('*').eq('owner_id',member.user_id).eq('turn_id',body.request_id).maybeSingle());if(ledger){const oldAction=data(await client.from('daisy_crm_actions').select('id').eq('id',ledger.request_id).eq('created_by',member.user_id).maybeSingle());return actionReply(client,member,ledger.request_id,oldAction?undefined:ledger.status==='done'?ledger.answer:undefined);}
@@ -64,10 +65,35 @@ export async function dispatchOwnerCallRequest(client:any,member:any,body:any,de
   if(settled){const fixed=data(await client.from(TABLE).update({status:settled}).eq('owner_id',member.user_id).eq('conversation_id',scope).eq('version',row.version).eq('status','dispatching').select('owner_id'));if(fixed.length===1)row.status=settled;}
  }
  const pending=alive&&row.status==='awaiting_details'?row.request:null;
+ // Read-only classification must follow semantic interpretation: a confirmation
+ // such as "yes, that's what I mean" can complete an existing authorized request.
+ let understanding:any;
+ try{
+  understanding=await (deps.understand||understandOwnerCall)(originalQuestion,pending,body.history||[]);
+  if(understanding.intent==='other')return null;
+  if(understanding.intent==='cancel'){question='cancel';slots=callSlots(question);}
+  else if(understanding.intent==='call'){
+   // No model-invented phone digits or script selection may reach dispatch.
+   const evidence=[originalQuestion,...(pending?.turns||[]),pending?.confirmation_command||''].join('\n');
+   const knownPhones=new Set(dictatedPhones(evidence));if(pending?.phone)knownPhones.add(pending.phone);
+   if(dictatedPhones(understanding.command).some((p:string)=>!knownPhones.has(p)))throw Error('The recipient number needs clarification');
+   const chosen=savedScriptNumber(understanding.command),knownScripts=[...evidence.matchAll(/\b(?:script|sprint)\s*(?:number\s*|no\.?\s*|#\s*)?[^\n]*/gi)].map(m=>savedScriptNumber(m[0]));
+   if(chosen!==null&&chosen!==(pending?.script_number??40)&&!knownScripts.includes(chosen))throw Error('The chosen script needs clarification');
+   question=understanding.command;slots=callSlots(question);
+  }
+ }catch{
+  if(!pending&&!slots.start)return null;
+  understanding={intent:'clarify',command:'',selection:'unchanged',clarification:'Just so I make sure I understand you correctly, '+(pending?'are you asking me to continue the call request'+(pending.script_number?' using script '+pending.script_number:'')+'? Please confirm which lead you mean.':'who are you asking me to call, and which script or message should I use?')};
+ }
  if(row?.status==='dispatching'&&alive&&!slots.cancel)return actionReply(client,member,row.request_id);
  if(slots.cancel){if(row&&['awaiting_details','dispatching'].includes(row.status)){await cancelOwnerCallRequest(client,member,scope);return {ok:true,answer:'The pending call request is cancelled.'};}return null;}
- const previous=pending||(slots.start&&slots.reference&&alive&&row?.status==='submitted'?{...row.request,request_id:body.request_id,turns:[],turn_ids:[]}:null);
- const next=reduceCallRequest(previous,question,body.request_id);if(!next){if(slots.phoneReply)return {ok:true,answer:'There is no active pending call in this conversation. Tell me who to call and which script to use.'};return null;}
+ let previous=pending||(slots.start&&slots.reference&&alive&&row?.status==='submitted'?{...row.request,request_id:body.request_id,turns:[],turn_ids:[]}:null);
+ if(previous&&understanding.selection==='latest_global'&&understanding.intent==='call')previous={...previous,phone:null,phone_required:false,candidates:[],name:null,target:'the latest lead'};
+ if(previous&&understanding.intent==='call'&&['specified','latest_matching'].includes(understanding.selection)&&!slots.phoneHint&&slots.target!==previous.target)previous={...previous,phone:null,phone_required:false,candidates:[],name:null};
+ const next=understanding.intent==='clarify'?{...(previous||{request_id:body.request_id,kind:'saved_script',script_number:40,turns:[]}),confirmation_command:understanding.command,awaiting_field:'interpretation'}:reduceCallRequest(previous,question,body.request_id);if(!next)return {ok:true,answer:'Just so I make sure I understand you correctly, who are you asking me to call?',pending:true};
+ if(understanding.intent==='call'){delete next.confirmation_command;next.recipient_selection=understanding.selection;}
+ // Keep original speech as evidence; normalized instructions are never user quotes.
+ next.turns=[...(previous?.turns||[]),originalQuestion].slice(-12);
  const turn=await client.from('daisy_owner_call_turns').insert({owner_id:member.user_id,turn_id:body.request_id,conversation_id:scope,request_id:next.request_id,status:'processing'});if(turn.error?.code==='23505')return actionReply(client,member,next.request_id);if(turn.error)throw Error(turn.error.message);
  const remember=async(answer:string)=>{data(await client.from('daisy_owner_call_turns').update({status:'done',answer}).eq('owner_id',member.user_id).eq('turn_id',body.request_id));return answer;};
  next.turn_ids=[...(previous?.turn_ids||[]),body.request_id].slice(-20);
@@ -75,17 +101,18 @@ export async function dispatchOwnerCallRequest(client:any,member:any,body:any,de
  const write=row?client.from(TABLE).update(record).eq('owner_id',member.user_id).eq('conversation_id',scope).eq('version',row.version).select('*'):client.from(TABLE).insert(record).select('*');
  const saved=await write;if(saved.error?.code==='23505')return {ok:true,answer:'Your call request is being processed. No additional call was started.'};const stored=data(saved);if(stored.length!==1)return {ok:true,answer:'Your call request is already being updated. No additional call was started.'};
  let answer:string|null=null;
- if(next.kind==='saved_script'&&!next.script_number)answer='Which saved script number should I use? I’m keeping the recipient and call details.';
+ if(understanding.intent==='clarify')answer=understanding.clarification;
+ else if(next.kind==='saved_script'&&!next.script_number)answer='Which saved script number should I use? I’m keeping the recipient and call details.';
  else if(next.phone_required||next.candidates?.length>1)answer='What complete phone number should I call? I’m keeping the script and call details.';
  else if(next.kind==='custom'&&!next.message)answer='What would you like Daisy to say on this call?';
  else if(!next.phone&&!next.target)answer='Who should I call, or what complete phone number should I use?';
  else if(next.kind==='custom'&&!next.phone)answer='What complete phone number should I call? I’m keeping your message.';
- if(answer){next.awaiting_field=!next.script_number&&next.kind==='saved_script'?'script':next.kind==='custom'&&!next.message?'message':'phone';data(await client.from(TABLE).update({request:{...next,last_answer:answer}}).eq('owner_id',member.user_id).eq('conversation_id',scope).eq('version',version));await remember(answer);return {ok:true,answer,request_id:next.request_id,pending:true};}
+ if(answer){next.awaiting_field=understanding.intent==='clarify'?'interpretation':!next.script_number&&next.kind==='saved_script'?'script':next.kind==='custom'&&!next.message?'message':'phone';data(await client.from(TABLE).update({request:{...next,last_answer:answer}}).eq('owner_id',member.user_id).eq('conversation_id',scope).eq('version',version));await remember(answer);return {ok:true,answer,request_id:next.request_id,pending:true};}
  const claimed=data(await client.from(TABLE).update({status:'dispatching'}).eq('owner_id',member.user_id).eq('conversation_id',scope).eq('version',version).eq('status','awaiting_details').select('request_id'));if(claimed.length!==1)return {ok:true,answer:'That call request is already being processed. No additional call was started.'};
  try{
   const dispatchGuard=async()=>{const current=data(await client.from(TABLE).select('status,version,request_id').eq('owner_id',member.user_id).eq('conversation_id',scope).maybeSingle());if(current?.status!=='dispatching'||current.version!==version||current.request_id!==next.request_id)throw Error('The pending call was cancelled or replaced before dialing');};
   let result:any;
-  if(next.kind==='saved_script')result=await deps.saved(client,member,question,[],next.request_id,undefined,{scriptNumber:next.script_number,phones:next.phone?[next.phone]:[],phoneSource:next.turns.join('\n'),target:next.target||'',suppliedName:next.name,conversationMode:next.mode,dispatchGuard});
+  if(next.kind==='saved_script')result=await deps.saved(client,member,question,[],next.request_id,undefined,{scriptNumber:next.script_number,phones:next.phone?[next.phone]:[],phoneSource:next.turns.join('\n'),target:next.target||'',suppliedName:next.name,conversationMode:next.mode,recipientSelection:next.recipient_selection,dispatchGuard});
   else result=await deps.custom(client,member,'Call '+next.phone+'. '+(next.name?'Ask for '+next.name+'. ':'')+next.message,next.request_id,next.phone,dispatchGuard);
   if(!result.action)next.awaiting_field=/could not find one active outbound script/i.test(result.answer||'')?'script':/more than one client/i.test(result.answer||'')?'recipient':'phone';
   const state=result.action?(['submitted','executing','completed'].includes(result.action.status)?'submitted':'failed'):'awaiting_details';
