@@ -854,7 +854,7 @@ app.innerHTML=`
 <input id="email" class="dpa-field" type="email" placeholder="Email Address" oninput="dpaValidateLead()">
 <input id="phone" class="dpa-field" type="tel" placeholder="Phone Number" oninput="dpaValidateLead()">
 </div>
-<div class="dpa-sms-consent" id="sms-consent"><input id="smsOptIn" type="checkbox" onchange="dpaValidateLead()" aria-describedby="smsPolicyLinks"><label for="smsOptIn"><span id="smsDisclosure" data-version="2026-10-22">I agree to receive recurring automated text messages from DPA Help Center about my PrepHub preparation, account access, appointments, and requested callbacks at the number provided. Message frequency varies. Message and data rates may apply. Reply STOP to opt out or HELP for help. Consent is optional and is not a condition of purchase or receiving services.</span> <span id="smsPolicyLinks">Read our <a href="/privacy/" target="_blank" rel="noopener">Privacy Policy</a> and <a href="/sms-terms/" target="_blank" rel="noopener">SMS Terms</a>.</span></label></div>
+<div class="dpa-sms-consent" id="sms-consent"><input id="smsOptIn" type="checkbox" onchange="dpaValidateLead()" aria-describedby="smsPolicyLinks"><label for="smsOptIn"><span id="voiceDisclosure" data-version="2026-11-05">I agree to an immediate automated AI-assisted call from Daisy about my homebuyer preparation results at the number provided, and one retry if I do not answer. I can ask to stop at any time.</span> <span id="smsDisclosure" data-version="2026-10-22">I agree to receive recurring automated text messages from DPA Help Center about my PrepHub preparation, account access, appointments, and requested callbacks at the number provided. Message frequency varies. Message and data rates may apply. Reply STOP to opt out or HELP for help. Consent is optional and is not a condition of purchase or receiving services.</span> <span id="smsPolicyLinks">Read our <a href="/privacy/" target="_blank" rel="noopener">Privacy Policy</a> and <a href="/sms-terms/" target="_blank" rel="noopener">SMS Terms</a>.</span></label></div>
 <button type="button" id="leadNextBtn" class="dpa-submit" onclick="dpaSaveLeadAndContinue()" disabled>YES, I WANT HELP</button>
 </div>
 
@@ -880,6 +880,7 @@ app.innerHTML=`
 <div class="dpa-score-bar"><div id="finalScoreFill" class="dpa-score-fill"></div></div>
 </div>
 <div id="resultsIntro" class="dpa-route-copy">Please wait. We are sending you to your next step.</div>
+<button type="button" id="retryResultsBtn" class="dpa-final-btn" style="display:none" onclick="dpaSubmitQualification()">TRY AGAIN</button>
 <button type="button" id="beginAppBtn" class="dpa-final-btn" style="display:none" onclick="dpaStartApplication()">BEGIN APPLICATION</button>
 <a id="agentBtn" class="dpa-agent-btn" style="display:none" href="${AGENT_PHONE_URL}">CALL 1-833-302-8953</a>
 </div>
@@ -1224,7 +1225,7 @@ first_name:leadData.first_name||"",
 last_name:leadData.last_name||"",
 email:leadData.email||"",
 phone:(leadData.phone||"").replace(/\D/g,""),
-voice_consent:{requested:leadData.voice_call_requested===true,disclosure_version:"2026-11-05"},
+voice_consent:{requested:leadData.voice_call_requested===true,disclosure_version:"2026-11-05",capture_method:"optional_web_checkbox"},
 sms_consent:{opted_in:document.getElementById("smsOptIn")?.checked===true,disclosure_version:"2026-10-22",disclosure_text:document.getElementById("smsDisclosure")?.textContent||"",source_url:window.location.origin+window.location.pathname,client_submitted_at:new Date().toISOString()},
 readiness_score:Number(leadData.readiness_score)||0,
 credit_score:Number(leadData.credit_score)||0,
@@ -1255,6 +1256,9 @@ leadData.submit_type=t;
 const p=makePayload();
 document.getElementById("leadPayloadField").value=JSON.stringify(p);
 
+const controller=new AbortController();
+const timeout=setTimeout(()=>controller.abort(),20000);
+try{
 const response=await fetch(PREPHUB_INTAKE_URL,{
 method:"POST",
 headers:{
@@ -1263,17 +1267,21 @@ headers:{
 "Authorization":"Bearer "+SUPABASE_PUBLISHABLE_KEY
 },
 body:JSON.stringify(p),
+signal:controller.signal,
 keepalive:true
 });
 
 const result=await response.json().catch(()=>({}));
 if(!response.ok)throw new Error(result.error||"PrepHub could not save your plan.");
+try{
 localStorage.setItem("dpa_prephub_require_email","1");
 localStorage.setItem("dpa_prephub_email",leadData.email);
 localStorage.setItem("dpa_prephub_lead_id",leadData.lead_id);
 localStorage.setItem("dpa_prephub_score",String(leadData.readiness_score));
 localStorage.setItem("dpa_prephub_first_name",leadData.first_name);
+}catch{/* A blocked browser storage setting must not turn a saved lead into an error. */}
 return result;
+}catch(error){if(error?.name==="AbortError")throw new Error("Saving is taking longer than expected. Please tap TRY AGAIN. Your details are still here.");throw error;}finally{clearTimeout(timeout);}
 }
 
 
@@ -1487,9 +1495,7 @@ wrap.innerHTML=`
 <button type="button" class="dpa-select-card" onclick="dpaSelectTaxes(this,'not_filed_recently',false)"><div class="dpa-select-title">Have not filed recently</div></button>
 <button type="button" class="dpa-select-card" onclick="dpaSelectTaxes(this,'not_sure',false)"><div class="dpa-select-title">Not sure</div></button>
 </div>
-<button type="button" id="taxesNextBtn" class="dpa-submit" onclick="dpaSubmitQualification(true)" disabled>GET MY RESULTS + DAISY CALL</button>
-<p class="dpa-voice-disclosure" id="voiceCallDisclosure">By choosing GET MY RESULTS + DAISY CALL, I request an immediate automated AI-assisted call from Daisy at the number I provided about my homebuyer preparation results, and one retry if I do not answer. I can ask to stop at any time.</p>
-<button type="button" id="resultsOnlyBtn" class="dpa-results-only" onclick="dpaSubmitQualification(false)" disabled>Get my results without a call</button>
+<button type="button" id="taxesNextBtn" class="dpa-submit" onclick="dpaSubmitQualification()" disabled>GET MY RESULTS</button>
 </div>`;
 }
 
@@ -1559,7 +1565,6 @@ btn.classList.add("active");
 
 const next=document.getElementById("taxesNextBtn");
 next.disabled=false;
-const resultsOnly=document.getElementById("resultsOnlyBtn");if(resultsOnly)resultsOnly.disabled=false;
 next.classList.add("ready");
 
 leadData.submission_stage="Tax Return History Selected";
@@ -1579,14 +1584,15 @@ dpaSubmitQualification();
 }
 };
 
-window.dpaSubmitQualification=async function(requestCall=true){
+window.dpaSubmitQualification=async function(){
 if(qualificationSubmitted)return;
+document.getElementById("retryResultsBtn").style.display="none";
 
 calculateScore();
 const destination=buildResultsUrl();
 
 qualificationSubmitted=true;
-leadData.voice_call_requested=requestCall===true;
+leadData.voice_call_requested=document.getElementById("smsOptIn")?.checked===true;
 leadData.final_submitted=true;
 leadData.final_submitted_at=new Date().toISOString();
 leadData.submission_stage=leadData.readiness_score===100?"Submit Final - Qualification Qualified":"Submit Final - Redirected To Results Page";
@@ -1599,7 +1605,7 @@ updateHiddenPayload();
 
 dpaGoToStep(4);
 document.getElementById("finalTitle").textContent="Saving your personal plan...";
-document.getElementById("resultsIntro").textContent="We’re creating your secure PrepHub login and emailing your next steps.";
+document.getElementById("resultsIntro").textContent="We’re saving your results. Your PrepHub sign-in email follows shortly.";
 
 let intakeResult={};
 try{
@@ -1607,7 +1613,8 @@ intakeResult=await sendPrepHubIntake("qualification_final");
 }catch(error){
 qualificationSubmitted=false;
 document.getElementById("finalTitle").textContent="We couldn’t save your plan yet.";
-document.getElementById("resultsIntro").textContent=(error&&error.message?error.message:"Please try again.")+" Return to the last question and tap GET MY RESULTS again.";
+document.getElementById("resultsIntro").textContent=(error&&error.message?error.message:"Please try again.")+" Tap TRY AGAIN to finish saving.";
+document.getElementById("retryResultsBtn").style.display="block";
 return;
 }
 
@@ -1623,7 +1630,7 @@ document.getElementById("finalTitle").textContent="Your preparation plan is save
 document.getElementById("finalScoreStatus").textContent="Opening PrepHub";
 document.getElementById("resultsIntro").textContent=intakeResult.email_sent
 ?"Opening your personal PrepHub. Your secure sign-in link is also in your email."
-:"Opening PrepHub. You can request a secure email login link there.";
+:"Opening your personal PrepHub. Your secure sign-in email is being prepared.";
 const next=new URL(destination,window.location.href);
 const first=buildDeficiencyList()[0]?.key;
 const views={credit:"credit",dti:"income",job:"employment",taxes:"taxes"};

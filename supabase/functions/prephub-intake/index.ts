@@ -86,6 +86,7 @@ async function forwardToHelux(payload: Record<string, unknown>) {
         "x-helux-key": apiKey,
       },
       body: JSON.stringify({...payload,call_controller:"prephub-auto-call"}),
+      signal: AbortSignal.timeout(8000),
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) {
@@ -360,6 +361,7 @@ async function sendPrepHubEmail(
   try {
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
+      signal: AbortSignal.timeout(12000),
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
@@ -409,6 +411,7 @@ async function sendPrepHubLoginEmail(
   try {
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
+      signal: AbortSignal.timeout(12000),
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
@@ -601,6 +604,7 @@ Deno.serve(async (req: Request) => {
     // a browser navigation. The worker cron also picks up any pending request.
     let autoCall:any={status:'not_requested'};
     try{autoCall=await enqueueIntakeCall(supabase,lead.id);if(autoCall.job_id&&autoCall.status==='pending')EdgeRuntime.waitUntil(runIntakeCalls(supabase,autoCall.job_id).catch(error=>console.error('Intake call remains recorded for reconciliation',error.message)));}catch(error){console.error('Intake call enrollment unavailable',error instanceof Error?error.message:'Unknown');autoCall={status:'needs_review'};}
+    const syncHelux = async () => {
     const helux = await forwardToHelux(payload);
 
     await supabase.from("helux_cases").upsert({
@@ -630,6 +634,8 @@ Deno.serve(async (req: Request) => {
       attempted_at: new Date().toISOString(),
     });
 
+    };
+    const sendResultsEmail = async () => {
     const redirectTo = `https://www.dpahelpcenter.com/prephub?lead=${encodeURIComponent(leadId)}`;
     const userData = {
       first_name: firstName,
@@ -688,14 +694,13 @@ Deno.serve(async (req: Request) => {
       attempted_at: new Date().toISOString(),
     });
 
-    return json({
-      ok: true,
-      lead_id: leadId,
-      email_sent: emailSent,
-      email_status: emailStatus,
-      helux,
-      auto_call: autoCall,
-    }, 200, origin);
+    };
+    // Lead + call request are durable already. External systems must not keep
+    // a buyer on the saving screen or delay the independent call worker.
+    EdgeRuntime.waitUntil(Promise.allSettled([syncHelux(), sendResultsEmail()]).then(results => {
+      for (const result of results) if (result.status === 'rejected') console.error('Intake background delivery failed', result.reason instanceof Error ? result.reason.message : 'Unknown');
+    }));
+    return json({ok:true,lead_id:leadId,email_sent:false,email_status:'queued',auto_call:autoCall},200,origin);
   } catch (error) {
     console.error("PrepHub intake failed", error);
     return json({ error: "We could not save your PrepHub plan. Please try again." }, 500, origin);
