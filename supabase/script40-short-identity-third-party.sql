@@ -1,0 +1,15 @@
+-- Approved short opening and third-party/call-screening handling.
+-- Preserve all preparation phases and retain the previous version in history.
+WITH candidates AS (
+ SELECT *, 'Hi, is {first_name} speaking?'::text AS greeting
+ FROM public.daisy_call_scripts
+ WHERE deleted_at IS NULL AND ((script_number=40 AND version=27) OR (script_number IN (60,61) AND version=1))
+), revised AS (
+ SELECT id, (content || jsonb_build_object('opening',greeting,'identity_handling','Start with: Hi, is {first_name} speaking? If the person says no, say: Oh, okay. No problem. This is Daisy with the Down Payment Assistance Help Center. Is {first_name} available to speak? If available, say Thank you. I’ll hold. Confirm the customer after the handoff before continuing. If unavailable, ask them to let {first_name} know Daisy with the Down Payment Assistance Help Center called to follow up on their inquiry, thank them and end. If explicitly wrong number, apologize briefly, end and record wrong_number. For automated screening, state Daisy with the Down Payment Assistance Help Center, returning {first_name}’s inquiry; wait silently for connection, then confirm the human customer. Do not disclose financial or preparation details to third parties. Never repeat a yes/no identity clarification to a screening system.',
+ 'key_points',(SELECT coalesce(jsonb_agg(point),'[]'::jsonb) FROM jsonb_array_elements_text(content->'key_points') point WHERE point !~ '^(Opening delivery:|If the recipient repeats congratulations)') || jsonb_build_array('Start with: Hi, is {first_name} speaking? If the person says no, say: Oh, okay. No problem. This is Daisy with the Down Payment Assistance Help Center. Is {first_name} available to speak? If available, say Thank you. I’ll hold. Confirm the customer after the handoff before continuing. If unavailable, ask them to let {first_name} know Daisy with the Down Payment Assistance Help Center called to follow up on their inquiry, thank them and end. If explicitly wrong number, apologize briefly, end and record wrong_number. For automated screening, state Daisy with the Down Payment Assistance Help Center, returning {first_name}’s inquiry; wait silently for connection, then confirm the human customer. Do not disclose financial or preparation details to third parties. Never repeat a yes/no identity clarification to a screening system.')))
+ || jsonb_build_object('script_text',replace(replace(content->>'script_text',content->>'opening',greeting),'Oh, I’m sorry. Is this {first_name} speaking?',greeting))
+ || CASE WHEN content ? 'body' THEN jsonb_build_object('body',replace(replace(content->>'body',content->>'opening',greeting),'Oh, I’m sorry. Is this {first_name} speaking?',greeting)) ELSE '{}'::jsonb END AS revised_content
+ FROM candidates
+)
+UPDATE public.daisy_call_scripts s SET history=coalesce(history,'[]'::jsonb)||jsonb_build_array(jsonb_build_object('version',version,'title',title,'category',category,'direction',direction,'content',content,'saved_at',now())),content=r.revised_content,version=version+1,updated_at=now()
+FROM revised r WHERE s.id=r.id;
