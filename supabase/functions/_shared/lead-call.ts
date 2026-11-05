@@ -16,10 +16,9 @@ export async function startLeadCall(client:any,member:any,body:any,deps={queue:p
  if(!lead)throw Error('The selected lead is no longer available');
  const op=check(await client.from('lead_operations').select('*').eq('lead_id',lead.id).maybeSingle());
  if(op?.archived_at||op?.deleted_at)throw Error('This lead is archived or deleted');
- const queue=await deps.queue(client,member),task=queue.tasks.find((t:any)=>t.lead_id===lead.id),stage=leadCallStage(lead,op,task);
- if(stage!==body.expected_stage)throw Error('This lead moved to another stage. Refresh the dashboard before calling.');
+ const stage=leadCallStage(lead,op,null);
  let scripts=client.from('daisy_call_scripts').select('*').eq('direction','outbound').is('deleted_at',null).is('archived_at',null);
- scripts=stage==='new'?scripts.eq('script_number',40):scripts.eq('title',stageScriptTitles[stage as 'preparation'|'dpa']);
+ scripts=scripts.eq('script_number',stage==='new'?40:stage==='preparation'?60:61);
  const matches=check(await scripts);if(matches.length!==1)throw Error('Choose one active saved script for this workflow stage in Scripts.');
  const script=matches[0],question='Call '+lead.lead_id+' using script '+script.script_number+' from the '+stage+' workflow row.';
  let prepared;
