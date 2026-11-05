@@ -13,8 +13,8 @@ export async function enqueueIntakeCall(client:any,leadId:string,now=Date.now())
  const owner=check(await client.from('manager_members').select('user_id,role,active').eq('user_id',cfg.authorized_by).eq('active',true).single());if(owner.role!=='owner')throw Error('Active automation owner required');
  const inserted=await client.from(JOBS).upsert({lead_id:lead.id,attempt:0,contact_day:contactDay(now),phone,...route,consent,authorized_by:owner.user_id,submitted_at:consent.received_at,due_at:new Date(now).toISOString(),reason:'Buyer requested an immediate Daisy call with final results'},{onConflict:'lead_id,attempt',ignoreDuplicates:true}).select('*');
  if(inserted.error&&inserted.error.code!=='23505')throw Error(inserted.error.message);
- const job=inserted.data?.[0]||check(await client.from(JOBS).select('*').eq('lead_id',lead.id).eq('attempt',0).maybeSingle())||check(await client.from(JOBS).select('*').eq('phone',phone).eq('contact_day',contactDay(now)).eq('attempt',0).maybeSingle());
- return {status:job?.status||'duplicate',job_id:job?.id||null};
+ const job=inserted.data?.[0]||check(await client.from(JOBS).select('*').eq('lead_id',lead.id).eq('attempt',0).maybeSingle());
+ return {status:job?.status||'phone_busy',job_id:job?.id||null};
 }
 export async function runIntakeCalls(client:any,jobId?:string,now=Date.now(),deps={prepare:prepareAction,finalize:finalizeCallDraft,execute:executeAction,context:preparationContext}){
  const cfg=check(await client.from('daisy_intake_call_settings').select('*').eq('id',true).single()),workflow=check(await client.from('prephub_followup_settings').select('workflow_paused').eq('id',true).single());
@@ -24,7 +24,7 @@ export async function runIntakeCalls(client:any,jobId?:string,now=Date.now(),dep
  const due=check(await query),processed=[];
  for(const job of due){
   const owner=check(await client.from('manager_members').select('user_id,role,active').eq('user_id',job.authorized_by).eq('active',true).single());if(owner.role!=='owner'||cfg.authorized_by!==owner.user_id)throw Error('Automatic call authorization changed');
-  const claimed=check(await client.from(JOBS).update({status:'working',action_id:job.id,updated_at:stamp()}).eq('id',job.id).eq('status','pending').select('id'));if(!claimed.length)continue;
+  const claim=await client.from(JOBS).update({status:'working',action_id:job.id,updated_at:stamp()}).eq('id',job.id).eq('status','pending').select('id');if(claim.error?.code==='23505')continue;const claimed=check(claim);if(!claimed.length)continue;
   try{
    const lead=check(await client.from('prephub_leads').select('*').eq('id',job.lead_id).single()),op=check(await client.from('lead_operations').select('*').eq('lead_id',job.lead_id).maybeSingle()),pref=check(await client.from('prephub_contact_preferences').select('*').eq('lead_id',job.lead_id).maybeSingle());
    if(op?.archived_at||op?.deleted_at||pref?.call_paused||intakePhone(lead.phone)!==job.phone)throw Error('Lead or phone is changed, inactive, or paused');

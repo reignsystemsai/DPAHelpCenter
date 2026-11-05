@@ -24,11 +24,10 @@ create table public.daisy_intake_call_jobs (
  reason text,
  created_at timestamptz not null default now(),
  updated_at timestamptz not null default now(),
- unique(lead_id,attempt),
- unique(phone,contact_day,attempt)
+ unique(lead_id,attempt)
 );
 create index daisy_intake_due on public.daisy_intake_call_jobs(due_at) where status='pending';
-create unique index daisy_intake_active_phone on public.daisy_intake_call_jobs(phone) where status in ('pending','working','submitted');
+create unique index daisy_intake_active_phone on public.daisy_intake_call_jobs(phone) where status in ('working','submitted');
 alter table public.daisy_intake_call_settings enable row level security;
 alter table public.daisy_intake_call_jobs enable row level security;
 revoke all on public.daisy_intake_call_settings,public.daisy_intake_call_jobs from public,anon,authenticated;

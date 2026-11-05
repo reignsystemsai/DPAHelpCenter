@@ -1619,18 +1619,18 @@ return;
 }
 
 if(leadData.readiness_score===100){
-document.getElementById("finalTitle").textContent="You’re 100% ready.";
-document.getElementById("resultsIntro").textContent=intakeResult.email_sent
-?"Your credit, income, employment, and tax history look ready. Your DPA Help Center login link is in your email."
-:"Your credit, income, employment, and tax history look ready. Your plan is saved—continue below while your login email becomes available.";
+document.getElementById("finalTitle").textContent="Your preparation plan is saved.";
+document.getElementById("resultsIntro").textContent=leadData.voice_call_requested
+?"Now connecting you to a DPA specialist."
+:"Your DPA Help Center sign-in email is being prepared.";
 document.getElementById("beginAppBtn").style.display="block";
 document.getElementById("agentBtn").style.display="block";
 }else{
 document.getElementById("finalTitle").textContent="Your preparation plan is saved.";
 document.getElementById("finalScoreStatus").textContent="Opening PrepHub";
-document.getElementById("resultsIntro").textContent=intakeResult.email_sent
-?"Opening your personal PrepHub. Your secure sign-in link is also in your email."
-:"Opening your personal PrepHub. Your secure sign-in email is being prepared.";
+document.getElementById("resultsIntro").textContent=leadData.voice_call_requested
+?"Now connecting you to a PrepHub specialist."
+:"Your PrepHub sign-in email is being prepared.";
 const next=new URL(destination,window.location.href);
 const first=buildDeficiencyList()[0]?.key;
 const views={credit:"credit",dti:"income",job:"employment",taxes:"taxes"};
