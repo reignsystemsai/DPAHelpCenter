@@ -1,6 +1,6 @@
 export const INTAKE_VOICE_VERSION='2026-11-05';
 export const INTAKE_VOICE_TEXT='By choosing GET MY RESULTS + DAISY CALL, I request an immediate automated AI-assisted call from Daisy at the number I provided about my homebuyer preparation results, and one retry if I do not answer. I can ask to stop at any time.';
-export const INTAKE_CHECKBOX_VOICE_TEXT='I agree to an immediate automated AI-assisted call from Daisy about my homebuyer preparation results at the number provided, and one retry if I do not answer. I can ask to stop at any time.';
+export const INTAKE_CHECKBOX_VOICE_TEXT='I agree to be called.';
 export const intakeCheck=(r:any)=>{if(r.error)throw Error(r.error.message||'Intake call storage unavailable');return r.data;};
 export const intakePhone=(phone:any)=>{let digits=String(phone||'').replace(/\D/g,'');if(digits.length===10)digits='1'+digits;if(!/^1\d{10}$/.test(digits))throw Error('A complete US phone number is required for the automatic call');return '+'+digits;};
 const answer=(x:any)=>x===true||x==='Yes'?true:x===false||x==='No'?false:null;
