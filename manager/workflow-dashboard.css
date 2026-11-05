@@ -28,3 +28,5 @@
 
 /* Confine each checkpoint cell; details belong in the frosted dialog. */
 .pd-client-group .pd-table td{overflow:hidden;white-space:normal;min-width:0}.pd-client-group .pd-table td>small,.pd-client-group .pd-table td>span{max-width:100%;overflow-wrap:anywhere}.pd-client-group .pd-table .pd-call-cell{overflow:hidden}.pd-call-cell .pd-lead-call{display:block;width:100%;min-width:44px}.pd-actions-cell{display:table-cell}.pd-actions-cell>*+*{margin-top:6px}.pd-actions-cell .pd-row-move{margin:0}.pd-actions-cell .pd-delete-link{align-self:flex-start;padding:5px 0}.pd-next-cell .pd-action-preview{white-space:normal;min-width:0;text-align:left;line-height:1.4}.pd-client-label{min-width:0;overflow-wrap:anywhere}.pd-client-group:not([data-pd-group=live]) .pd-table{min-width:1120px}
+
+.pd-card .pd-worklist-buttons .pd-stop-worklist{grid-column:1/-1;color:#ad203b;border-color:#e5c4cb;background:#fff7f8}.pd-card .pd-worklist-buttons .pd-stop-worklist:disabled{opacity:.55}.pd-card .pd-worklist-status{font-size:10px;line-height:1.5;min-height:30px;margin:8px 0 0;overflow-wrap:anywhere}
