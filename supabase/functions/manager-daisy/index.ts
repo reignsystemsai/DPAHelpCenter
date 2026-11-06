@@ -1,3 +1,4 @@
+import {recoveryActionForQueue} from '../_shared/call-recovery.ts';
 import {dispatchOwnerCallRequest,cancelOwnerCallRequest} from '../_shared/owner-call-request.ts';
 import {startLeadCall,startWorklistCall} from '../_shared/lead-call.ts';
 import {savedScriptNumber} from '../_shared/saved-script-dispatch.ts';
@@ -62,6 +63,7 @@ Deno.serve(async req=>{
    if(action==='call_live'){if(item.kind!=='call')throw Error('Call required');const live=await fetch(`https://helux-ai-workforce.onrender.com/api/v1/manager/calls/${item.id}/live`,{headers:{'x-helux-key':Deno.env.get('HELUX_API_KEY')||''},signal:AbortSignal.timeout(6000)});if(!live.ok)throw Error('Live transcript is temporarily unavailable');return json({ok:true,call:await live.json()});}
    if(action==='call_recording'){if(item.kind!=='call'||item.result?.recording_status!=='completed')return json({error:'Recording is not available'},404);let path=null;try{path=await archiveRecording(client,item);}catch(e){console.error('Recording archive pending',e instanceof Error?e.message:'Unavailable');}if(path){const audio=await client.storage.from('daisy-call-recordings').download(path);if(audio.data)return new Response(audio.data,{headers:{...headers,'Content-Type':'application/octet-stream'}});}const r=await fetch(`https://helux-ai-workforce.onrender.com/api/v1/manager/calls/${item.id}/recording`,{headers:{'x-helux-key':Deno.env.get('HELUX_API_KEY')||''},signal:AbortSignal.timeout(20000)});if(!r.ok)return json({error:'Recording could not be loaded'},502);return new Response(r.body,{headers:{...headers,'Content-Type':'application/octet-stream'}});}
    if(item.kind==='call'&&item.provider_id){try{const r=await fetch(`https://helux-ai-workforce.onrender.com/api/v1/manager/calls/${item.id}`,{headers:{'x-helux-key':Deno.env.get('HELUX_API_KEY')||''},signal:AbortSignal.timeout(15000)});if(r.ok){const refreshed=await client.from('daisy_crm_actions').select('*').eq('id',item.id).single();if(!refreshed.error)item=refreshed.data;}}catch{}}
+   if(action==='action_details')item=await recoveryActionForQueue(client,item);
    let gate:any=null;if(item.status==='draft')try{const check=await actionGate(client,item);gate={ready:check.ready,reason:check.reason,overridable:check.overridable};}catch(e){gate={ready:false,reason:e instanceof Error?e.message:'Action unavailable'};}return json({ok:true,action:item,gate});
   }
   if(action==='speech'){
