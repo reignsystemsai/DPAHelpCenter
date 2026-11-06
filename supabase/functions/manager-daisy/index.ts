@@ -1,5 +1,5 @@
 import {dispatchOwnerCallRequest,cancelOwnerCallRequest} from '../_shared/owner-call-request.ts';
-import {startLeadCall} from '../_shared/lead-call.ts';
+import {startLeadCall,startWorklistCall} from '../_shared/lead-call.ts';
 import {savedScriptNumber} from '../_shared/saved-script-dispatch.ts';
 import {commandHistory,recentOwnerCallContext,beginCommandAudit} from '../_shared/command-context.ts';
 import {ownerCallInstruction} from '../_shared/direct-number.ts';
@@ -29,6 +29,7 @@ Deno.serve(async req=>{
   const requestStartedAt=Date.now(),client=db(),member=await manager(client,req),body=await req.json(),action=body.action||'report';
   if(action==='test_room'){const r=await testRoomAction(client,member,body);if(r.audio_response){const bytes=new Uint8Array(await r.audio_response.arrayBuffer());let binary='';for(let i=0;i<bytes.length;i+=8192)binary+=String.fromCharCode(...bytes.subarray(i,i+8192));return json({ok:true,audio_base64:btoa(binary)});}return json(r);}
   if(action==='preparation_queue')return json(await preparationQueue(client,member));
+  if(action==='start_worklist_call')return json(await startWorklistCall(client,member,body));
   if(action==='start_lead_call')return json(await startLeadCall(client,member,body));
   if(action==='preparation_task')return json(await workflowCommand(client,member,body));
   if(action==='caller_settings'){if(member.role!=='owner')throw Error('Owner access required');return json({ok:true,...await readCallerSettings(client)});}

@@ -32,3 +32,34 @@ export async function startLeadCall(client:any,member:any,body:any,deps={queue:p
  const result=await deps.execute(client,member,action,question);
  return {...result,stage,script_number:script.script_number,call_started:!!result.action?.provider_id};
 }
+
+const worklistTitles:Record<string,string>={login:'New / Not Engaged',credit:'Credit',income:'DTI & Income',taxes:'Taxes',work:'Work History'};
+// Start one owner-selected worklist call. No batch drafts, generated script, or
+// client-side preview/finalize round trip; the next lead is sent only after it ends.
+export async function startWorklistCall(client:any,member:any,body:any,deps={prepare:prepareAction,execute:executeCurrentCall}){
+ if(member.role!=='owner')throw Error('Owner access required');
+ if(!uuid(body.lead_id)||!uuid(body.request_id)||!uuid(body.script_id)||!worklistTitles[body.worklist])throw Error('Choose one saved lead, worklist, saved script and unique request');
+ const previous=check(await client.from('daisy_crm_actions').select('*').eq('id',body.request_id).eq('created_by',member.user_id).maybeSingle());
+ if(previous){if(previous.lead_id!==body.lead_id||previous.kind!=='call'||previous.payload?.worklist_key!==body.worklist||previous.payload?.script_id!==body.script_id)throw Error('This request belongs to another worklist call');return {ok:true,action:previous,duplicate:true,call_started:!!previous.provider_id,answer:'This call request is already recorded. Check its outcome before retrying.'};}
+ const [lead,op,task,settings,pref,callbacks,script]=await Promise.all([
+  client.from('prephub_leads').select('*').eq('id',body.lead_id).single(),
+  client.from('lead_operations').select('*').eq('lead_id',body.lead_id).maybeSingle(),
+  client.from('prephub_followup_jobs').select('*').eq('lead_id',body.lead_id).eq('task_kind','preparation').maybeSingle(),
+  client.from('prephub_followup_settings').select('workflow_mode,workflow_paused').eq('id',true).single(),
+  client.from('prephub_contact_preferences').select('*').eq('lead_id',body.lead_id).maybeSingle(),
+  client.from('prephub_followup_jobs').select('status,due_at').eq('lead_id',body.lead_id).eq('task_kind','callback'),
+  client.from('daisy_call_scripts').select('*').eq('id',body.script_id).eq('direction','outbound').is('archived_at',null).is('deleted_at',null).single()
+ ].map(async q=>check(await q)));
+ if(!settings||settings.workflow_paused||settings.workflow_mode!=='owner_approved')throw Error('The call worklist is paused or not enabled');
+ if(!lead||op?.archived_at||op?.deleted_at)return {ok:true,skipped:true,reason:'Lead is archived or no longer available'};
+ const stage=leadCallStage(lead,op,task);if(stage==='dpa'||body.worklist==='login'&&stage!=='new'||body.worklist!=='login'&&stage!=='preparation')return {ok:true,skipped:true,reason:'Lead moved out of this worklist'};
+ const held=pref?.call_paused?'Calls paused':task?.admin_paused||task?.status==='paused'?'Task paused':task&&task.task_owner!=='Daisy'?'Assigned to administrator':['working','submitted'].includes(task?.status)?'Call already in progress':callbacks.some((j:any)=>!['completed','canceled','skipped'].includes(j.status)&&Date.parse(j.due_at)>Date.now())?'Client has a future scheduled callback':task?.due_at&&Date.parse(task.due_at)>Date.now()?'Not due yet':null;
+ if(held)return {ok:true,skipped:true,reason:held};
+ if(!script)throw Error('The selected saved script is no longer available');
+ const title=worklistTitles[body.worklist],question='Start '+title+' worklist: call '+lead.lead_id+' now using saved script '+script.script_number+'.';
+ let prepared;try{prepared=await deps.prepare(client,member,{kind:'call',lead_id:lead.lead_id,reason:title+' worklist',content:personalizeScript({...script.content,script_text:scriptText(script.content)},lead),saved_script:script,script_category:script.category},{requestId:body.request_id,question});}catch(e){const concurrent=check(await client.from('daisy_crm_actions').select('*').eq('id',body.request_id).eq('created_by',member.user_id).maybeSingle());if(!concurrent)throw e;return {ok:true,duplicate:true,action:concurrent,call_started:!!concurrent.provider_id,answer:'This call request is already being processed.'};}
+ const action=check(await client.from('daisy_crm_actions').update({payload:{...prepared.action.payload,worklist_key:body.worklist}}).eq('id',prepared.action.id).eq('created_by',member.user_id).eq('status','draft').select('*').single());
+ const result=await deps.execute(client,member,action,question);
+ if(!result.action?.provider_id&&result.action?.status==='draft'&&result.answer?.startsWith('Call not placed:')){check(await client.from('daisy_crm_actions').update({status:'cancelled'}).eq('id',action.id).eq('status','draft'));return {ok:true,skipped:true,reason:result.answer.slice('Call not placed: '.length)};}
+ return {...result,script_number:script.script_number,call_started:!!result.action?.provider_id};
+}
