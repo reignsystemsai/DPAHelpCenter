@@ -56,10 +56,27 @@ export async function startWorklistCall(client:any,member:any,body:any,deps={pre
  const held=pref?.call_paused?'Calls paused':task?.admin_paused||task?.status==='paused'?'Task paused':task&&task.task_owner!=='Daisy'?'Assigned to administrator':['working','submitted'].includes(task?.status)?'Call already in progress':callbacks.some((j:any)=>!['completed','canceled','skipped'].includes(j.status)&&Date.parse(j.due_at)>Date.now())?'Client has a future scheduled callback':task?.due_at&&Date.parse(task.due_at)>Date.now()?'Not due yet':null;
  if(held)return {ok:true,skipped:true,reason:held};
  if(!script)throw Error('The selected saved script is no longer available');
+ if(body.run_id){if(!uuid(body.run_id))throw Error('Saved worklist run required');const run=check(await client.from('daisy_worklist_runs').select('state').eq('id',body.run_id).eq('created_by',member.user_id).single());if(run?.state?.status!=='running')return {ok:true,skipped:true,reason:'Worklist stopped'};}
  const title=worklistTitles[body.worklist],question='Start '+title+' worklist: call '+lead.lead_id+' now using saved script '+script.script_number+'.';
  let prepared;try{prepared=await deps.prepare(client,member,{kind:'call',lead_id:lead.lead_id,reason:title+' worklist',content:personalizeScript({...script.content,script_text:scriptText(script.content)},lead),saved_script:script,script_category:script.category},{requestId:body.request_id,question});}catch(e){const concurrent=check(await client.from('daisy_crm_actions').select('*').eq('id',body.request_id).eq('created_by',member.user_id).maybeSingle());if(!concurrent)throw e;return {ok:true,duplicate:true,action:concurrent,call_started:!!concurrent.provider_id,answer:'This call request is already being processed.'};}
- const action=check(await client.from('daisy_crm_actions').update({payload:{...prepared.action.payload,worklist_key:body.worklist}}).eq('id',prepared.action.id).eq('created_by',member.user_id).eq('status','draft').select('*').single());
+ const action=check(await client.from('daisy_crm_actions').update({payload:{...prepared.action.payload,worklist_key:body.worklist,worklist_run_id:body.run_id||null}}).eq('id',prepared.action.id).eq('created_by',member.user_id).eq('status','draft').select('*').single());
  const result=await deps.execute(client,member,action,question);
  if(!result.action?.provider_id&&result.action?.status==='draft'&&result.answer?.startsWith('Call not placed:')){check(await client.from('daisy_crm_actions').update({status:'cancelled'}).eq('id',action.id).eq('status','draft'));return {ok:true,skipped:true,reason:result.answer.slice('Call not placed: '.length)};}
  return {...result,script_number:script.script_number,call_started:!!result.action?.provider_id};
+}
+
+// Owner-only durable queue checkpoints and a rolling 24-hour activity history.
+export async function worklistSession(client:any,member:any,body:any){
+ if(member.role!=='owner')throw Error('Owner access required');
+ if(body.operation==='lookup'){if(!uuid(body.request_id))throw Error('Saved call request required');const action=check(await client.from('daisy_crm_actions').select('*').eq('id',body.request_id).eq('created_by',member.user_id).eq('kind','call').maybeSingle());return {ok:true,action};}
+ if(body.operation==='read'){const since=new Date(Date.now()-86400000).toISOString();const [runs,activity]=await Promise.all([
+ client.from('daisy_worklist_runs').select('*').eq('created_by',member.user_id).gte('created_at',since).order('updated_at',{ascending:false}).limit(50),
+ client.from('daisy_crm_actions').select('id,lead_id,status,provider_id,created_at,executed_at,name:payload->recipient->>name,worklist:payload->>worklist_key,script_id:payload->>script_id,root:payload->disconnect_recovery->>root_action_id,call_status:result->>call_status').eq('created_by',member.user_id).eq('kind','call').in('status',['executing','submitted','completed','needs_review']).gte('created_at',since).order('created_at',{ascending:false}).limit(500)
+ ].map(async q=>check(await q)));return {ok:true,runs,activity};}
+ if(body.operation!=='save'||!uuid(body.run_id)||!Number.isInteger(body.expected_version)||body.expected_version<0)throw Error('A versioned worklist checkpoint is required');
+ const s=body.state;if(!s||!['all',...Object.keys(worklistTitles)].includes(s.key)||!Array.isArray(s.targets)||s.targets.length>2000||!Number.isInteger(s.index)||s.index<0||s.index>s.targets.length||!Array.isArray(s.log)||s.log.length>2000||!['running','paused','completed','review'].includes(s.status)||JSON.stringify(s).length>500000)throw Error('Invalid worklist checkpoint');
+ if(s.targets.some((t:any)=>!uuid(t.id)||!uuid(t.scriptId)||!uuid(t.requestId)||!worklistTitles[t.key]))throw Error('Invalid saved call target');
+ const state={key:s.key,title:String(s.title||'Daisy calls').slice(0,120),targets:s.targets,index:s.index,called:Number(s.called)||0,currentActionId:uuid(s.currentActionId)?s.currentActionId:null,currentKey:s.currentKey||null,status:s.status,log:s.log.map((l:any)=>({at:new Date(l.at).toISOString(),text:String(l.text).slice(0,1500)}))};
+ const row=body.expected_version===0?check(await client.from('daisy_worklist_runs').insert({id:body.run_id,created_by:member.user_id,state,version:1,created_at:new Date().toISOString()}).select('*').single()):check(await client.from('daisy_worklist_runs').update({state,version:body.expected_version+1,updated_at:new Date().toISOString()}).eq('id',body.run_id).eq('created_by',member.user_id).eq('version',body.expected_version).select('*').maybeSingle());
+ if(!row)throw Error('This worklist changed in another manager tab. Refresh before resuming.');return {ok:true,run:row};
 }
